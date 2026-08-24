@@ -26,6 +26,18 @@ struct CloudSetupTests {
         #expect(ProviderCatalog.provider("grok-build") == nil)
     }
 
+    @Test("Google Gemini is a selectable hosted provider")
+    func exposesGoogleGeminiProvider() throws {
+        let google = try #require(CloudCatalog.provider("google"))
+        let model = try #require(
+            CloudCatalog.models(for: google.id).first { $0.id == "gemini-3.5-flash" }
+        )
+
+        #expect(google.wireProtocol == .googleGenerativeAI)
+        #expect(google.api == "https://generativelanguage.googleapis.com")
+        #expect(model.supportsTools)
+    }
+
     private func freshDefaults() -> UserDefaults {
         let suite = "CloudSetupTests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!

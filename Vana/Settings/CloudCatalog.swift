@@ -11,7 +11,7 @@ enum CloudCatalog {
         }
 
     /// 排除本地部署(Ollama、LM Studio)和目录里没有固定地址的 provider
-    /// (custom-provider、DimCode OAuth,以及目录暂时缺 api 的 google):
+    /// (custom-provider、DimCode OAuth 等):
     /// 手机连不到 localhost,而没有 base URL 的 provider 一发请求就是 missingBaseURL。
     private static func isHostedCloud(_ provider: ProviderInfo) -> Bool {
         guard let api = provider.api,
