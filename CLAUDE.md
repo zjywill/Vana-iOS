@@ -1547,7 +1547,17 @@ Siri 那条路要另验一遍);站点的介绍页和支持页也还是中文。
 
 ## 依赖
 
-云端 LLM 请求走 AIKit(`zjywill/aikitswift`),以本地包 `../aikitswift` 引入——构建这个项目需要旁边有 aikitswift 的 checkout。`AgentRuntime` 是仓库内的本地包,没有外部依赖。
+云端 LLM 请求走 AIKit(`zjywill/aikitswift`),按 **远端 `main` 分支**引入,旁边不需要
+有 checkout。**真正决定这次构建用哪一版的是 `Package.resolved` 里那个 commit**,它跟着
+`Vana.xcodeproj` 一起进了仓库——分支会动,那个文件不会,归档出来的 build 因此是可复现的。
+想跟上游走一步就显式 `-resolvePackageDependencies`(或 Xcode 的 Update to Latest Package
+Versions),**顺手把 `Package.resolved` 一起提交**;不提交的话,下一台机器解出来的是另一版,
+而两边都以为自己在跟 main。
+
+本地改 AIKit 时临时把 `project.yml` 换回 `path: ../aikitswift` 再 `xcodegen`,**但那一版
+不要提交**:提交一份指着开发机某个相对路径的工程,别人和 CI 都构建不出来。
+
+`AgentRuntime` 是仓库内的本地包,没有外部依赖。
 
 ## 约定
 

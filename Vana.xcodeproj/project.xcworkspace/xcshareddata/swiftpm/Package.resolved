@@ -1,0 +1,14 @@
+{
+  "originHash" : "00ac6ccde9219f54fff30c45f296355fa1033c05df69458c8aace6574009a5e8",
+  "pins" : [
+    {
+      "identity" : "aikitswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zjywill/aikitswift",
+      "state" : {
+        "revision" : "608944b2ff9d10f2bd59d43d51c3d8b25805528b"
+      }
+    }
+  ],
+  "version" : 3
+}

@@ -371,25 +371,6 @@ struct SettingsView: View {
                     )
                 }
                 .disabled(isHealthRequestInFlight)
-                // 面板真的弹出来的那次不打扰他——他刚在上面做完选择。**没弹**的那几次
-                // 才要挡在他面前:那时候屏幕上唯一的变化是一行灰色小字,而他刚按下的那颗
-                // 按钮看起来什么都没做(2026-08-25 审核报的正是这个)。这句话还得带着
-                // 下一步走——「健康」App 是这条路上唯一能改的地方。
-                .alert(
-                    HealthKitAttribution.authorizeAction,
-                    isPresented: Binding(
-                        get: { healthAlert != nil },
-                        set: { if !$0 { healthAlert = nil } }
-                    ),
-                    presenting: healthAlert
-                ) { _ in
-                    Button("打开“健康”App") {
-                        openURL(URL(string: "x-apple-health://")!)
-                    }
-                    Button("好", role: .cancel) {}
-                } message: { status in
-                    Text(status.message)
-                }
 
                 if let healthStatus {
                     Label(healthStatus.message, systemImage: healthStatus.icon)
@@ -516,6 +497,30 @@ struct SettingsView: View {
             #endif
         }
         .navigationTitle("设置")
+        // 面板真的弹出来的那次不打扰他——他刚在上面做完选择。**没弹**的那几次才要挡在
+        // 他面前:那时候屏幕上唯一的变化是一行灰色小字,而他刚按下的那颗按钮看起来什么
+        // 都没做(2026-08-25 审核报的正是这个)。这句话还得带着下一步走——「健康」App
+        // 是这条路上唯一能改的地方。
+        //
+        // **挂在 `Form` 上,不挂在那颗按钮所在的行上。** 这句话弹出来的那一刻,同一个
+        // section 里正好多出一行状态小字,而 `Form` 的行是懒的、会被重建——挂在行上的
+        // alert 撞上那一次重建就悄悄地不present了。而这颗按钮上「一次静默的失败」正是
+        // 被打回两次的那件事,不值得为省一层缩进去赌它。
+        .alert(
+            HealthKitAttribution.authorizeAction,
+            isPresented: Binding(
+                get: { healthAlert != nil },
+                set: { if !$0 { healthAlert = nil } }
+            ),
+            presenting: healthAlert
+        ) { _ in
+            Button("打开“健康”App") {
+                openURL(URL(string: "x-apple-health://")!)
+            }
+            Button("好", role: .cancel) {}
+        } message: { status in
+            Text(status.message)
+        }
         .task(loadAPIKey)
         // 刚在 iOS 设置里把位置打开又切回来的那种情况:授权状态由 delegate 更新,但那时候
         // 还没有人去定过位,页面上会一直停在「还没定到位置」。

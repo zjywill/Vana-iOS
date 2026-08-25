@@ -301,7 +301,6 @@
 		D8D9A902344F47B96D111A41 /* ZIPArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZIPArchive.swift; sourceTree = "<group>"; };
 		DA5CB4841D50E7443AF2A155 /* SessionIndexEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionIndexEntry.swift; sourceTree = "<group>"; };
 		DBF129669EB43B7A05A7A8C3 /* HealthAssistantInstructions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthAssistantInstructions.swift; sourceTree = "<group>"; };
-		DEEF24F41E81F067DD2FA096 /* aikitswift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = aikitswift; path = ../aikitswift; sourceTree = SOURCE_ROOT; };
 		E13D9EF0625DE3EE86E53CAD /* MemoryTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryTools.swift; sourceTree = "<group>"; };
 		E4D26A5B1BEC31DA80115320 /* ChatAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAttachment.swift; sourceTree = "<group>"; };
 		E5BD852B751C0419070C8538 /* Vana.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Vana.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -449,7 +448,6 @@
 			isa = PBXGroup;
 			children = (
 				0F551CDB67C5568B8D385D01 /* AgentRuntime */,
-				DEEF24F41E81F067DD2FA096 /* aikitswift */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -736,7 +734,7 @@
 			mainGroup = AE3FD3DC16509496456541E8;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				6CE94DED24A9DE713A65B2EE /* XCLocalSwiftPackageReference "../aikitswift" */,
+				F0F991013E91FCDF9B525233 /* XCRemoteSwiftPackageReference "aikitswift" */,
 				E86F74BA8C6F78B7148467BC /* XCLocalSwiftPackageReference "AgentRuntime" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -744,8 +742,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6FDAC064D3618A3C0D7671A7 /* Vana */,
 				D3651E4931C6533973704B0F /* VanaTests */,
+				6FDAC064D3618A3C0D7671A7 /* Vana */,
 			);
 		};
 /* End PBXProject section */
@@ -947,7 +945,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Vana/Vana.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vana/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vana;
@@ -1142,7 +1140,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Vana/Vana.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vana/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vana;
@@ -1205,15 +1203,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		6CE94DED24A9DE713A65B2EE /* XCLocalSwiftPackageReference "../aikitswift" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../aikitswift;
-		};
 		E86F74BA8C6F78B7148467BC /* XCLocalSwiftPackageReference "AgentRuntime" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = AgentRuntime;
 		};
 /* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F0F991013E91FCDF9B525233 /* XCRemoteSwiftPackageReference "aikitswift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/zjywill/aikitswift";
+			requirement = {
+				kind = revision;
+				revision = 608944b2ff9d10f2bd59d43d51c3d8b25805528b;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		340352F720612D6FBAB4AC27 /* AgentRuntime */ = {
@@ -1222,6 +1227,7 @@
 		};
 		4AC98EE935EDB91D54396CAF /* AIKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F0F991013E91FCDF9B525233 /* XCRemoteSwiftPackageReference "aikitswift" */;
 			productName = AIKit;
 		};
 		AA74E0C35E65ECF5B89820CA /* AgentRuntime */ = {

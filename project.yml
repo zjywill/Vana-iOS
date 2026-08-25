@@ -23,8 +23,12 @@ settings:
     # 下面那串带 `.ios` 后缀就是这么来的,详见 CLAUDE.md 开头。
     DEVELOPMENT_TEAM: NGM7GX8DGB
 packages:
+  # 钉在 commit 上,不钉分支。分支会动,而一次过审的 build 必须是可复现的:
+  # 提交上去的那个二进制里到底是哪一版 AIKit,只能由这一行说了算。
+  # 跟上游走一步 = 改这一行 + `xcodegen` + 重新解析,顺手把 `Package.resolved` 一起提交。
   AIKitSwift:
-    path: ../aikitswift
+    url: https://github.com/zjywill/aikitswift
+    revision: 608944b2ff9d10f2bd59d43d51c3d8b25805528b
   AgentRuntime:
     path: AgentRuntime
 targets:
@@ -98,7 +102,7 @@ targets:
         # 2 那次没被 ASC 收下,理论上还能重用,但**不值得赌**:Organizer 里已经有一条
         # 叫 1.0 (2) 的记录,再传一个同号的容易撞上 "redundant binary",而那时候
         # 归档和上传的十几分钟已经花掉了。加一位是免费的。
-        CURRENT_PROJECT_VERSION: "9"
+        CURRENT_PROJECT_VERSION: "10"
         # Icon Composer 的 Vana/AppIcon.icon,名字要和这里对上。
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
