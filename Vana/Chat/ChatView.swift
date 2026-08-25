@@ -296,12 +296,6 @@ struct ChatView: View {
                 isShowingDataUseNotice = !hasAcceptedDataUseNotice
                 await requestHealthAuthorization()
             }
-            // 第一次打开时,那一屏告知盖在最上面。它按完之后这条才轮得到——两张面板叠在一起
-            // 的话,底下那张说的正是用户此刻要拿来做决定的话。
-            .onChange(of: hasAcceptedDataUseNotice) { _, accepted in
-                guard accepted else { return }
-                Task { await requestHealthAuthorization() }
-            }
         }
         // 盖在整个 `NavigationStack` 上,导航栏也要被它压住:抽屉推出来的时候,底下那颗
         // 「会话列表」按钮不该还能再按一次。
@@ -314,7 +308,17 @@ struct ChatView: View {
         //
         // 挂在最外层(和抽屉那个 overlay 同一级),不和里面那两张 sheet 挤在 `NavigationStack`
         // 上:它盖住的是整屏,包括导航栏。
-        .fullScreenCover(isPresented: $isShowingDataUseNotice) {
+        //
+        // 授权那次请求挂在 `onDismiss` 上,不挂在「按过了没有」那个状态的 onChange 上:
+        // 后者在他按下按钮的**那一帧**就到,而这一屏此刻正在往下退。系统的授权面板要从
+        // 同一条 presentation 链上推上来,撞上一次还在进行的 dismiss,那次 present 就
+        // 悄悄地不发生——而 HealthKit 那个 await 也跟着永远不回话(2026-08-25 审核报的
+        // 「按了没反应」,根子多半在这里:第一次打开正好是这条路)。`onDismiss` 在退场
+        // 动画真的结束之后才到,那时候这条链是空的。
+        .fullScreenCover(
+            isPresented: $isShowingDataUseNotice,
+            onDismiss: { Task { await requestHealthAuthorization() } }
+        ) {
             DataUseNoticeSheet {
                 hasAcceptedDataUseNotice = true
                 isShowingDataUseNotice = false

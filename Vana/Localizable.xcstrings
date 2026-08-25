@@ -6306,6 +6306,83 @@
           }
         }
       }
+    },
+    "请求失败：%@。请到“健康”App > 共享 > App > Vana 里管理。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Request failed: %@. Manage access in the Health app > Sharing > Apps > Vana."
+          }
+        }
+      }
+    },
+    "系统的授权面板没有响应": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The system permission sheet didn't respond"
+          }
+        }
+      }
+    },
+    "此设备不支持健康数据": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This device doesn't support health data"
+          }
+        }
+      }
+    },
+    "此设备上没有「健康记录」功能": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This device doesn't have Health Records"
+          }
+        }
+      }
+    },
+    "打开“健康”App": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the Health app"
+          }
+        }
+      }
+    },
+    "已请求授权面板。没有出现的话，请到“健康”App > 共享 > App > Vana 里管理。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The permission sheet has been requested. If it didn't appear, manage access in the Health app > Sharing > Apps > Vana."
+          }
+        }
+      }
+    },
+    "系统没有把授权面板推上来。已经做过选择的数据类型 iOS 不会再问——要打开或关闭，请到“健康”App > 共享 > App > Vana。": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS didn't bring up the permission sheet. It never asks again about data types you've already decided on — to turn them on or off, go to the Health app > Sharing > Apps > Vana."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -188,6 +188,17 @@ final class HealthStore: Sendable {
     /// 每次现问,不缓存:文档里明说它会随着账号在恢复、同步过程中被改动而变化。
     var supportsHealthRecords: Bool { store.supportsHealthRecords() }
 
+    /// 同一件事,但**不在主线程上问,而且带一个头**。
+    ///
+    /// 它是同步 API,而它要读的是地区和账号状态(账号正在恢复/同步时尤其)。授权那条路
+    /// 跑在 `@MainActor` 上,用户此刻刚按下按钮——这里卡一下就是界面卡一下。问不出来时
+    /// 按 false 走:少问病历那两类,总好过为一个 Bool 把这颗按钮拖住(而 false 恰好是
+    /// 2026-08-21 那次拒绝要的那一侧)。
+    private static func supportsHealthRecords(_ store: HKHealthStore) async -> Bool {
+        let supports = try? await withDeadline(statusTimeout) { store.supportsHealthRecords() }
+        return supports ?? false
+    }
+
     /// 这一次请求要问哪些类型。
     ///
     /// force 时把按需那几类也一起问了:设置页那个按钮是用户主动点的,一次问全比让他们
@@ -209,65 +220,66 @@ final class HealthStore: Sendable {
     /// 每跑一次就请求一次授权,面板就闪一次。设置页那个按钮传 `force: true` 绕开它。
     @MainActor private static var hasRequestedThisLaunch = false
 
-    /// HealthKit 的授权面板没有取消 API。系统调用悬着时,界面即使已经停止显示加载,
-    /// 也不能再发起第二次请求——否则每点一次都会多留一条永远等不到结果的调用。
-    @MainActor
-    private struct AuthorizationRequest {
-        let id: UUID
-        let force: Bool
-        let task: Task<Bool, any Error>
+    /// 查询类调用的上限。这几个(`statusForAuthorizationRequest`)不弹任何 UI,该立刻回话
+    /// ——**没有一个正当理由让它花掉 5 秒**,所以超了就是系统那边不回话了。
+    static let statusTimeout = Duration.seconds(5)
+
+    /// 面板类调用的上限。人站在面板前做决定要几秒到十几秒,所以放得宽:它挡的不是"用户慢",
+    /// 是"面板压根没出现,而这一侧还在 await"。只有回复中途那条路(`requestOnDemand`)会等它。
+    static let panelTimeout = Duration.seconds(30)
+
+    /// 面板请求发出去多久之后就当它没成。超过这个数,下一次按按钮可以再发一次——
+    /// 面板真在屏幕上的时候用户根本碰不到那颗按钮。
+    static let panelStaleAfter = Duration.seconds(60)
+
+    /// 上一次真的问出去的是哪一组类型(它们标识符的指纹)。
+    ///
+    /// **这是「点一下,面板闪一下就没了」的解药。** 血压那两个类型的授权状态永远停在
+    /// `shouldRequest`(见 `bloodPressureReadTypes`),所以
+    /// `statusForAuthorizationRequest` 每次都说「还要问」;而 iOS 那边其实已经没有什么
+    /// 好问的了,于是 `requestAuthorization` 把面板推上来、当场再收回去。**用户看到的
+    /// 就是屏幕闪了一下,什么都没发生**——2026-08-25 审核报的「按了没反应」,极可能就是
+    /// 这一下(那台设备上启动时已经问过一轮了)。
+    ///
+    /// 所以记住上一次问的是哪一组:同一组不再问第二遍,照实说「都已经问过了」并把用户
+    /// 指到「健康」App(那才是能改的地方)。**指纹按类型算,不是一个 Bool**——以后版本
+    /// 里加了新的数据类型,这一组就变了,那颗按钮立刻恢复它本来的用处
+    /// (「新增的数据类型需要重新请求」)。
+    static let askedTypesKey = "healthAuthorizationAskedTypes"
+
+    static func fingerprint(of types: Set<HKObjectType>) -> String {
+        types.map(\.identifier).sorted().joined(separator: "|")
     }
 
-    @MainActor private var authorizationRequest: AuthorizationRequest?
+    /// 上一次把面板扔出去是什么时候。**只用来防重复,不用来阻塞任何人**。
+    @MainActor private var panelRequestedAt: ContinuousClock.Instant?
 
-    /// 需要问的时候才问,返回这次有没有真的弹窗。
+    @MainActor
+    private var isPanelInFlight: Bool {
+        guard let panelRequestedAt else { return false }
+        return ContinuousClock.now - panelRequestedAt < Self.panelStaleAfter
+    }
+
+    /// 需要问的时候才问,返回**这次有没有把面板扔出去**。
     ///
-    /// 所有类型都已经决定过时再调 `requestAuthorization`,iOS 仍然会把授权面板推上来
-    /// 再立刻收回去。`statusForAuthorizationRequest` 能在不弹任何 UI 的情况下问清楚
-    /// "还需不需要问"。
+    /// ## 这一侧不 await 面板
+    ///
+    /// 这是整块东西的关键判断,推翻了原来那版(以及第一次修它的那版)。
+    ///
+    /// `requestAuthorization` 那次 await 的结果**这一侧本来就用不上**:iOS 从不告诉 app
+    /// 读取权限被拒了(拒绝和「没有数据」长得一模一样),所以等它回来,界面上能多说的
+    /// 只有一句「你的选择已保存」——而用户刚在面板上按完,他比谁都清楚。
+    ///
+    /// 拿一句零信息的话去换「这颗按钮可能永远 disable 在正在请求上」,是这两次被拒的
+    /// 共同根源(2026-08-21 / 2026-08-25)。所以现在:**要等的只有那次纯查询**(它不弹
+    /// UI、该立刻回话、有 5 秒上限),面板扔出去就返回。
+    ///
+    /// 顺带修掉了第一版超时的一处反噬:给整条路径设 8 秒上限,会在用户正读着面板的第 8 秒
+    /// 报一句「系统的授权面板没有响应」——而它明明就在他眼前。**唯一能等的东西,是那个
+    /// 不需要人参与的东西。**
     @MainActor
     @discardableResult
     func requestAuthorizationIfNeeded(force: Bool = false) async throws -> Bool {
-        if let active = authorizationRequest {
-            let didAsk = try await finishAuthorizationRequest(active)
-
-            // 启动时那次只问日常类型。若设置页在它结束前要求 force,先共用正在进行的
-            // 系统请求,等它结束后再补问按需类型;两张授权面板绝不并发出现。
-            if force && !active.force {
-                return try await requestAuthorizationIfNeeded(force: true)
-            }
-            return didAsk
-        }
-
-        let request = AuthorizationRequest(
-            id: UUID(),
-            force: force,
-            task: Task { @MainActor [self] in
-                try await performAuthorizationRequestIfNeeded(force: force)
-            }
-        )
-        authorizationRequest = request
-        return try await finishAuthorizationRequest(request)
-    }
-
-    @MainActor
-    private func finishAuthorizationRequest(_ request: AuthorizationRequest) async throws -> Bool {
-        do {
-            let didAsk = try await request.task.value
-            if authorizationRequest?.id == request.id {
-                authorizationRequest = nil
-            }
-            return didAsk
-        } catch {
-            if authorizationRequest?.id == request.id {
-                authorizationRequest = nil
-            }
-            throw error
-        }
-    }
-
-    @MainActor
-    private func performAuthorizationRequestIfNeeded(force: Bool) async throws -> Bool {
         guard HKHealthStore.isHealthDataAvailable() else {
             throw HealthStoreError.healthDataUnavailable
         }
@@ -276,12 +288,60 @@ final class HealthStore: Sendable {
         }
         Self.hasRequestedThisLaunch = true
 
-        let requested = Self.requestedTypes(force: force, supportsHealthRecords: supportsHealthRecords)
-        let status = try await store.statusForAuthorizationRequest(toShare: [], read: requested)
+        // 已经有一张面板在飞:不叠第二次(HealthKit 对着自己弹两张的行为没有保证)。
+        // 但也**不等它**——照实说面板已经请求过了,界面那边照旧有下一句话。
+        guard !isPanelInFlight else { return true }
+
+        let requested = Self.requestedTypes(
+            force: force,
+            supportsHealthRecords: await Self.supportsHealthRecords(store)
+        )
+        let status = try await Self.withDeadline(Self.statusTimeout) { [store] in
+            try await store.statusForAuthorizationRequest(toShare: [], read: requested)
+        }
         guard status == .shouldRequest else { return false }
 
-        try await store.requestAuthorization(toShare: [], read: requested)
+        // 同一组类型问过一次就不再问:再问一次换来的只是面板闪一下(见 `askedTypesKey`)。
+        let fingerprint = Self.fingerprint(of: requested)
+        let defaults = UserDefaults.standard
+        guard defaults.string(forKey: Self.askedTypesKey) != fingerprint else { return false }
+        defaults.set(fingerprint, forKey: Self.askedTypesKey)
+
+        present(requested)
         return true
+    }
+
+    /// 把面板扔出去,不等它。
+    @MainActor
+    private func present(_ types: Set<HKObjectType>) {
+        panelRequestedAt = ContinuousClock.now
+        Task { @MainActor [store] in
+            // 失败了也没有人在等这个结果:面板出不来的那次,界面上那句话已经说过了。
+            try? await store.requestAuthorization(toShare: [], read: types)
+            panelRequestedAt = nil
+        }
+    }
+
+    /// 给一次可能不回话的系统调用套一个上限。
+    ///
+    /// HealthKit 既没有超时也没有取消 API,所以**每一处 await 都必须自己带一个头**。
+    /// 超时不代表那次调用停了(停不了),它只代表这一侧不再等——而这一侧不等,用户才有下一步。
+    static func withDeadline<T: Sendable>(
+        _ timeout: Duration,
+        _ operation: @escaping @Sendable () async throws -> T
+    ) async throws -> T {
+        try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask { try await operation() }
+            group.addTask {
+                try await Task.sleep(for: timeout)
+                throw HealthStoreError.authorizationTimedOut
+            }
+            defer { group.cancelAll() }
+            guard let first = try await group.next() else {
+                throw HealthStoreError.authorizationTimedOut
+            }
+            return first
+        }
     }
 
     /// 后台读数据之前能问清楚的三种状态。
@@ -296,9 +356,16 @@ final class HealthStore: Sendable {
     ///
     /// Siri 那条路跑在后台,授权面板推不上来。所以在查之前先问一句:没问过授权就照实说
     /// "先打开 Vana",而不是查出一片空然后报"最近没有数据"——后者是在撒谎。
+    ///
+    /// 那条路**自己也有超时**:这一句悬住,用户听到的是「出了点问题」,连一句能照着做的话
+    /// 都没有。所以它也带一个头(`statusTimeout`)。问不出来时按 `.ready`
+    /// 走下去——真没授权的话下一步查出来是空,而查询那一侧分得清锁屏和没数据;反过来报
+    /// `.notRequested`,是让一个早就授权过的用户白跑一趟「先打开 Vana」。
     func readAccess() async -> ReadAccess {
         guard HKHealthStore.isHealthDataAvailable() else { return .unavailable }
-        let status = try? await store.statusForAuthorizationRequest(toShare: [], read: Self.readTypes)
+        let status = try? await Self.withDeadline(Self.statusTimeout) { [store] in
+            try await store.statusForAuthorizationRequest(toShare: [], read: Self.readTypes)
+        }
         return status == .shouldRequest ? .notRequested : .ready
     }
 
@@ -312,16 +379,26 @@ final class HealthStore: Sendable {
     /// 按需授权:第一次真的要读的时候才问,一次运行只问一次。
     @MainActor private static var requestedOnDemand: Set<String> = []
 
+    /// **这一条跑在用户正等着回复的时候**(血压、化验单那两个工具里),所以它是这块东西里
+    /// 最不能悬住的一处:这里 await 一个不回话的系统调用,屏幕上就是一条永远转下去的回复。
+    ///
+    /// 和设置页那条不同,这里**要等面板**:等到了才查得到数据,不等就必然查出一片空。
+    /// 所以给的是宽的那个上限(`panelTimeout`,够一个人读完面板做决定),它挡的只是
+    /// 「面板压根没出现」那一种。超时就照常往下查——那一步本来就允许查出空,而
+    /// 「血压没有数据」在这个 app 里是一句正常的话。
     @MainActor
     private func requestOnDemand(_ types: Set<HKObjectType>, key: String) async {
         guard !Self.requestedOnDemand.contains(key) else { return }
         Self.requestedOnDemand.insert(key)
 
-        guard let status = try? await store.statusForAuthorizationRequest(toShare: [], read: types),
-              status == .shouldRequest else {
-            return
+        let status = try? await Self.withDeadline(Self.statusTimeout) { [store] in
+            try await store.statusForAuthorizationRequest(toShare: [], read: types)
         }
-        try? await store.requestAuthorization(toShare: [], read: types)
+        guard status == .shouldRequest else { return }
+
+        _ = try? await Self.withDeadline(Self.panelTimeout) { [store] in
+            try await store.requestAuthorization(toShare: [], read: types)
+        }
     }
 
     func dailySteps(days: Int) async throws -> [DayValue] {
@@ -1055,17 +1132,21 @@ final class HealthStore: Sendable {
     }
 }
 
-enum HealthStoreError: LocalizedError {
+enum HealthStoreError: LocalizedError, Equatable {
     case healthDataUnavailable
     /// 这台设备(或这个地区)上没有「健康记录」。和「没有记录」是两件事,得分开说。
     case healthRecordsUnavailable
+    /// 系统那一侧没有在上限之内回话。见 `HealthStore.withDeadline`。
+    case authorizationTimedOut
 
     var errorDescription: String? {
         switch self {
         case .healthDataUnavailable:
-            "此设备不支持健康数据"
+            String(localized: "此设备不支持健康数据")
         case .healthRecordsUnavailable:
-            "此设备上没有「健康记录」功能"
+            String(localized: "此设备上没有「健康记录」功能")
+        case .authorizationTimedOut:
+            String(localized: "系统的授权面板没有响应")
         }
     }
 }

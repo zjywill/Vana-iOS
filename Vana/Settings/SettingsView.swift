@@ -31,6 +31,10 @@ struct SettingsView: View {
     @State private var isRequestingHealth = false
     @State private var isHealthRequestInFlight = false
     @State private var healthStatus: HealthAuthStatus?
+    /// 面板没弹出来的那几次,那句话要挡在他面前。见 `requestHealthAuthorization`。
+    @State private var healthAlert: HealthAuthStatus?
+    /// 这一次按的是哪一下。超时放行之后回来晚了的那次靠它闭嘴。
+    @State private var healthRequestToken = UUID()
     @State private var location = LocationProvider.shared
     @State private var dictation = VoiceDictation.shared
     @FocusState private var focusedField: Field?
@@ -367,6 +371,25 @@ struct SettingsView: View {
                     )
                 }
                 .disabled(isHealthRequestInFlight)
+                // 面板真的弹出来的那次不打扰他——他刚在上面做完选择。**没弹**的那几次
+                // 才要挡在他面前:那时候屏幕上唯一的变化是一行灰色小字,而他刚按下的那颗
+                // 按钮看起来什么都没做(2026-08-25 审核报的正是这个)。这句话还得带着
+                // 下一步走——「健康」App 是这条路上唯一能改的地方。
+                .alert(
+                    HealthKitAttribution.authorizeAction,
+                    isPresented: Binding(
+                        get: { healthAlert != nil },
+                        set: { if !$0 { healthAlert = nil } }
+                    ),
+                    presenting: healthAlert
+                ) { _ in
+                    Button("打开“健康”App") {
+                        openURL(URL(string: "x-apple-health://")!)
+                    }
+                    Button("好", role: .cancel) {}
+                } message: { status in
+                    Text(status.message)
+                }
 
                 if let healthStatus {
                     Label(healthStatus.message, systemImage: healthStatus.icon)
@@ -727,10 +750,19 @@ struct SettingsView: View {
     /// 授权面板是系统的,推上来之后这一侧只能等它回话——而**等不到的时候必须还有下一步**。
     ///
     /// 2026-08-21 审核在 iPad 上按了这颗按钮,那一行就一直停在「正在请求…」:按钮自己
-    /// disable 着,屏幕上没有一句话解释,也没有第二次机会。根因修在 `HealthStore`
-    /// (病历类型不该在不支持的设备上问),但「一个永远转下去的指示器」这种形状本身不能留:
+    /// disable 着,屏幕上没有一句话解释,也没有第二次机会。2026-08-25 又报了一次,措辞
+    /// 是「按了没有反应」。根因修在 `HealthStore`(悬着的启动请求不再堵住这条路,
+    /// 那个 await 自己也会超时),但「一个永远转下去的指示器」这种形状本身不能留:
     /// 系统那一侧回不回话不归我们管,但这一行不能永远显示成正在加载。
-    private static let healthRequestTimeout = Duration.seconds(20)
+    ///
+    /// 比 `HealthStore.statusTimeout` 长一点:底层先超时,说出来的话才是准的(超时是一种
+    /// 结果,不是「界面自己放弃了」)。这一层只是它没做到时的兜底。
+    ///
+    /// **它不再需要覆盖面板那一段**——这一侧根本不等面板了(见
+    /// `HealthStore.requestAuthorizationIfNeeded`)。这一点很要紧:上一版把整条路径压在
+    /// 12 秒里,而用户读着面板做决定的第 12 秒,屏幕上会冒出一句「系统的授权面板没有响应」,
+    /// 指着他眼前那张面板说它不存在。
+    private static let healthRequestTimeout = Duration.seconds(8)
 
     /// 再请求一次授权。iOS 只会为"还没问过"的类型弹窗——新增数据类型后靠这个补上,
     /// 已经拒过的项它不会再问,那种情况只能去「健康」App 改。
@@ -739,6 +771,12 @@ struct SettingsView: View {
         isHealthRequestInFlight = true
         isRequestingHealth = true
         healthStatus = nil
+        // 看门狗放行之后他可以再按一次,而上一次那个 await 仍然可能在几分钟后回话。
+        // 认号:回来晚了的那次一个字都不许往屏幕上写,否则他看到的是上一次按的结果。
+        let token = UUID()
+        healthRequestToken = token
+        // 按下去之前屏幕最上面是谁。面板上来的话,这个位置会换人。
+        let topBefore = Self.topPresentedController
 
         // `.owner` 而不是 `.shared`:设置页说的是「这台设备怎么工作」(provider、
         // model、key、通知时间全是这一类),而 HealthKit 授权本来就是这台设备机主的
@@ -748,17 +786,24 @@ struct SettingsView: View {
             do {
                 let didAsk = try await HealthStore.owner.requestAuthorizationIfNeeded(force: true)
                 return HealthAuthStatus(
+                    // 「已弹出」改成「已请求」:这一侧不等面板的结果,也就没有资格说它出来了。
+                    // 后半句是给面板没出来的那次留的——他此刻正盯着一块没有变化的屏幕。
                     message: didAsk
-                        ? String(localized: "已弹出授权面板，你的选择已保存。")
+                        ? String(localized: "已请求授权面板。没有出现的话，请到“健康”App > 共享 > App > Vana 里管理。")
                         : String(localized: "这些数据类型都已经问过了。要打开或关闭，请到“健康”App 里改。"),
                     icon: didAsk ? "checkmark.circle.fill" : "info.circle",
-                    isError: false
+                    isError: false,
+                    // 面板扔出去的那次不弹 alert:它多半正盖在屏幕上,而排在它后面的
+                    // alert 会在他按完之后突然冒出来。没弹面板那次才要挡在他面前——
+                    // 那时候屏幕上唯一的变化是一行灰色小字。
+                    needsAttention: !didAsk
                 )
             } catch {
                 return HealthAuthStatus(
-                    message: String(localized: "请求失败：\(error.localizedDescription)"),
+                    message: String(localized: "请求失败：\(error.localizedDescription)。请到“健康”App > 共享 > App > Vana 里管理。"),
                     icon: "exclamationmark.triangle.fill",
-                    isError: true
+                    isError: true,
+                    needsAttention: true
                 )
             }
         }
@@ -769,22 +814,71 @@ struct SettingsView: View {
             // 旁边「在“健康”App 中管理」那颗按钮始终可用。
             let watchdog = Task { @MainActor in
                 try? await Task.sleep(for: Self.healthRequestTimeout)
-                guard !Task.isCancelled, isRequestingHealth else { return }
+                guard !Task.isCancelled, isRequestingHealth, healthRequestToken == token else { return }
                 isRequestingHealth = false
-                healthStatus = HealthAuthStatus(
+                isHealthRequestInFlight = false
+                let timedOut = HealthAuthStatus(
                     // 下面就是「在“健康”App 中管理」那一行,这句话指的是它。
                     message: String(localized: "系统的授权面板没有响应。请直接到“健康”App > 共享 > App > Vana 里管理。"),
                     icon: "exclamationmark.triangle.fill",
-                    isError: true
+                    isError: true,
+                    needsAttention: true
                 )
+                healthStatus = timedOut
+                healthAlert = timedOut
             }
 
             let status = await request.value
             watchdog.cancel()
+            guard healthRequestToken == token else { return }
             isRequestingHealth = false
             isHealthRequestInFlight = false
             healthStatus = status
+
+            if status.needsAttention {
+                healthAlert = status
+                return
+            }
+
+            // 面板已经扔出去了,但**它到底有没有上来**,HealthKit 一个字都不说。
+            // UIKit 说得出来:面板是 present 上来的,真在屏幕上时根视图挂着一个
+            // presented view controller。等一下再看——present 有一段动画。
+            //
+            // 判错的两边代价都很小(多一张 alert / 少一张 alert);判对的那次正好是
+            // 审核两次都撞上的那一种:按了,屏幕上什么都没发生。**这颗按钮上,一次
+            // 静默的失败比一张多余的 alert 贵得多。**
+            try? await Task.sleep(for: .milliseconds(900))
+            guard healthRequestToken == token,
+                  Self.topPresentedController === topBefore else { return }
+
+            // 到这儿就确定了:面板没上来。说得比那句「没有出现的话」更实在一点——
+            // 他不用再自己判断有没有出现过。
+            let notPresented = HealthAuthStatus(
+                message: String(localized: "系统没有把授权面板推上来。已经做过选择的数据类型 iOS 不会再问——要打开或关闭，请到“健康”App > 共享 > App > Vana。"),
+                icon: "info.circle",
+                isError: false
+            )
+            healthStatus = notPresented
+            healthAlert = notPresented
         }
+    }
+
+    /// 此刻站在最上面的那个 view controller。
+    ///
+    /// 用来判断「刚扔出去的那张授权面板上来了没有」:按之前记一个,900 毫秒之后再看一次,
+    /// **换人了才算面板真的上来了**。
+    ///
+    /// 不能只问「有没有 presented view controller」——SwiftUI 这一屏上它**恒为非 nil**
+    /// (模拟器上实测,五次全是 true),那样写出来的是一段永远不会触发的代码,而它守的
+    /// 恰恰是审核两次报的那种失败。比身份,不比有无。
+    private static var topPresentedController: UIViewController? {
+        var top = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow }?
+            .rootViewController
+        while let next = top?.presentedViewController { top = next }
+        return top
     }
 
     /// "sk-ant…7f2a":露头尾够认出是哪一把 key,又不至于把整串摆在屏幕上。太短的不露。
@@ -872,6 +966,11 @@ private struct HealthAuthStatus {
     let message: String
     let icon: String
     let isError: Bool
+    /// 这句话要不要挡在他面前。
+    ///
+    /// 只有**屏幕上其余部分什么都没变**的那几次才为真:面板没弹、请求失败、系统没回话。
+    /// 面板真的弹出来的那次不为真——他刚在上面做完选择,再弹一张确认框是纯粹的多一下。
+    var needsAttention = false
 }
 
 private enum KeyStatus: Equatable {

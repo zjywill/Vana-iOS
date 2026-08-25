@@ -47,6 +47,55 @@ struct HealthAuthorizationTests {
         #expect(requested.contains(HKCategoryType(.sleepAnalysis)))
     }
 
+    /// **2026-08-25 那次审核报的是「按了没反应」**,而这一侧唯一能做错的事就是
+    /// 一直 await 一个不会回话的系统调用:HealthKit 既没有超时也没有取消 API,悬着的
+    /// 那次请求会把设置页那颗按钮永远 disable 在「正在请求…」上。等不到就得把话说出去。
+    @Test("系统那一侧不回话时,这一侧自己超时,不永远挂着")
+    func authorizationWaitTimesOut() async {
+        await #expect(throws: HealthStoreError.authorizationTimedOut) {
+            try await HealthStore.withDeadline(.milliseconds(50)) {
+                try await Task.sleep(for: .seconds(60))
+                return true
+            }
+        }
+    }
+
+    @Test("回得来的那次照常拿到结果")
+    func authorizationWaitReturnsTheResult() async throws {
+        let didAsk = try await HealthStore.withDeadline(.seconds(5)) { true }
+
+        #expect(didAsk)
+    }
+
+    /// 要等的只有那次纯查询;面板那一段人要站在前面做决定,给它设一个短上限就是在
+    /// 用户读着面板的时候报「面板没有响应」。两个数不能是同一个,也不能倒过来。
+    @Test("查询的上限短，面板的上限宽，界面那层的兜底排在查询后面")
+    func deadlinesAreOrdered() {
+        #expect(HealthStore.statusTimeout < HealthStore.panelTimeout)
+        #expect(HealthStore.panelTimeout <= HealthStore.panelStaleAfter)
+    }
+
+    /// 「点一下,面板闪一下就没了」的那条。血压那两类的授权状态永远停在 `shouldRequest`,
+    /// 所以不记住「上次问的是哪一组」的话,每次按都会再问一遍同一组,而 iOS 已经没什么可问
+    /// 的了——面板推上来当场收回去,屏幕上就是闪了一下。
+    @Test("同一组类型的指纹稳定,和顺序无关")
+    func fingerprintIsStableAcrossOrder() {
+        let a = HealthStore.requestedTypes(force: true, supportsHealthRecords: false)
+        let b = HealthStore.requestedTypes(force: true, supportsHealthRecords: false)
+
+        #expect(HealthStore.fingerprint(of: a) == HealthStore.fingerprint(of: b))
+    }
+
+    /// 指纹按类型算而不是一个 Bool,为的就是这一条:以后加了新的数据类型,那颗按钮要
+    /// 恢复它本来的用处(「新增的数据类型需要重新请求」)。
+    @Test("多问一个类型就是另一组，按钮跟着复活")
+    func fingerprintChangesWhenTypesChange() {
+        let everyday = HealthStore.requestedTypes(force: false, supportsHealthRecords: false)
+        let withBloodPressure = HealthStore.requestedTypes(force: true, supportsHealthRecords: false)
+
+        #expect(HealthStore.fingerprint(of: everyday) != HealthStore.fingerprint(of: withBloodPressure))
+    }
+
     /// 「这台设备上没有这个功能」和「没有记录」是两件事。前者让用户去「健康」App 里连医院
     /// 是白跑一趟——这条路上永远连不上,该说的是让他拍一张。
     @Test("读不到病历时说的是拍一张，不是去连医院")

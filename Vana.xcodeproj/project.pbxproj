@@ -744,8 +744,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D3651E4931C6533973704B0F /* VanaTests */,
 				6FDAC064D3618A3C0D7671A7 /* Vana */,
+				D3651E4931C6533973704B0F /* VanaTests */,
 			);
 		};
 /* End PBXProject section */
@@ -947,7 +947,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Vana/Vana.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vana/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vana;
@@ -1142,7 +1142,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Vana/Vana.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vana/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vana;

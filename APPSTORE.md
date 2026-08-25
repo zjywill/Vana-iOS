@@ -285,6 +285,16 @@ only when the user asks about it, is never used for advertising or data mining, 
 sold to any third party, and is never stored in iCloud (the related files are excluded from
 device backups).
 
+THE "REQUEST APPLE HEALTH (HEALTHKIT) ACCESS" BUTTON IN SETTINGS
+iOS only presents its permission sheet for data types the user has not decided on yet; for
+types already decided it returns without showing anything, which is expected system
+behaviour and not an app bug. Because of that the button now always reports back on screen:
+either the sheet appears, or an alert says nothing needed to be asked (with a shortcut to
+the Health app, the only place a past decision can be changed). It never stays on
+"Requesting…" — if the system does not answer within a few seconds the app says so and the
+button becomes tappable again. On a fresh install the sheet appears at first launch, right
+after the "Before you start" screen.
+
 FIRST LAUNCH
 The first launch shows a "Before you start" screen stating exactly what is sent to the model
 service the user configures and what never leaves the device. The disclaimer and the full
@@ -304,6 +314,12 @@ entitlement 里申请了 `com.apple.developer.healthkit.access: health-records`�
 以便在对话中解释这些数值。数据只在用户提问时读取，不用于广告或数据挖掘，
 不出售给任何第三方，也不保存到 iCloud（相关文件已排除出设备备份）。
 ```
+
+**2026-08-25 又被同一条打回一次**(iPad Air 11" M3 / iPadOS 26.6,措辞变成「按了没有反应」)。
+病历那条修完之后还剩两处能让这颗按钮哑掉,都在 app 这一侧:首次那一屏刚按完就去 present
+系统面板(present 撞上还在进行的 dismiss,悄悄不发生),以及**一个悬着的启动请求会把设置页
+那次 await 永远堵住**。现在授权请求挂在 `onDismiss` 上、这一侧的 await 自己会超时、force
+不再去等启动那次,而按完必定说一句话。详见 CLAUDE.md 里「HealthKit 授权」那一节。
 
 **这一项在不支持的设备上必须整个让开。** Health Records 按地区开放,`supportsHealthRecords()`
 为 false 时**连授权都不能申请**——2026-08-21 那次被拒(iPad Air M4,「Apple Health」按钮一直转)
