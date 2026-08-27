@@ -1536,6 +1536,16 @@
         }
       }
     },
+    "健康数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health data"
+          }
+        }
+      }
+    },
     "儿童" : {
       "localizations" : {
         "en" : {
@@ -1992,6 +2002,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Including the ones you added yourself. This can't be undone. Your health data itself is untouched."
+          }
+        }
+      }
+    },
+    "化验与体检记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lab results & health records"
           }
         }
       }
@@ -2962,6 +2982,16 @@
         }
       }
     },
+    "徒步" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiking"
+          }
+        }
+      }
+    },
     "心率与 HRV" : {
       "localizations" : {
         "en" : {
@@ -3385,6 +3415,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Numbers first, with the method spelled out"
+          }
+        }
+      }
+    },
+    "数据之间的关联" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correlations in your data"
           }
         }
       }
@@ -3925,6 +3965,22 @@
         }
       }
     },
+    "查询了最近 %lld 天%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Looked up %2$@ for the last %1$lld days"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "查询了最近 %1$lld 天%2$@"
+          }
+        }
+      }
+    },
     "核对识别结果" : {
       "localizations" : {
         "en" : {
@@ -4035,6 +4091,16 @@
         }
       }
     },
+    "正在查询…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Querying…"
+          }
+        }
+      }
+    },
     "正在检查…" : {
       "localizations" : {
         "en" : {
@@ -4133,6 +4199,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Steps, sleep and heart rate come from %@. Vana only reads what you authorize and never writes to or modifies your health records."
+          }
+        }
+      }
+    },
+    "步行" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Walking"
           }
         }
       }
@@ -4335,6 +4411,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Couldn't note “%@”"
+          }
+        }
+      }
+    },
+    "活动量" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activity"
           }
         }
       }
@@ -4585,6 +4671,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "How you're doing"
+          }
+        }
+      }
+    },
+    "瑜伽" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yoga"
           }
         }
       }
@@ -5017,6 +5113,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Has my blood pressure been fluctuating?"
+          }
+        }
+      }
+    },
+    "血氧、呼吸与体温" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blood oxygen, respiration & temperature"
           }
         }
       }
@@ -6072,6 +6178,16 @@
         }
       }
     },
+    "锻炼" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Workouts"
+          }
+        }
+      }
+    },
     "长期在吃" : {
       "localizations" : {
         "en" : {
@@ -6308,6 +6424,16 @@
         }
       }
     },
+    "静息心率与 HRV" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resting heart rate & HRV"
+          }
+        }
+      }
+    },
     "静息心率怎么比平时高？" : {
       "localizations" : {
         "en" : {
@@ -6369,6 +6495,16 @@
       }
     },
     "高强度间歇" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HIIT"
+          }
+        }
+      }
+    },
+    "高强度间歇训练" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {

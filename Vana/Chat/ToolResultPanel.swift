@@ -142,7 +142,8 @@ struct ToolResultPanel: View {
                         rawText(report.modelText)
                     } else {
                         // 查询失败,或者是旧版本存下来的会话——那时候只留了文本。
-                        Text(call.output ?? "正在查询…")
+                        // `??` 拼出来的是 String 不是字面量,占位那句要自己包 `String(localized:)`。
+                        Text(call.output ?? String(localized: "正在查询…"))
                             .font(.callout.monospaced())
                             .textSelection(.enabled)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -170,7 +171,7 @@ struct ToolResultPanel: View {
         case SessionRecallTools.searchToolName: String(localized: "翻过的对话")
         case SessionRecallTools.readToolName: String(localized: "回顾的对话")
         case WebSearchTools.searchToolName: String(localized: "网页搜索结果")
-        default: HealthTools.label(for: call.name, activity: HealthTools.activity(fromInput: call.input))
+        default: HealthTools.localizedLabel(for: call.name, activity: HealthTools.activity(fromInput: call.input))
         }
     }
 

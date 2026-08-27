@@ -233,8 +233,51 @@ enum HealthTools {
     /// 与 `HealthStore` 给锻炼记录起的名字一致。
     static let activityNames = ["跑步", "骑行", "步行", "力量训练", "游泳", "徒步", "瑜伽", "高强度间歇训练"]
 
+    /// 胶囊上那句「查询了…」。只有界面在读,所以本地化;模型侧一律走 `label(for:)`。
     static func note(for name: String, days: Int, activity: String? = nil) -> String {
-        "查询了最近 \(normalizedDays(days)) 天\(label(for: name, activity: activity))"
+        String(localized: "查询了最近 \(normalizedDays(days)) 天\(localizedLabel(for: name, activity: activity))")
+    }
+
+    /// `label(for:)` 的界面版。分成两份是因为 `label` 的另外几个读者是模型
+    /// (召回的工具轨迹、兴趣画像)和中文语音词表——那几份跟着界面语言走就错了。
+    static func localizedLabel(for name: String, activity: String? = nil) -> String {
+        switch name {
+        case "daily_steps":
+            String(localized: "活动量")
+        case "sleep_summary":
+            String(localized: "睡眠")
+        case "heart_rate_summary":
+            String(localized: "静息心率与 HRV")
+        case "workouts":
+            activity.map(localizedActivityName) ?? String(localized: "锻炼")
+        case "body_metrics":
+            String(localized: "体重与体脂")
+        case "blood_pressure":
+            String(localized: "血压")
+        case "vitals":
+            String(localized: "血氧、呼吸与体温")
+        case "correlations":
+            String(localized: "数据之间的关联")
+        case "health_records":
+            String(localized: "化验与体检记录")
+        default:
+            String(localized: "健康数据")
+        }
+    }
+
+    /// `activityNames` 是工具参数的取值,必须保持中文;界面显示时在这儿换一次。
+    private static func localizedActivityName(_ name: String) -> String {
+        switch name {
+        case "跑步": String(localized: "跑步")
+        case "骑行": String(localized: "骑行")
+        case "步行": String(localized: "步行")
+        case "力量训练": String(localized: "力量训练")
+        case "游泳": String(localized: "游泳")
+        case "徒步": String(localized: "徒步")
+        case "瑜伽": String(localized: "瑜伽")
+        case "高强度间歇训练": String(localized: "高强度间歇训练")
+        default: name
+        }
     }
 
     static func label(for name: String, activity: String? = nil) -> String {
