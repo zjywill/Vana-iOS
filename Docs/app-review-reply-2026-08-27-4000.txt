@@ -1,0 +1,40 @@
+Hello,
+
+Thank you for the questions. Answers below; the referenced screenshots are attached.
+
+1. THIRD-PARTY AI SERVICE
+
+Yes. Vana has no server and no AI service of its own. The user connects their own account with a third-party model service: in Settings they pick a provider from a built-in catalog (e.g. DeepSeek, used in our review notes) and paste their own API key. The app then talks directly from the device to that provider. Until the user adds a key, the app cannot answer questions and contacts no AI service at all.
+
+2. DATA SENT TO IT
+
+Vana itself collects nothing: no accounts, no backend, no analytics; the developer never sees any user data. Only when the user asks a question in chat, the following is sent to the service the user configured:
+
+- The text the user types, and that conversation's back-and-forth.
+- Aggregated Apple Health values under the user's HealthKit authorization, e.g. "6.2 h of sleep on Aug 6". Raw samples are never sent.
+- Clinical Health Records the user asks about - lab results and vital signs only (name, date, value). Diagnoses and medication records are never read.
+- Text recognized on-device from photos of lab reports and medicine boxes. The photo itself is sent only after a per-photo confirmation by the user.
+- The city name (never coordinates), if location was granted.
+- In-app memory and medication-list entries, unless turned off.
+
+Never sent: photo/file originals by default, voice recordings (speech is recognized on-device), GPS coordinates, the API key, any identifier. This matches our App Privacy declaration (not linked to identity, not used for tracking).
+
+3. EXPLICIT CONSENT
+
+Yes, in three layers, all before any chat interaction is possible:
+
+1. The first launch shows a full-screen "Before you start" notice (screenshots 3a, 3b) - before any chat and before the HealthKit sheet. It spells out what is sent to the model service the user configures, what never leaves the device, and that Vana has no server. The user must tap "Get started" to proceed; the full privacy policy is linked on the same screen, and the disclosure stays available in Settings > About Vana.
+2. Nothing can flow to any AI service until the user deliberately connects one - choosing the provider and pasting their own API key is itself the opt-in.
+3. Each data source has its own system-level consent on top: the iOS HealthKit permission sheet, the iOS location permission, and a per-photo confirmation for sending an original image.
+
+4. CLINICAL HEALTH RECORDS FLOW (screenshots 4a, 4b, 4c)
+
+The health-records entitlement is used to read lab results and vital signs the user has already connected in the Health app, so they can be explained in conversation. The flow:
+
+1. The user asks about lab results in chat, e.g. "Can you check my recent lab results?" (4c). Clinical records are read only at that moment, never in the background.
+2. On the first such question, iOS presents its own authorization flow: "How Sharing Health Records Works" (4a), then "Share Health Records - add your provider accounts to grant 'Vana' access to the requested health records" (4b). Granting access stays entirely inside this system UI.
+3. Vana reads the granted records (lab results and vital signs: name, date, value) and explains them in the conversation. With no provider account connected - as in 4c - it says so and offers alternatives: connect an institution in the Health app, or photograph a paper lab report, which is recognized on-device so only the text is sent. Every AI answer carries the label "Written by AI and may be wrong. Not a diagnosis or medication advice - check key numbers against the original records."
+
+Clinical data is read only when the user asks about it, never used for advertising or data mining, never sold, and never stored in iCloud (the app's local files are excluded from device backups).
+
+Privacy policy: https://vana.pinapia.com/privacy/ (Simplified Chinese) and https://vana.pinapia.com/privacy/en/ (English).
