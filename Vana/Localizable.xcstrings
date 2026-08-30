@@ -2766,6 +2766,16 @@
         }
       }
     },
+    "已停止回复" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reply stopped"
+          }
+        }
+      }
+    },
     "已回答" : {
       "localizations" : {
         "en" : {
@@ -3594,6 +3604,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Couldn't save: %@"
+          }
+        }
+      }
+    },
+    "无法回复：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t reply: %@"
           }
         }
       }

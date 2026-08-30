@@ -89,7 +89,11 @@ Thank you again — please let us know if anything else needs attention.
 - Cancel 之后字留在输入框、什么都不发；Agree and Send 之后消息发出（假 key 会 401，
   但闸已经验证过了）。
 
-## 顺手发现的（不影响这次）
+## 顺手发现的（已修，进同一个 build 11）
 
-- 英文界面下报错气泡前缀「无法回复：」还是中文——和 8-27 记的那两处本地化漏网是同一类，
-  修的时候一起看。
+- 英文界面下报错气泡前缀「无法回复：」还是中文——已修（`ChatMessage` 那两句占位包
+  `String(localized:)`），英文模拟器上验过是 "Couldn't reply: …"。
+- 8-27 记的「首屏那段状态摘要仍是中文」——根子是三个辅助生成器的提示词写死了「中文」
+  （`QuickSummaryWriter` / `QuestionSuggester` / `FollowUpSuggester`），且长度校验按中文
+  字数设。已改成跟界面语言走、上限按语言分档。**这条改完没在真 key 上看过生成效果**，
+  配好 key 后值得在英文界面看一眼首屏那段话和 chip。

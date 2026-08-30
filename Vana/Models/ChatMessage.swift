@@ -590,9 +590,12 @@ extension ChatMessage: AgentTurnSink {
         storedTurn.inlinedMessageIDs.append(contentsOf: inputs.map(\.id))
     }
 
+    // 这两句是 app 写给用户的话,要跟着界面语言走(错误描述那半句早就本地化了,漏的只有
+    // 前缀——英文界面上「无法回复： The API key was rejected…」正是 2026-08-30 逮到的样子)。
+    // 回放判断靠 `textIsPlaceholder` 标记,不比对字面,所以本地化是安全的。
     mutating func markStopped() {
         if text.isEmpty {
-            text = "已停止回复"
+            text = String(localized: "已停止回复")
             textIsPlaceholder = true
         }
         storedTurn.state = .stopped
@@ -600,7 +603,7 @@ extension ChatMessage: AgentTurnSink {
 
     mutating func markFailed(_ description: String) {
         if text.isEmpty {
-            text = "无法回复：\(description)"
+            text = String(localized: "无法回复：\(description)")
             textIsPlaceholder = true
         }
         storedTurn.state = .failed

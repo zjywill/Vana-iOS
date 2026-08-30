@@ -30,13 +30,23 @@ struct FollowUpSuggester: Sendable {
     /// 念过去,那部分对"接着问什么"没有贡献。
     static let maxAnswerCharacters = 1_600
 
-    private static let instructions = """
+    /// 每行的字符上限。英文一档放宽,理由同 `QuestionSuggester.maxLineCharacters`:
+    /// 拿 12 去卡英文,两条都凑不齐,英文界面上追问 chip 就永远只剩固定那几颗。
+    /// 提示词里的数字和校验必须是同一个。
+    static var maxLineCharacters: Int {
+        HealthAssistantInstructions.replyLanguage == "English" ? 36 : 12
+    }
+
+    /// 语言跟着界面走,和聊天回答同一个判据。不是 `let`:语言要在跑的那一刻读。
+    private static var instructions: String {
+        """
     你在为一个健康分析 app 写「接着问」的快捷按钮。用户刚问完一个健康问题，助手刚答完，\
     你要写三条他最可能接着问的话，每条会直接显示成一个可点的小按钮。
 
     要求：
     - 只输出三行，每行一句，不要编号、不要引号、不要任何解释。
-    - 中文，口语，每行不超过 12 个字——放不进按钮的等于没写。
+    - 用\(HealthAssistantInstructions.replyLanguage)写——无论下面的对话用什么语言。\
+    口语，每行不超过 \(maxLineCharacters) 个字符——放不进按钮的等于没写。
     - 必须是接着刚才那段回答问下去的，而且能用步数、睡眠、静息心率与 HRV、锻炼、\
     体重体脂这几类数据回答。
     - 三条问向不同的方向，比如：换个时间范围看看、追问原因、看一个相关的别的指标。
@@ -44,6 +54,7 @@ struct FollowUpSuggester: Sendable {
     - 用第一人称，像用户自己在问，不是像 app 在提示。
     - 不做诊断。
     """
+    }
 
     /// 最多三条,**够两条就算成过**;少于两条返回空,调用方用兜底那几条顶上。
     ///
@@ -100,7 +111,7 @@ struct FollowUpSuggester: Sendable {
     }
 
     static func parse(_ text: String) -> [String] {
-        let lines = ModelLines.parse(text, minCharacters: 3, maxCharacters: 12, limit: 3)
+        let lines = ModelLines.parse(text, minCharacters: 3, maxCharacters: maxLineCharacters, limit: 3)
         return lines.count >= 2 ? lines : []
     }
 
