@@ -13,8 +13,13 @@ import SwiftUI
 ///   的全部价值就是它真的被读到了一次。真要看细节的走底下那行「隐私说明」。
 /// - **正反两组都要有,不能只写「我们保护你的隐私」**。可信来自具体:「照片原件不会离开这台
 ///   设备,只发识别出来的文字」是可以被验证的一句话,「我们重视你的隐私」不是。
-/// - **不做成一次同意书**。没有勾选框、没有「同意并继续」——那个形状暗示这里在签一份协议,
-///   而实际发生的事只是告知。按钮就写「开始使用」。
+/// - **它是一次明确的同意,按钮写「同意并继续」**。第一版故意不做成同意书(「告知不是签协议」),
+///   2026-08-29 被 5.1.1(i)/5.1.2(i) 判回来:Apple 要求把数据发给第三方 AI 服务之前必须
+///   obtain the user's permission,「开始使用」在审核眼里不是 permission。同意的对象写在按钮
+///   上方那句 `consentFootnote` 里,和三组内容同一屏——同意必须发生在读完告知之后、又不另开
+///   一屏。配套的另一半在 `ProviderConsent`:第一次真的要发给某一家之前,还会点名再问一次。
+/// - **「发给谁」要有名字**。「你配置的模型服务」是个代词;默认预选的是 DeepSeek,这一屏就
+///   写出 DeepSeek——审核判词里 "identify who the data is sent to" 缺的正是这个名字。
 /// - **这是设备级的,不跟着成员走**(同 provider、model、API key)。它说的是「这台手机怎么
 ///   工作」,不是「我和谁在聊」,所以不在 `TenantPaths.perTenantItems` 里。
 enum DataUseNotice {
@@ -36,6 +41,7 @@ enum DataUseNotice {
         title: String(localized: "会发给你配置的模型服务"),
         tint: .orange,
         points: [
+            String(localized: "对方是一家由你选定的第三方模型服务——默认预选的是 DeepSeek（深度求索），可以在设置里换成目录里的其他家。第一次真的要发给某一家之前，Vana 还会点名问你一次"),
             String(localized: "你打的字，以及这条对话里的往来"),
             String(localized: "从 Apple 健康读到的聚合数值，例如「8 月 6 日睡眠 6.2 小时」"),
             String(localized: "化验单、报告、药盒在本机识别出来的文字"),
@@ -70,6 +76,16 @@ enum DataUseNotice {
     )
 
     static let groups: [Group] = [leaves, stays, noServer]
+
+    /// 按钮上方那句:点下去到底同意了什么。**单独一个常量而不是散在视图里**,
+    /// `ComplianceTests` 要能盯住它——这一句掉了,那颗按钮就退化回「开始使用」。
+    static let consentFootnote = String(localized: """
+        点「同意并继续」，表示你已读过上面的说明，并同意 Vana 在你提问时，\
+        把「会发出去」那一组里列出的内容发给你选定的模型服务来生成回答。
+        """)
+
+    /// 按钮文字。和 `consentFootnote` 里引号中的那四个字必须是同一串。
+    static let consentActionTitle = String(localized: "同意并继续")
 
     /// 免责。分三段,最后一段是急症——把它放在最后一段而不是塞进第一段的从句里,是因为
     /// 那是这三段里唯一一句要在几秒钟内被想起来的话。
@@ -126,8 +142,16 @@ struct DataUseNoticeSheet: View {
                             .font(.subheadline)
                     }
 
+                    // 同意的内容写在按钮正上方,不塞进滚动区:滚动区可以不被读完,
+                    // 而「点这一下等于同意了什么」必须和那一下同框。
+                    Text(DataUseNotice.consentFootnote)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
+
                     Button(action: onAccept) {
-                        Text("开始使用")
+                        Text(DataUseNotice.consentActionTitle)
                             .font(.body.weight(.semibold))
                             .frame(maxWidth: .infinity, minHeight: 50)
                     }

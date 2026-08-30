@@ -22,6 +22,11 @@ final class ChatViewModel {
     /// **是一次请求,不是一种状态**——界面接住它、把设置页推到他面前,然后立刻置回 false。
     /// 做成常驻状态的话,从设置页退回来那一刻它还是 true,设置页会当场再推一次。
     var needsCloudSetup = false
+    /// 他按了发送,但还没同意过把数据发给当前这家 provider(`ProviderConsent`)。
+    ///
+    /// 存的是 provider id,界面拿它弹那个点名确认的 alert。和 `needsCloudSetup` 一样是
+    /// 一次请求不是一种状态:同意或取消都当场清掉。打的字留在输入框里,同意之后再发。
+    private(set) var pendingProviderConsent: String?
     /// 正在退避重试时给用户看的一句话。
     ///
     /// 退避期间界面上什么都不动的话,等十几秒和卡死是一模一样的观感——而这时候 app 其实
@@ -206,6 +211,20 @@ final class ChatViewModel {
             return
         }
 
+        // 第一次要发给这家 provider:先点名征一次同意(Guideline 5.1.2(i),2026-08-29 被判
+        // 的正是「发送之前没问过、也没点过名」)。字留在输入框里,他在 alert 上按「同意并
+        // 发送」会再回到这里,那时候这道闸已经开了。换 provider 会再问,同一家只问一次。
+        //
+        // 注入了假引擎就是在测试里,那条路上没有任何东西真的出设备,不拦。
+        if engineFactory == nil {
+            let provider = EngineSettings.selection.provider
+            guard ProviderConsent.granted(provider) else {
+                if let suggestedQuestion { input = suggestedQuestion }
+                pendingProviderConsent = provider
+                return
+            }
+        }
+
         let text = (suggestedQuestion ?? input).trimmingCharacters(in: .whitespacesAndNewlines)
         // 排在输入框上方的照片跟着下一句话一起走,不管这句话是打出来的还是点 chip 点出来的:
         // 规矩只有一条才记得住。
@@ -222,6 +241,20 @@ final class ChatViewModel {
         // 正在回复:这一句排进队列就完了,不再开一轮。取走它的是 `takeQueuedInput`。
         guard !isReplying, hasQueuedInput else { return }
         startReply()
+    }
+
+    /// 他在点名确认的 alert 上按了「同意并发送」。记下来,然后把刚才那句发出去——
+    /// 字还在输入框里,`send()` 会再走一遍,这次闸是开的。
+    func confirmProviderConsent() {
+        guard let provider = pendingProviderConsent else { return }
+        ProviderConsent.record(provider)
+        pendingProviderConsent = nil
+        send()
+    }
+
+    /// 按了「取消」:什么都不发,字留在输入框里。不记录任何东西——下次按发送会再问。
+    func declineProviderConsent() {
+        pendingProviderConsent = nil
     }
 
     /// 收回一条还没进上下文的消息,文字放回输入框。
@@ -871,7 +904,10 @@ final class ChatViewModel {
                 suggestions = situationSuggestions
             }
 
-            guard let settings = try? cloudSettings() else { return }
+            // 同意之前一次模型调用都不发。这条跑在**启动时**、带着健康结论——正是
+            // 「发送之前没问过」最实打实的一条路。本地那句和那三条本地问题已经摆上了。
+            guard let settings = try? cloudSettings(),
+                  ProviderConsent.granted(settings.provider) else { return }
             let suggester = QuestionSuggester(
                 providerId: settings.provider,
                 model: settings.model,
@@ -919,7 +955,8 @@ final class ChatViewModel {
             quickSummary = situation.quickSummary
             // 没配 key 时这颗按钮也不是白按的:重读一遍数据本身就是它的另一半用处
             // (「我刚同步完手表」),那一半不需要模型。
-            guard let settings = try? cloudSettings() else {
+            guard let settings = try? cloudSettings(),
+                  ProviderConsent.granted(settings.provider) else {
                 isWritingSummary = false
                 return
             }
@@ -1055,8 +1092,11 @@ final class ChatViewModel {
     /// 后台抽一次记忆。全程失败即放弃——记忆学不到东西是小事,让用户这一步卡住是大事。
     private func harvestMemory(from harvested: ChatSession) {
         guard EngineSettings.memoryEnabled, MemoryHarvest.shouldHarvest(harvested) else { return }
-        // 注入了假引擎就是在测试里,别真去调模型。
-        guard engineFactory == nil, let settings = try? cloudSettings() else { return }
+        // 注入了假引擎就是在测试里,别真去调模型。没同意过发给这家的也不抽——能走到这儿
+        // 说明对话发生过,同意几乎必然在;这一句兜的是「聊完之后换了 provider」那条缝。
+        guard engineFactory == nil,
+              let settings = try? cloudSettings(),
+              ProviderConsent.granted(settings.provider) else { return }
 
         let previous = harvestTail
         let messageCount = harvested.messages.count

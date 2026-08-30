@@ -90,7 +90,7 @@
 <main>
 
 <h1>Vana Privacy Policy</h1>
-<p class="meta">Effective date: August 10, 2026</p>
+<p class="meta">Effective date: August 30, 2026</p>
 
 <div class="lede">
   <p><strong>Vana has no server and no accounts.</strong> We (the developer) cannot see any of your data — it never passes through a machine of ours.</p>
@@ -109,7 +109,8 @@
 <p><strong>None of this goes into backups.</strong> It is explicitly excluded from iCloud and computer backups — health data should not leave this device, and a backup is no exception. Please note the cost: <em>when you move to a new phone, these conversations, memories, medications and photos do not come with you</em>; you start fresh on the new device.</p>
 
 <h2>What leaves this device</h2>
-<p>For anyone to answer your question, the question itself has to be sent. You decide to whom: you pick a provider in Settings and enter your own API key, and Vana simply sends the request there. What goes out includes:</p>
+<p>For anyone to answer your question, the question itself has to be sent. <strong>To whom: a third-party model service that you choose.</strong> In Settings you pick one from a built-in catalog (DeepSeek is pre-selected by default; you can switch to any other provider in the catalog) and enter your own API key. Vana sends requests from this device directly to that provider’s API — nothing passes through any other server in between.</p>
+<p><strong>Nothing is sent without your explicit consent.</strong> The first-launch notice lists everything below, and you enter the app only by tapping “Agree and continue”. In addition, the first time Vana is actually about to send to a given service, it names that service and asks for your permission once more — if you decline, nothing is sent and your text stays in the input box. Switching to a different service asks again. What goes out includes:</p>
 <ul>
   <li>What you type, and the earlier back-and-forth in this conversation</li>
   <li><strong>Aggregated values</strong> read from Apple Health (per day or per night, e.g. “6.2 h of sleep on Aug 6”) — never raw samples</li>
@@ -119,7 +120,7 @@
   <li>Content from long-term memory and the medication list (only if you have not turned those features off)</li>
 </ul>
 <p>If you enter a serper.dev search key, Vana sends the <strong>search terms</strong> to that service when it needs outside material. Search terms never contain your health data or personal situation — this is stated both in the tool description and in the system prompt.</p>
-<p>How those two services handle what they receive is governed by <strong>their own privacy policies</strong> and is outside Vana's control. Which provider to use, and whether to add a search key at all, is your choice.</p>
+<p>The model service and the search service are third parties. How they handle what they receive is governed by <strong>their own privacy policies</strong> (for example, DeepSeek’s privacy policy is available on its website) and is outside Vana’s control — we cannot make promises on their behalf. Which provider to use, and whether to add a search key at all, is your choice; if you are not comfortable with how one of them handles data, switch to another or don’t use it. Everything listed above is used solely to answer the question you just asked; Vana uses it for no other purpose and never sells it.</p>
 
 <h2>What never leaves this device</h2>
 <ul>

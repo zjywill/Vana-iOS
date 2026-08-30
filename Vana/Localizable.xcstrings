@@ -1,9 +1,7 @@
 {
   "sourceLanguage" : "zh-Hans",
   "strings" : {
-    "" : {
-
-    },
+    "" : {},
     " · %lld 段" : {
       "localizations" : {
         "en" : {
@@ -1426,6 +1424,16 @@
         }
       }
     },
+    "你的问题，连同它需要用到的内容（这条对话的往来、从 Apple「健康」读到的聚合数值、长期记忆和用药表里的条目），会发送给第三方模型服务 %@ 来生成回答，由对方按它自己的隐私政策处理。这台设备上发给这家服务的请求只问这一次；换用其他服务时会再次询问。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your question, along with what it needs (this conversation, aggregated values read from Apple Health, and entries from long-term memory and the medication list), will be sent to the third-party model service %@ to generate the answer, handled under its own privacy policy. On this device you will only be asked once for this service; switching to another service will ask again."
+          }
+        }
+      }
+    },
     "你自己加的" : {
       "localizations" : {
         "en" : {
@@ -2106,6 +2114,16 @@
         }
       }
     },
+    "发送给 %@？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send to %@?"
+          }
+        }
+      }
+    },
     "取消" : {
       "localizations" : {
         "en" : {
@@ -2242,6 +2260,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Am I taking it too often?"
+          }
+        }
+      }
+    },
+    "同意并发送" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agree and Send"
+          }
+        }
+      }
+    },
+    "同意并继续" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agree and continue"
           }
         }
       }
@@ -2632,6 +2670,16 @@
         }
       }
     },
+    "对方是一家由你选定的第三方模型服务——默认预选的是 DeepSeek（深度求索），可以在设置里换成目录里的其他家。第一次真的要发给某一家之前，Vana 还会点名问你一次" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The recipient is a third-party model service you choose — DeepSeek is pre-selected by default, and you can switch to any other provider in Settings. The first time Vana is about to send to a given service, it names that service and asks you once more"
+          }
+        }
+      }
+    },
     "对睡眠有帮助吗？" : {
       "localizations" : {
         "en" : {
@@ -2903,6 +2951,7 @@
       }
     },
     "开始使用" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4561,6 +4610,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Swimming"
+          }
+        }
+      }
+    },
+    "点「同意并继续」，表示你已读过上面的说明，并同意 Vana 在你提问时，把「会发出去」那一组里列出的内容发给你选定的模型服务来生成回答。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By tapping “Agree and continue”, you confirm you have read the notice above and agree that, when you ask a question, Vana sends the items listed under “Sent to the model service you configure” to the model service you choose in order to generate the answer."
           }
         }
       }

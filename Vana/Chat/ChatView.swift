@@ -276,6 +276,24 @@ struct ChatView: View {
                 isComposerFocused = false
                 isShowingCloudSetup = true
             }
+            // 第一次要把数据发给这家 provider:点名征一次同意(Guideline 5.1.2(i))。
+            // 「同意并发送」把刚才那句原样发出去;「取消」什么都不发,字留在输入框里。
+            .alert(
+                Text("发送给 \(pendingConsentProviderName)？"),
+                isPresented: Binding(
+                    get: { model.pendingProviderConsent != nil },
+                    set: { if !$0 { model.declineProviderConsent() } }
+                )
+            ) {
+                Button(action: model.confirmProviderConsent) {
+                    Text("同意并发送")
+                }
+                Button(role: .cancel, action: model.declineProviderConsent) {
+                    Text("取消")
+                }
+            } message: {
+                Text("你的问题，连同它需要用到的内容（这条对话的往来、从 Apple「健康」读到的聚合数值、长期记忆和用药表里的条目），会发送给第三方模型服务 \(pendingConsentProviderName) 来生成回答，由对方按它自己的隐私政策处理。这台设备上发给这家服务的请求只问这一次；换用其他服务时会再次询问。")
+            }
             .navigationDestination(isPresented: $isShowingCloudSetup) {
                 SettingsView(
                     canClearConversation: !model.messages.isEmpty && !model.isReplying,
@@ -324,6 +342,12 @@ struct ChatView: View {
                 isShowingDataUseNotice = false
             }
         }
+    }
+
+    /// 点名确认那个 alert 上的名字。目录里查得到就用显示名(DeepSeek),查不到
+    /// (自建 endpoint、手填的 id)就原样给 id——名字必须有,哪怕不好看。
+    private var pendingConsentProviderName: String {
+        model.pendingProviderConsent.map(CloudCatalog.providerName(for:)) ?? ""
     }
 
     /// 有东西盖住对话了吗。

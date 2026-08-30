@@ -75,6 +75,7 @@
 		758CAFC9CD3E866CBCA09A62 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F329C843BC24BC69B9C8B22 /* ChatView.swift */; };
 		76CA8D0A1B861F76C94DF847 /* TenantPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B164E60F06AE5F04C34A1 /* TenantPaths.swift */; };
 		7A7387ABAE107E59675E80D4 /* HealthTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF735A49053191B3A4DF699 /* HealthTools.swift */; };
+		7C089081DD2763071EF92523 /* ProviderConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59697E2E50DF20ECB05A04D0 /* ProviderConsent.swift */; };
 		7F6985041E47C60AE8E155A9 /* AskUserCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2552218700BE157F9F2E07D /* AskUserCard.swift */; };
 		7FBBBB446DE2A5100F124A1E /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFECA484A9D54D55039FC79 /* HealthStore.swift */; };
 		81570995D8D914BF506B0ABC /* AskUserTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C6F3129A1B9D1B3D7DCA25 /* AskUserTools.swift */; };
@@ -229,6 +230,7 @@
 		56BEC630EF5CCF8814029DEF /* JumpToBottomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JumpToBottomTests.swift; sourceTree = "<group>"; };
 		56EDB6D216E4C798453B3F39 /* ModelCapabilityTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelCapabilityTags.swift; sourceTree = "<group>"; };
 		58EC53F1064F15A9EB658B61 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = en; path = en.lproj/PrivacyPolicy.html; sourceTree = "<group>"; };
+		59697E2E50DF20ECB05A04D0 /* ProviderConsent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderConsent.swift; sourceTree = "<group>"; };
 		596D541CBA67458F0A43D761 /* HealthSituation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSituation.swift; sourceTree = "<group>"; };
 		5AB99FB2A4350D0133261BCD /* HealthAuthorizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthAuthorizationTests.swift; sourceTree = "<group>"; };
 		5D103188F48FDAA2E06EA301 /* BackgroundDigest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundDigest.swift; sourceTree = "<group>"; };
@@ -417,6 +419,7 @@
 			children = (
 				4DA27D3E28569907B8B5352B /* DataUseNotice.swift */,
 				E6E4B569F7EF11E85FF11022 /* PrivacyPolicyView.swift */,
+				59697E2E50DF20ECB05A04D0 /* ProviderConsent.swift */,
 				E8E404D0CB27B81582779B7E /* PrivacyPolicy.html */,
 			);
 			path = Legal;
@@ -879,6 +882,7 @@
 				1782E63151E7A0ACAA43120B /* ModelCapabilityTags.swift in Sources */,
 				3D225ABCB4F2001AF4D50503 /* PhotoImagePolicy.swift in Sources */,
 				BCED787887FFF43CB4F53A54 /* PrivacyPolicyView.swift in Sources */,
+				7C089081DD2763071EF92523 /* ProviderConsent.swift in Sources */,
 				38C60056BCA19924ACC632D6 /* QuestionSuggester.swift in Sources */,
 				CDD6B62DA122A1EB5F9C397D /* QuickSummaryWriter.swift in Sources */,
 				161A3A49E010FA66D1D7DB6B /* RecognizedTextLayout.swift in Sources */,
@@ -945,7 +949,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Vana/Vana.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vana/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vana;
@@ -1140,7 +1144,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Vana/Vana.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vana/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vana;

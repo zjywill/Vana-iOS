@@ -142,13 +142,15 @@ enum DerivedTurn {
             .trimmingCharacters(in: CharacterSet(charactersIn: "。．.！!？?；;，,、 "))
     }
 
-    /// 云端要齐 key 和 model 才发得出去。
+    /// 云端要齐 key 和 model 才发得出去,而且**这家 provider 要被用户点名同意过**
+    /// (`ProviderConsent`)。后台派生跑在用户不在场的时候——同意之前替他发一轮,
+    /// 正是 5.1.2(i) 那句「before sharing」要挡的事。
     static func cloudSettings() -> (provider: String, model: String)? {
         let key = (try? KeychainStore.get(account: KeychainStore.apiKeyAccount)) ?? ""
         guard !key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
 
         let selection = EngineSettings.selection
-        guard !selection.model.isEmpty else { return nil }
+        guard !selection.model.isEmpty, ProviderConsent.granted(selection.provider) else { return nil }
         return selection
     }
 }

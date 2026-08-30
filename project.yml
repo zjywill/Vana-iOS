@@ -102,7 +102,7 @@ targets:
         # 2 那次没被 ASC 收下,理论上还能重用,但**不值得赌**:Organizer 里已经有一条
         # 叫 1.0 (2) 的记录,再传一个同号的容易撞上 "redundant binary",而那时候
         # 归档和上传的十几分钟已经花掉了。加一位是免费的。
-        CURRENT_PROJECT_VERSION: "10"
+        CURRENT_PROJECT_VERSION: "11"
         # Icon Composer 的 Vana/AppIcon.icon,名字要和这里对上。
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES

@@ -76,7 +76,9 @@ struct MedicationBriefer: Sendable {
     static func fill(_ item: MedicationItem, store: MedicationStore = .shared) async -> Bool {
         guard !item.briefIsUserWritten else { return false }
         let selection = EngineSettings.selection
-        guard !selection.model.isEmpty else { return false }
+        // 同意之前不发(`ProviderConsent`):药名也是他的个人数据,而这一步可能在他一句话
+        // 都还没发过的时候就跑(录完第一条药顺手生成说明)。
+        guard !selection.model.isEmpty, ProviderConsent.granted(selection.provider) else { return false }
         let briefer = MedicationBriefer(providerId: selection.provider, model: selection.model)
         // `try?` 把「抛错」和「模型说不认识」都压成 nil。这里两者的处置本来就一样:都不写。
         guard let text = try? await briefer.brief(for: item.name) else { return false }

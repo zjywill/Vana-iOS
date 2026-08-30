@@ -104,6 +104,10 @@ struct ComplianceTests {
         #expect(html.contains("只读"))
         #expect(html.contains("数据挖掘"))
         #expect(html.contains("iCloud"))
+        // 5.1.2(i):第三方要有名字,发送要以同意为前提。
+        #expect(html.contains("第三方"))
+        #expect(html.contains("DeepSeek"))
+        #expect(html.contains("同意"))
         // 删除路径和儿童条款。
         #expect(html.contains("删除"))
         #expect(html.contains("儿童"))
@@ -131,6 +135,10 @@ struct ComplianceTests {
         #expect(html.contains("read-only"))
         #expect(html.contains("data mining"))
         #expect(html.contains("iCloud"))
+        // 5.1.2(i),和中文那份逐条对应。
+        #expect(html.contains("third-party"))
+        #expect(html.contains("DeepSeek"))
+        #expect(html.contains("consent"))
         #expect(html.contains("delete"))
         #expect(html.contains("Children"))
         #expect(html.contains("emergency"))
@@ -229,6 +237,41 @@ struct ComplianceTests {
         let staying = DataUseNotice.stays.points.joined()
         #expect(staying.contains("默认"), "照片那条写成了绝对承诺，而它现在有一个例外")
         #expect(staying.contains("设置里定"), "没说清原图发不发这件事在用户手上")
+    }
+
+    /// 2026-08-29 被 5.1.1(i)/5.1.2(i) 判的两处:按钮不是同意、「发给谁」没有名字。
+    /// 这条盯住修法本身:那一屏必须是明确同意(「同意并继续」+ 说清点下去同意了什么),
+    /// 而且第三方要点得出名(默认预选的 DeepSeek)。改文案时这两样掉一样,判词就会原样回来。
+    @Test("那一屏是明确同意，而且点得出第三方的名字")
+    func noticeIsExplicitConsentAndNamesTheThirdParty() {
+        #expect(DataUseNotice.consentActionTitle.contains("同意"))
+        #expect(DataUseNotice.consentFootnote.contains("同意并继续"), "同意说明里引用的按钮文字和按钮对不上")
+        #expect(DataUseNotice.consentFootnote.contains("发"), "同意说明没说清同意的是「发出去」这件事")
+        let leaving = DataUseNotice.leaves.points.joined()
+        #expect(leaving.contains("第三方"), "没说清对方是第三方")
+        #expect(leaving.contains("DeepSeek"), "「发给谁」还是没有名字")
+        #expect(leaving.contains("点名问你一次"), "没提第一次发送前还会点名确认")
+    }
+
+    /// 「发送之前征得同意」的另一半:按 provider 记一次同意,记过才放行。
+    /// 默认一定是 false——种子里预填了 DeepSeek,但预填不是同意。
+    @Test("发送同意按 provider 记录，默认没有")
+    func providerConsentIsPerProviderAndOffByDefault() throws {
+        let suite = "test.providerConsent.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        #expect(!ProviderConsent.granted(EngineSettings.defaultProvider, defaults: defaults))
+        #expect(!ProviderConsent.granted("", defaults: defaults))
+
+        ProviderConsent.record("deepseek", defaults: defaults)
+        #expect(ProviderConsent.granted("deepseek", defaults: defaults))
+        // 同意落在具体那一家上,不外溢。
+        #expect(!ProviderConsent.granted("openai", defaults: defaults))
+
+        // 重复记录不叠加。
+        ProviderConsent.record("deepseek", defaults: defaults)
+        #expect(defaults.stringArray(forKey: ProviderConsent.consentedKey) == ["deepseek"])
     }
 
     /// 「保护你的隐私」这类话不可验证,写了等于没写。这条盯的是那一屏没有退化成一句套话。
