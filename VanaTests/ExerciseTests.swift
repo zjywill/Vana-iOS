@@ -81,6 +81,28 @@ struct ExerciseTests {
         }
     }
 
+    /// **`floor` 说的必须和步骤里写的是同一件事。**
+    ///
+    /// 这个旗标是硬过滤的判据(`noFloor` 把整组滤掉),而它是一个布尔值——标错了,
+    /// 卡片上一切正常、步骤一个字没错,只是一个说了「起身困难」的人拿到了一组平板支撑。
+    /// 和「膝盖不好却拿到深蹲」是同一类失灵,只是换了个维度,而且更难被发现:关节那条
+    /// 至少还有用户自己说过的话可以对,这条只能靠有人去读步骤。
+    ///
+    /// 所以判据是**步骤或器材里提没提到趴、跪、躺、卧**。这五条曾经全标着 `false`:
+    /// 平板支撑、侧平板、俯卧撑、窄距俯卧撑、登山跑。
+    @Test("步骤里要趴要跪要躺的,floor 必须是 true")
+    func floorFlagMatchesTheSteps() throws {
+        let onTheGround = try Regex(#"[趴跪躺卧]"#)
+        for move in library.moves where !move.floor {
+            for line in move.steps + [move.gear] {
+                #expect(
+                    try onTheGround.firstMatch(in: line) == nil,
+                    "\(move.id) 要到地上去,但 floor 标着 false：\(line)"
+                )
+            }
+        }
+    }
+
     @Test("关节标签都在 excludeJoint 那一组里")
     func riskJointsAreDeclared() {
         let known = Set(ExerciseTools.joints)
