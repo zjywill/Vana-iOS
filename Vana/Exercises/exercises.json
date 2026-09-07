@@ -1,17 +1,17 @@
 {
  "version": 1,
  "sources": {
-  "yoga": {
-   "name": "alexcumplido/yoga-api",
-   "url": "https://github.com/alexcumplido/yoga-api",
-   "license": "图片授权待确认(见 README)",
-   "style": "彩色线稿,单张静态"
-  },
   "ek": {
    "name": "everkinetic/data",
    "url": "https://github.com/everkinetic/data",
    "license": "CC BY-SA 4.0",
    "style": "线稿,tension / relaxation 两态"
+  },
+  "wg": {
+   "name": "bryllim/workout-guide",
+   "url": "https://github.com/bryllim/workout-guide",
+   "license": "CC BY-SA 4.0(改编自 everkinetic/data)",
+   "style": "线稿,一个动作三帧"
   }
  },
  "scenes": [
@@ -84,30 +84,62 @@
    ]
   },
   {
-   "id": "eagle-arms",
-   "zh": "鹰式手臂（肩背打开）",
-   "en": "Eagle",
-   "src": "yoga",
+   "id": "shoulder-cross",
+   "zh": "体前交叉拉肩",
+   "en": "Cross-Body Shoulder Stretch",
+   "src": "wg",
    "scenes": [
     "颈肩",
     "办公室"
    ],
    "part": "肩后侧 / 上背",
-   "gear": "徒手,站着坐着都行",
+   "gear": "徒手,坐着就能做",
    "steps": [
-    "两条手臂在身前交叉,右臂在下、左臂在上。",
-    "小臂立起来互相缠一下,手掌尽量贴在一起,贴不上就手背相对。",
-    "手肘轻轻往上抬,肩胛骨之间会有拉开的感觉。",
-    "换一边,让另一条手臂在下。"
+    "一条手臂伸直,横过身体前方,往对侧肩膀的方向送。",
+    "另一只手托在这条手臂的肘窝附近,轻轻往身体这边带。",
+    "肩后侧有拉开的感觉就停住,不要耸肩,呼吸不要屏。",
+    "换一边做同样的动作。"
    ],
-   "cue": "肩膀不要缩到耳朵边上;下半身可以不做缠腿那部分,上半身就够了。",
-   "avoid": "肩关节做过手术或习惯性脱位的不要做。",
+   "cue": "托的位置在肘窝附近,不要压肘尖;被拉的那侧肩膀始终往下沉。",
+   "avoid": "肩关节脱位过、做过肩部手术、抬手就疼的先问医生。",
    "risk": [
     "肩"
    ],
    "floor": false,
    "files": [
-    "yoga-16.svg"
+    "wg-cross-body-shoulder-stretch-1.svg",
+    "wg-cross-body-shoulder-stretch-2.svg",
+    "wg-cross-body-shoulder-stretch-3.svg"
+   ]
+  },
+  {
+   "id": "arm-circles",
+   "zh": "手臂绕环",
+   "en": "Arm Circles",
+   "src": "wg",
+   "scenes": [
+    "颈肩",
+    "办公室",
+    "跑前"
+   ],
+   "part": "肩 / 上背",
+   "gear": "徒手,站着或坐着都行",
+   "steps": [
+    "两臂侧平举,手掌朝下,肩膀先往下沉一点。",
+    "从小圈开始向前绕,圈慢慢变大。",
+    "再换成向后绕,同样从小到大。",
+    "整个过程手臂不用绷紧,肩膀不要跟着耸起来。"
+   ],
+   "cue": "圈的大小以肩膀不发出刺痛为准;绕的时候脖子放松,不要跟着一起转。",
+   "avoid": "肩周炎急性期、肩袖损伤没好的时候别做。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-arm-circles-1.svg",
+    "wg-arm-circles-2.svg",
+    "wg-arm-circles-3.svg"
    ]
   },
   {
@@ -139,68 +171,131 @@
    ]
   },
   {
-   "id": "cat",
-   "zh": "猫式（拱背）",
-   "en": "Cat",
-   "src": "yoga",
+   "id": "doorway-chest",
+   "zh": "门框开胸",
+   "en": "Doorway Chest Stretch",
+   "src": "wg",
    "scenes": [
-    "腰背",
-    "睡前",
-    "办公室"
+    "颈肩",
+    "办公室",
+    "腰背"
    ],
-   "part": "脊柱 / 腰背",
-   "gear": "需要跪地,垫子或地毯上做",
+   "part": "胸前 / 肩前侧",
+   "gear": "一个门框",
    "steps": [
-    "四点跪好,手在肩膀正下方,膝盖在髋正下方。",
-    "呼气,背往上拱起来,下巴微收,肚子往里收。",
-    "回到背部平直的位置。",
-    "和下面那个牛式连起来做,一呼一吸各一次。"
+    "站在门口,两条前臂分别贴在门框两侧,肘部大约与肩同高。",
+    "一只脚往前迈一小步,身体重心跟着往前送。",
+    "胸前被拉开的时候停住,不要把腰往前顶、也不要耸肩。",
+    "肘的高低换一换,拉到的位置也跟着变。"
    ],
-   "cue": "动的是整条脊柱,不是只有腰;跟着呼吸走就不会太快。",
-   "avoid": "手腕疼的可以改成握拳撑地;膝盖不适的垫厚一点。",
+   "cue": "拉开的是胸口不是肩关节;肘抬高一点偏胸上部,放低一点偏胸下部,挑最舒服的那个高度。",
+   "avoid": "肩前侧有过撞击或脱位史的先问康复师。",
    "risk": [
-    "腕",
-    "膝"
+    "肩"
    ],
-   "floor": true,
+   "floor": false,
    "files": [
-    "yoga-7.svg"
+    "wg-doorway-chest-stretch-1.svg",
+    "wg-doorway-chest-stretch-2.svg",
+    "wg-doorway-chest-stretch-3.svg"
    ]
   },
   {
-   "id": "cow",
-   "zh": "牛式（沉腰）",
-   "en": "Cow",
-   "src": "yoga",
+   "id": "scapular-pushup",
+   "zh": "肩胛俯卧撑",
+   "en": "Scapular Push-up",
+   "src": "wg",
+   "scenes": [
+    "颈肩",
+    "力量"
+   ],
+   "part": "前锯肌 / 上背",
+   "gear": "徒手",
+   "steps": [
+    "摆成俯卧撑的支撑姿势,手臂全程伸直不弯。",
+    "只让两片肩胛骨慢慢往中间夹,胸口随之下沉一点点。",
+    "再把肩胛骨往两边推开,上背轻轻拱起。",
+    "来回做,幅度很小,手肘始终锁着。"
+   ],
+   "cue": "动的只有肩胛骨,手肘一弯就变成普通俯卧撑了;觉得手腕吃力可以改成跪姿。",
+   "avoid": "手腕疼、肩膀抬起来就响且伴随疼痛的别做。",
+   "risk": [
+    "腕",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-scapular-push-up-1.svg",
+    "wg-scapular-push-up-2.svg",
+    "wg-scapular-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "prone-y-raise",
+   "zh": "俯卧 Y 字抬举",
+   "en": "Prone Y Raise",
+   "src": "wg",
+   "scenes": [
+    "颈肩",
+    "腰背"
+   ],
+   "part": "下斜方肌 / 上背",
+   "gear": "徒手,需要趴下",
+   "steps": [
+    "趴在垫子上,额头轻轻贴地,两臂在头顶前方摆成一个 Y。",
+    "大拇指朝上,肩膀先往下沉、往后收。",
+    "把两条手臂抬离地面一点,停一下再慢慢放下。",
+    "抬的时候脖子不要跟着仰,眼睛看地面。"
+   ],
+   "cue": "抬得越低越好做,重点是肩胛骨往下往后,不是手举多高。",
+   "avoid": "腰不舒服可以在肚子下面垫一个薄枕头;腰椎有伤的先问医生。",
+   "risk": [
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-prone-y-raise-1.svg",
+    "wg-prone-y-raise-2.svg",
+    "wg-prone-y-raise-3.svg"
+   ]
+  },
+  {
+   "id": "cat-cow",
+   "zh": "猫牛式（拱背沉腰）",
+   "en": "Cat-Cow Stretch",
+   "src": "wg",
    "scenes": [
     "腰背",
     "睡前",
     "办公室"
    ],
    "part": "脊柱 / 腰背",
-   "gear": "需要跪地,垫子或地毯上做",
+   "gear": "徒手,需要跪下",
    "steps": [
-    "还是四点跪姿,手在肩下、膝在髋下。",
-    "吸气,胸口往前送,尾骨轻轻往上翘,背自然下沉。",
-    "视线看向前方偏下,不要用力仰头。",
-    "和猫式交替进行。"
+    "四点跪撑,手在肩膀正下方,膝盖在髋正下方。",
+    "呼气,慢慢把背拱起来,下巴往胸口收,像一只弓背的猫。",
+    "吸气,再慢慢让腰沉下去、胸口打开,尾骨轻轻上翘。",
+    "跟着呼吸来回,不追求幅度。"
    ],
-   "cue": "腰塌下去到舒服就停,不比谁塌得深。",
-   "avoid": "腰椎有滑脱、椎间盘问题的把幅度收小,或者只做猫式那一半。",
+   "cue": "一节一节地动,不是整段腰塌下去;手腕不舒服可以改成拳撑或前臂撑。",
+   "avoid": "腰椎间盘突出急性期、腰往后仰就放射到腿的先问医生。",
    "risk": [
-    "腕",
-    "膝"
+    "腰",
+    "腕"
    ],
    "floor": true,
    "files": [
-    "yoga-8.svg"
+    "wg-cat-cow-stretch-1.svg",
+    "wg-cat-cow-stretch-2.svg",
+    "wg-cat-cow-stretch-3.svg"
    ]
   },
   {
    "id": "childs-pose",
    "zh": "婴儿式",
    "en": "Child's Pose",
-   "src": "yoga",
+   "src": "wg",
    "scenes": [
     "腰背",
     "睡前",
@@ -221,41 +316,101 @@
    ],
    "floor": true,
    "files": [
-    "yoga-10.svg"
+    "wg-childs-pose-1.svg",
+    "wg-childs-pose-2.svg",
+    "wg-childs-pose-3.svg"
    ]
   },
   {
-   "id": "sphinx",
-   "zh": "斯芬克斯式（小幅后展）",
-   "en": "Sphinx",
-   "src": "yoga",
+   "id": "abdominal-draw-in",
+   "zh": "腹部收紧（呼吸练习）",
+   "en": "Stationary Abdominal Draw In",
+   "src": "ek",
+   "scenes": [
+    "核心",
+    "腰背"
+   ],
+   "part": "深层腹肌",
+   "gear": "徒手,躺着或跪着都行",
+   "steps": [
+    "四点跪好或者平躺,背保持自然中立。",
+    "正常吸气。",
+    "呼气的时候把肚脐轻轻往脊柱方向收,像系紧一条腰带。",
+    "保持呼吸不要憋气,再慢慢放松。"
+   ],
+   "cue": "这是最不起眼但对腰最有用的一个,幅度小到别人看不出来。",
+   "avoid": "几乎没有禁忌;疝气术后先问医生。",
+   "risk": [],
+   "floor": false,
+   "files": [
+    "ek-0027-tension.svg",
+    "ek-0027-relaxation.svg"
+   ]
+  },
+  {
+   "id": "bird-dog",
+   "zh": "鸟狗式（对角伸展）",
+   "en": "Bird Dog",
+   "src": "wg",
    "scenes": [
     "腰背",
-    "办公室"
+    "核心"
    ],
-   "part": "腰背 / 胸前",
-   "gear": "需要趴下",
+   "part": "核心 / 下背",
+   "gear": "徒手,需要跪下",
    "steps": [
-    "趴在地上,两条小臂贴地,手肘在肩膀正下方。",
-    "肩膀往下往后沉,胸口往前打开。",
-    "腿和屁股放松,不要夹紧。",
-    "感觉腰前侧被轻轻打开就停在那儿呼吸。"
+    "四点跪撑,背保持平的,眼睛看地面。",
+    "一条手臂往前伸,同时对侧的腿往后伸直。",
+    "伸到和身体差不多成一条线就停住,腰不要塌下去。",
+    "收回来,换另外一组对角。"
    ],
-   "cue": "久坐一天之后这个比大幅度后弯安全得多。",
-   "avoid": "腰一后仰就疼、或者有腰椎间盘突出的不要做。",
+   "cue": "想象腰上放着一杯水,整个过程别让它洒;伸不直没关系,腰不晃才是重点。",
+   "avoid": "腰痛发作期别做;手腕不舒服可以改成前臂撑。",
+   "risk": [
+    "腰",
+    "腕"
+   ],
+   "floor": true,
+   "files": [
+    "wg-bird-dog-1.svg",
+    "wg-bird-dog-2.svg",
+    "wg-bird-dog-3.svg"
+   ]
+  },
+  {
+   "id": "dead-bug",
+   "zh": "死虫式",
+   "en": "Dead Bug",
+   "src": "wg",
+   "scenes": [
+    "核心",
+    "腰背"
+   ],
+   "part": "深层腹肌 / 核心",
+   "gear": "徒手,需要躺下",
+   "steps": [
+    "仰卧,两臂向上指向天花板,髋和膝都弯成直角抬起来。",
+    "先让腰贴住地面,整个过程都不要让它拱起来。",
+    "一条手臂往头顶方向放,同时对侧的腿慢慢伸出去。",
+    "在腰还贴着地的范围内收回来,换另一组对角。"
+   ],
+   "cue": "腰一离地就说明伸得太远了,把幅度收小,这个动作练的正是不让腰动。",
+   "avoid": "腰椎术后、抬腿就腰疼的先问康复师。",
    "risk": [
     "腰"
    ],
    "floor": true,
    "files": [
-    "yoga-35.svg"
+    "wg-dead-bug-1.svg",
+    "wg-dead-bug-2.svg",
+    "wg-dead-bug-3.svg"
    ]
   },
   {
    "id": "supermans",
    "zh": "超人式（背部激活）",
-   "en": "Supermans",
-   "src": "ek",
+   "en": "Superman Hold",
+   "src": "wg",
    "scenes": [
     "腰背",
     "力量"
@@ -275,69 +430,16 @@
    ],
    "floor": true,
    "files": [
-    "ek-0105-tension.svg",
-    "ek-0105-relaxation.svg"
-   ]
-  },
-  {
-   "id": "seated-twist",
-   "zh": "坐姿脊柱扭转",
-   "en": "Half Lord of the Fishes",
-   "src": "yoga",
-   "scenes": [
-    "腰背",
-    "办公室"
-   ],
-   "part": "脊柱 / 臀外侧",
-   "gear": "徒手,坐着做",
-   "steps": [
-    "坐好,右腿弯曲跨到左腿外侧,脚掌踩实。",
-    "左手肘抵在右膝外侧,右手撑在身后地面。",
-    "吸气把脊柱拉长,呼气再慢慢转向右边。",
-    "换边。"
-   ],
-   "cue": "先长高再转,不要塌着腰硬拧。",
-   "avoid": "孕期、腰椎术后不要做深度扭转。",
-   "risk": [
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-32.svg"
-   ]
-  },
-  {
-   "id": "standing-side-bend",
-   "zh": "站姿侧腰伸展",
-   "en": "Crescent Moon",
-   "src": "yoga",
-   "scenes": [
-    "腰背",
-    "办公室"
-   ],
-   "part": "侧腰 / 肋间",
-   "gear": "徒手,站着做",
-   "steps": [
-    "站直,两手在头顶合十或互抓手腕。",
-    "身体往一侧倒,侧腰拉开,髋部保持稳定别跟着晃出去。",
-    "保持正常呼吸,感觉整条侧面被拉长。",
-    "回正,换另一边。"
-   ],
-   "cue": "不要往前弯也不要往后仰,就在一个平面里侧倒。",
-   "avoid": "站不稳的扶着桌子做。",
-   "risk": [
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-39.svg"
+    "wg-superman-hold-1.svg",
+    "wg-superman-hold-2.svg",
+    "wg-superman-hold-3.svg"
    ]
   },
   {
    "id": "low-lunge",
    "zh": "低位弓步（髋屈肌）",
-   "en": "Low Lunge",
-   "src": "yoga",
+   "en": "Kneeling Hip Flexor Stretch",
+   "src": "wg",
    "scenes": [
     "髋腿",
     "跑后",
@@ -358,173 +460,69 @@
    ],
    "floor": true,
    "files": [
-    "yoga-23.svg"
+    "wg-kneeling-hip-flexor-stretch-1.svg",
+    "wg-kneeling-hip-flexor-stretch-2.svg",
+    "wg-kneeling-hip-flexor-stretch-3.svg"
    ]
   },
   {
-   "id": "pigeon",
-   "zh": "鸽子式（臀外侧）",
-   "en": "Pigeon",
-   "src": "yoga",
+   "id": "glute-bridge",
+   "zh": "臀桥",
+   "en": "Glute Bridge",
+   "src": "wg",
    "scenes": [
-    "髋腿",
-    "跑后",
+    "力量",
+    "腰背",
     "睡前"
    ],
-   "part": "臀外侧 / 髋",
-   "gear": "需要跪地",
+   "part": "臀 / 后链",
+   "gear": "需要躺下",
    "steps": [
-    "从四点跪姿开始,右膝往前放到右手腕后方,小腿斜放在身前。",
-    "左腿往后伸直,脚背贴地。",
-    "上半身立着或者慢慢往前趴,以右侧臀部有拉伸感为准。",
-    "换边。"
+    "躺好屈膝,双脚踩实,手臂放身体两侧。",
+    "夹紧臀部把髋顶起来,身体从肩到膝成一条斜线。",
+    "顶到最高处停一下,不要用腰去顶。",
+    "慢慢落回来,做到臀部发酸就休息。"
    ],
-   "cue": "跑步之后臀部发紧,拉这里比拉大腿有用。",
-   "avoid": "膝盖内侧有不适立刻退出来,改做躺姿的「四字」拉伸。",
+   "cue": "腰先酸说明是腰在干活,把幅度收小、更用力夹臀。",
+   "avoid": "腰部急性疼痛时不要做。",
    "risk": [
-    "膝",
-    "髋"
+    "腰"
    ],
    "floor": true,
    "files": [
-    "yoga-24.svg"
+    "wg-glute-bridge-1.svg",
+    "wg-glute-bridge-2.svg",
+    "wg-glute-bridge-3.svg"
    ]
   },
   {
-   "id": "butterfly",
-   "zh": "蝴蝶式（内收肌）",
-   "en": "Butterfly",
-   "src": "yoga",
+   "id": "donkey-kick",
+   "zh": "跪姿后踢腿",
+   "en": "Donkey Kick",
+   "src": "wg",
    "scenes": [
-    "髋腿",
-    "睡前"
+    "力量",
+    "腰背"
    ],
-   "part": "大腿内侧 / 髋",
-   "gear": "徒手,坐着做",
+   "part": "臀 / 下背",
+   "gear": "徒手,需要跪下",
    "steps": [
-    "坐好,两脚掌相对,脚跟往身体方向收一点。",
-    "手扶着脚,背立直。",
-    "膝盖自然往两边打开,不要用手往下压。",
-    "想加深就把上半身从髋部往前送一点。"
+    "四点跪撑,膝盖在髋正下方,背保持平的。",
+    "一条腿保持屈膝,脚跟朝天花板方向往上抬。",
+    "抬到臀部发力就够了,腰不要跟着往后仰。",
+    "慢慢放回来,换另一条腿。"
    ],
-   "cue": "膝盖离地高一点完全没关系,别去比谁贴得下去。",
-   "avoid": "髋关节置换过的、腹股沟拉伤没好的不要做。",
+   "cue": "抬高不是目标,臀部有感觉才是;腰一往后塌就说明抬过头了。",
+   "avoid": "膝盖跪着疼可以垫毛巾;腰痛发作期别做。",
    "risk": [
-    "髋"
+    "腰",
+    "膝"
    ],
-   "floor": false,
+   "floor": true,
    "files": [
-    "yoga-5.svg"
-   ]
-  },
-  {
-   "id": "seated-forward-bend",
-   "zh": "坐姿前屈（腘绳肌）",
-   "en": "Seated Forward Bend",
-   "src": "yoga",
-   "scenes": [
-    "髋腿",
-    "跑后"
-   ],
-   "part": "大腿后侧 / 下背",
-   "gear": "徒手,坐着做",
-   "steps": [
-    "坐直,两腿往前伸直,脚尖朝上。",
-    "吸气把背拉长,呼气从髋部往前折。",
-    "手放到能舒服够到的位置,小腿、脚踝、脚都行。",
-    "背不要拱成一个圆,宁可弯得少一点。"
-   ],
-   "cue": "膝盖可以微微弯,弯着膝盖拉到的才是大腿后侧。",
-   "avoid": "下背一弯就疼的改成躺着用毛巾勾脚拉。",
-   "risk": [
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-30.svg"
-   ]
-  },
-  {
-   "id": "standing-forward-bend",
-   "zh": "站姿前屈",
-   "en": "Standing Forward Bend",
-   "src": "yoga",
-   "scenes": [
-    "髋腿",
-    "跑后",
-    "睡前"
-   ],
-   "part": "大腿后侧 / 下背",
-   "gear": "徒手,站着做",
-   "steps": [
-    "站直,双脚与髋同宽。",
-    "膝盖微微弯着,从髋部往前折下去。",
-    "让上半身和头自然垂着,手随意抓小腿或者垂下去。",
-    "起来的时候慢一点,一节一节把背立回来。"
-   ],
-   "cue": "起身太快会头晕,这一条比拉伸本身更要紧。",
-   "avoid": "血压偏高、有青光眼、容易体位性头晕的不要做低头位。",
-   "risk": [
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-38.svg"
-   ]
-  },
-  {
-   "id": "pyramid",
-   "zh": "加强侧伸展（单腿后侧）",
-   "en": "Pyramid",
-   "src": "yoga",
-   "scenes": [
-    "髋腿",
-    "跑后"
-   ],
-   "part": "大腿后侧",
-   "gear": "徒手,站着做",
-   "steps": [
-    "两脚一前一后站开,后脚稍微往外转一点。",
-    "髋部摆正,两侧髋骨朝向正前方。",
-    "上半身从髋部往前折向前腿。",
-    "前腿后侧有拉伸感就停,换边。"
-   ],
-   "cue": "髋摆正比折得深重要,歪着折是白拉。",
-   "avoid": "腘绳肌拉伤急性期不要做。",
-   "risk": [
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-28.svg"
-   ]
-  },
-  {
-   "id": "garland",
-   "zh": "深蹲蹲坐（花环式）",
-   "en": "Garland Pose",
-   "src": "yoga",
-   "scenes": [
-    "髋腿",
-    "睡前"
-   ],
-   "part": "髋 / 踝 / 下背",
-   "gear": "徒手",
-   "steps": [
-    "两脚比髋略宽,脚尖稍微外八。",
-    "慢慢蹲下去,尽量让脚跟踩地。",
-    "手肘抵在膝盖内侧,掌心合十,把膝盖轻轻往外撑。",
-    "背立起来,在这里呼吸。"
-   ],
-   "cue": "脚跟落不了地就在下面垫一本书或者一条卷起来的毛巾。",
-   "avoid": "膝盖有明显不适、半月板受过伤的不要蹲到底。",
-   "risk": [
-    "膝",
-    "踝"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-37.svg"
+    "wg-donkey-kick-1.svg",
+    "wg-donkey-kick-2.svg",
+    "wg-donkey-kick-3.svg"
    ]
   },
   {
@@ -585,391 +583,427 @@
    ]
   },
   {
-   "id": "crescent-lunge",
-   "zh": "新月式弓步",
-   "en": "Crescent Lunge",
-   "src": "yoga",
+   "id": "leg-swings",
+   "zh": "站姿摆腿",
+   "en": "Leg Swings",
+   "src": "wg",
    "scenes": [
     "跑前",
     "髋腿"
    ],
-   "part": "髋前侧 / 大腿",
-   "gear": "徒手",
+   "part": "髋 / 大腿",
+   "gear": "徒手,扶着墙、扶手或椅背",
    "steps": [
-    "右脚往前迈一大步,后脚跟抬起、后腿伸直。",
-    "前膝弯到脚踝正上方。",
-    "手臂往上举过头顶,肋骨不要往前顶。",
-    "换边。"
+    "站好,一只手扶住墙、扶手或椅背保持稳定。",
+    "被扶那侧之外的腿放松,前后自然地摆动。",
+    "幅度从小到大,不要用力甩到底。",
+    "换一边,再换成左右横摆。"
    ],
-   "cue": "跑前用这个把髋打开,比原地压腿有用。",
-   "avoid": "站不稳时先扶着墙做。",
+   "cue": "上半身保持直立,靠髋带动腿,不是靠腰甩;这是热身,不是拉伸,不用停在某个位置。",
+   "avoid": "髋关节置换过、摆动时腹股沟有牵扯痛的先问医生。",
    "risk": [
-    "膝"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-12.svg"
-   ]
-  },
-  {
-   "id": "warrior-one",
-   "zh": "战士一式",
-   "en": "Warrior One",
-   "src": "yoga",
-   "scenes": [
-    "跑前",
-    "髋腿"
-   ],
-   "part": "髋 / 腿 / 肩",
-   "gear": "徒手",
-   "steps": [
-    "一脚在前一脚在后,后脚往外转约 45 度,整个脚掌踩实。",
-    "髋部尽量转向正前方。",
-    "前膝弯曲,不要超过脚尖太多。",
-    "手臂往上伸,肩膀放松。"
-   ],
-   "cue": "后脚踩实是关键,踩不实就把步子收短一点。",
-   "avoid": "膝盖不适时把前膝弯的幅度收小。",
-   "risk": [
-    "膝"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-44.svg"
-   ]
-  },
-  {
-   "id": "warrior-two",
-   "zh": "战士二式",
-   "en": "Warrior Two",
-   "src": "yoga",
-   "scenes": [
-    "跑前",
-    "髋腿"
-   ],
-   "part": "髋 / 腿",
-   "gear": "徒手",
-   "steps": [
-    "双脚左右分开站大一点,前脚朝前、后脚朝侧。",
-    "前膝弯曲对准脚尖方向。",
-    "两臂向前后打开,与地面平行。",
-    "视线看向前手指尖,换边。"
-   ],
-   "cue": "前膝要和脚尖同一个方向,不要往内塌。",
-   "avoid": "髋或膝有旧伤时把两脚间距收小。",
-   "risk": [
-    "膝"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-45.svg"
-   ]
-  },
-  {
-   "id": "extended-side-angle",
-   "zh": "侧角伸展",
-   "en": "Extended Side Angle",
-   "src": "yoga",
-   "scenes": [
-    "跑前",
-    "腰背"
-   ],
-   "part": "侧腰 / 髋",
-   "gear": "徒手",
-   "steps": [
-    "从战士二式开始。",
-    "前臂搭在前腿大腿上,或者手撑在前脚内侧。",
-    "另一条手臂从耳边往斜上方伸出去。",
-    "感觉从后脚到指尖被拉成一条线,换边。"
-   ],
-   "cue": "不要把重量全压在前腿上,后脚要有存在感。",
-   "avoid": "颈部不适时不要抬头看上面那只手。",
-   "risk": [
-    "膝",
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-18.svg"
-   ]
-  },
-  {
-   "id": "reverse-warrior",
-   "zh": "反战士式",
-   "en": "Reverse Warrior",
-   "src": "yoga",
-   "scenes": [
-    "跑前",
-    "腰背"
-   ],
-   "part": "侧腰",
-   "gear": "徒手",
-   "steps": [
-    "从战士二式开始,前膝保持弯曲。",
-    "前手往上往后翻,后手轻轻滑到后腿上。",
-    "侧腰拉开,不要往后仰腰。",
-    "换边。"
-   ],
-   "cue": "拉的是侧面,不是后腰;腰有感觉就说明弯错方向了。",
-   "avoid": "腰椎不适的把幅度收到很小。",
-   "risk": [
-    "膝",
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-29.svg"
-   ]
-  },
-  {
-   "id": "triangle",
-   "zh": "三角式",
-   "en": "Triangle",
-   "src": "yoga",
-   "scenes": [
-    "跑前",
-    "髋腿"
-   ],
-   "part": "大腿后侧 / 侧腰",
-   "gear": "徒手",
-   "steps": [
-    "双脚左右分开,前脚朝前、后脚朝侧,两腿都伸直。",
-    "身体往前腿方向侧倒,不要往前弯。",
-    "前手放在小腿、脚踝或者一块砖上,后手往上伸。",
-    "换边。"
-   ],
-   "cue": "手放多低不重要,身体在一个平面里才重要。",
-   "avoid": "腘绳肌拉伤、腰痛发作时不要做。",
-   "risk": [
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-42.svg"
-   ]
-  },
-  {
-   "id": "chair",
-   "zh": "幻椅式（静蹲）",
-   "en": "Chair",
-   "src": "yoga",
-   "scenes": [
-    "跑前",
-    "力量"
-   ],
-   "part": "大腿 / 臀",
-   "gear": "徒手",
-   "steps": [
-    "双脚与髋同宽站好。",
-    "屁股往后往下坐,像要坐一把看不见的椅子。",
-    "膝盖不要往前顶太多,重量放在脚跟上。",
-    "手臂往前或往上伸,腿开始抖就起来。"
-   ],
-   "cue": "腿在抖是正常的,腰开始代偿就该停。",
-   "avoid": "膝盖疼痛时把下蹲幅度收到很小。",
-   "risk": [
-    "膝"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-9.svg"
-   ]
-  },
-  {
-   "id": "tree",
-   "zh": "树式（平衡）",
-   "en": "Tree",
-   "src": "yoga",
-   "scenes": [
-    "平衡"
-   ],
-   "part": "脚踝 / 髋 / 核心",
-   "gear": "徒手,建议旁边有扶手",
-   "steps": [
-    "站直,重心移到左脚。",
-    "右脚掌贴在左小腿内侧或大腿内侧,不要压在膝盖上。",
-    "双手合十在胸前,眼睛看一个不动的点。",
-    "换边。"
-   ],
-   "cue": "站不稳就脚尖点地做,或者扶着墙——这不算失败。",
-   "avoid": "有跌倒史、头晕的一定扶着东西做。",
-   "risk": [
-    "踝",
     "髋"
    ],
    "floor": false,
    "files": [
-    "yoga-41.svg"
+    "wg-leg-swings-stretch-1.svg",
+    "wg-leg-swings-stretch-2.svg",
+    "wg-leg-swings-stretch-3.svg"
    ]
   },
   {
-   "id": "downward-dog",
-   "zh": "下犬式",
-   "en": "Downward-Facing Dog",
-   "src": "yoga",
+   "id": "high-knees",
+   "zh": "原地高抬腿",
+   "en": "High Knees",
+   "src": "wg",
    "scenes": [
-    "跑后",
-    "腰背"
+    "跑前"
    ],
-   "part": "肩 / 大腿后侧 / 小腿",
+   "part": "髋屈肌 / 小腿",
+   "gear": "徒手,站着做",
+   "steps": [
+    "原地站好,两臂自然屈肘在身体两侧。",
+    "交替把膝盖往上抬,抬到大腿差不多与地面平行。",
+    "落地用前脚掌,轻一点,不要砸地。",
+    "节奏由慢到快,呼吸别憋着。"
+   ],
+   "cue": "身体保持直立,不要为了抬高而后仰;膝盖抬不高就降低高度,轻落地更重要。",
+   "avoid": "膝或踝有伤、跳起来就疼的别做;楼下有人的时候换个动作。",
+   "risk": [
+    "膝",
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-high-knees-1.svg",
+    "wg-high-knees-2.svg",
+    "wg-high-knees-3.svg"
+   ]
+  },
+  {
+   "id": "inchworm",
+   "zh": "毛毛虫爬行",
+   "en": "Inchworm",
+   "src": "wg",
+   "scenes": [
+    "跑前",
+    "跑后"
+   ],
+   "part": "大腿后侧 / 核心 / 肩",
    "gear": "徒手",
    "steps": [
-    "从四点跪姿开始,脚趾踩地。",
-    "把屁股往上往后推,身体成一个倒 V。",
-    "膝盖可以弯着,先让背伸长。",
-    "两只脚跟轮流往下踩,感觉小腿被交替拉开。"
+    "站直,慢慢往前弯腰,双手撑到脚前的地面上,膝盖可以微弯。",
+    "两只手交替往前爬,一直爬到接近平板支撑的位置。",
+    "停一下,再让两只脚小步往手的方向走回来。",
+    "慢慢起身站直。"
    ],
-   "cue": "背拉直比脚跟落地重要,弯着膝盖完全可以。",
-   "avoid": "手腕、肩膀有伤,或者血压问题不宜低头位的不要做。",
+   "cue": "爬到平板那一下腰不要塌;腘绳肌紧的话膝盖多弯一点,别硬压。",
+   "avoid": "手腕、肩膀承重就疼的别做;血压问题头晕的人起身要慢。",
    "risk": [
     "腕",
-    "肩"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-15.svg"
-   ]
-  },
-  {
-   "id": "upward-dog",
-   "zh": "上犬式",
-   "en": "Upward-Facing Dog",
-   "src": "yoga",
-   "scenes": [
-    "腰背"
-   ],
-   "part": "胸前 / 腹前侧",
-   "gear": "徒手",
-   "steps": [
-    "趴好,手掌放在肋骨两侧。",
-    "推地把胸口抬起来,大腿离地。",
-    "肩膀往下沉,不要缩到耳朵边。",
-    "脖子保持自然延长,不要猛仰头。"
-   ],
-   "cue": "久坐圆肩之后打开胸口用这个,但幅度要循序。",
-   "avoid": "腰后仰就疼、孕期、腕伤的换成斯芬克斯式。",
-   "risk": [
-    "腰",
-    "腕"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-43.svg"
-   ]
-  },
-  {
-   "id": "forward-bend-shoulder",
-   "zh": "前屈开肩",
-   "en": "Forward Bend with Shoulder Opener",
-   "src": "yoga",
-   "scenes": [
-    "颈肩",
-    "腰背"
-   ],
-   "part": "肩前侧 / 大腿后侧",
-   "gear": "徒手",
-   "steps": [
-    "站直,两手在身后十指交扣。",
-    "膝盖微弯,从髋部往前折。",
-    "手臂朝头顶方向自然落下去,不用硬掰。",
-    "起身慢一点。"
-   ],
-   "cue": "肩前侧的拉伸感来自手臂往上落,不是来自弯得更低。",
-   "avoid": "肩关节不稳、血压问题不宜低头位的不要做。",
-   "risk": [
     "肩",
     "腰"
    ],
    "floor": false,
    "files": [
-    "yoga-20.svg"
+    "wg-inchworm-1.svg",
+    "wg-inchworm-2.svg",
+    "wg-inchworm-3.svg"
    ]
   },
   {
-   "id": "bridge",
-   "zh": "桥式（瑜伽）",
-   "en": "Bridge",
-   "src": "yoga",
+   "id": "worlds-greatest",
+   "zh": "弓步转体拉伸",
+   "en": "World's Greatest Stretch",
+   "src": "wg",
    "scenes": [
-    "腰背",
-    "睡前"
+    "跑前",
+    "髋腿"
    ],
-   "part": "臀 / 胸前",
-   "gear": "需要躺下",
+   "part": "髋前侧 / 胸椎 / 大腿后侧",
+   "gear": "徒手,需要到地上",
    "steps": [
-    "躺好,屈膝,双脚与髋同宽踩地,脚跟靠近臀部。",
-    "脚掌推地,把髋一点点抬起来。",
-    "肩膀往下压地,胸口往下巴方向靠。",
-    "落下来的时候一节一节放回去。"
+    "迈一大步成弓步,后腿伸直,两只手撑在前脚内侧的地面上。",
+    "髋往下沉,感受后腿那侧的髋前打开。",
+    "把靠内侧的那只手往上打开,眼睛跟着手转,胸口朝向侧上方。",
+    "手放回地面,换另一边。"
    ],
-   "cue": "抬多高不重要,臀部有在发力才重要。",
-   "avoid": "颈部不适时不要在抬起状态转头。",
+   "cue": "这个动作一次做了髋、胸椎和大腿后侧三件事,所以更要慢;转不动就少转一点。",
+   "avoid": "膝盖跪地疼可以垫东西;腰或髋有伤的先问康复师。",
    "risk": [
-    "颈",
+    "髋",
+    "膝",
     "腰"
    ],
    "floor": true,
    "files": [
-    "yoga-4.svg"
+    "wg-worlds-greatest-stretch-1.svg",
+    "wg-worlds-greatest-stretch-2.svg",
+    "wg-worlds-greatest-stretch-3.svg"
    ]
   },
   {
-   "id": "glute-bridge",
-   "zh": "臀桥（力量版）",
-   "en": "Bridging",
-   "src": "ek",
+   "id": "forward-lunge",
+   "zh": "前弓步",
+   "en": "Forward Lunge",
+   "src": "wg",
    "scenes": [
     "力量",
-    "腰背"
+    "髋腿",
+    "跑前"
    ],
-   "part": "臀 / 后链",
-   "gear": "需要躺下",
+   "part": "大腿 / 臀",
+   "gear": "徒手,站着做",
    "steps": [
-    "躺好屈膝,双脚踩实,手臂放身体两侧。",
-    "夹紧臀部把髋顶起来,身体从肩到膝成一条斜线。",
-    "顶到最高处停一下,不要用腰去顶。",
-    "慢慢落回来,做到臀部发酸就休息。"
+    "站直,一条腿向前迈一大步。",
+    "身体垂直下沉,前腿膝盖大致在脚踝正上方,后腿膝盖接近地面。",
+    "前脚掌用力把身体推回起点。",
+    "换另一条腿。"
    ],
-   "cue": "腰先酸说明是腰在干活,把幅度收小、更用力夹臀。",
-   "avoid": "腰部急性疼痛时不要做。",
+   "cue": "是往下沉不是往前扑;前膝不要冲过脚尖太多,重心放在前脚的整个脚掌上。",
+   "avoid": "膝盖有伤、下蹲就疼的别做,可以改成靠墙静蹲。",
    "risk": [
-    "腰"
+    "膝",
+    "髋"
    ],
-   "floor": true,
+   "floor": false,
    "files": [
-    "ek-0109-tension.svg",
-    "ek-0109-relaxation.svg"
+    "wg-forward-lunge-1.svg",
+    "wg-forward-lunge-2.svg",
+    "wg-forward-lunge-3.svg"
    ]
   },
   {
-   "id": "corpse",
-   "zh": "仰卧放松（挺尸式）",
-   "en": "Corpse",
-   "src": "yoga",
+   "id": "butterfly",
+   "zh": "蝴蝶式（内收肌）",
+   "en": "Butterfly Stretch",
+   "src": "wg",
    "scenes": [
+    "髋腿",
     "睡前"
    ],
-   "part": "全身",
-   "gear": "需要躺下",
+   "part": "大腿内侧 / 髋",
+   "gear": "徒手,坐着做",
    "steps": [
-    "平躺,两腿自然分开,脚尖向外倒。",
-    "手臂放在身体两侧,掌心朝上。",
-    "闭上眼睛,把注意力放在呼吸上。",
-    "从脚到头,一处一处让它松下来。"
+    "坐好,两脚掌相对,脚跟往身体方向收一点。",
+    "手扶着脚,背立直。",
+    "膝盖自然往两边打开,不要用手往下压。",
+    "想加深就把上半身从髋部往前送一点。"
    ],
-   "cue": "睡前那一下不需要做动作,需要的是这个。",
-   "avoid": "腰下面不舒服的在膝盖下垫个枕头。",
-   "risk": [],
+   "cue": "膝盖离地高一点完全没关系,别去比谁贴得下去。",
+   "avoid": "髋关节置换过的、腹股沟拉伤没好的不要做。",
+   "risk": [
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-butterfly-stretch-1.svg",
+    "wg-butterfly-stretch-2.svg",
+    "wg-butterfly-stretch-3.svg"
+   ]
+  },
+  {
+   "id": "seated-forward-bend",
+   "zh": "坐姿前屈（腘绳肌）",
+   "en": "Seated Forward Fold",
+   "src": "wg",
+   "scenes": [
+    "髋腿",
+    "跑后",
+    "睡前"
+   ],
+   "part": "大腿后侧 / 下背",
+   "gear": "徒手,坐着做",
+   "steps": [
+    "坐直,两腿往前伸直,脚尖朝上。",
+    "吸气把背拉长,呼气从髋部往前折。",
+    "手放到能舒服够到的位置,小腿、脚踝、脚都行。",
+    "背不要拱成一个圆,宁可弯得少一点。"
+   ],
+   "cue": "膝盖可以微微弯,弯着膝盖拉到的才是大腿后侧。",
+   "avoid": "下背一弯就疼的改成躺着用毛巾勾脚拉。",
+   "risk": [
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-seated-forward-fold-stretch-1.svg",
+    "wg-seated-forward-fold-stretch-2.svg",
+    "wg-seated-forward-fold-stretch-3.svg"
+   ]
+  },
+  {
+   "id": "hamstring-stretch",
+   "zh": "站姿腘绳肌拉伸",
+   "en": "Hamstring Stretch",
+   "src": "wg",
+   "scenes": [
+    "髋腿",
+    "跑后"
+   ],
+   "part": "大腿后侧",
+   "gear": "需要一个台阶、矮凳或稳固的支撑物",
+   "steps": [
+    "找一个台阶或矮凳,把一只脚跟搭上去,脚尖朝上。",
+    "两条腿都保持伸直但不锁死,骨盆摆正朝前。",
+    "从髋部开始把身体往前折,背保持直的,大腿后侧有拉开的感觉就停。",
+    "换另一条腿。"
+   ],
+   "cue": "弯的是髋不是腰,背一拱就变成拉后背了;搭的位置越低越轻,不舒服就放低。",
+   "avoid": "坐骨神经痛发作、拉的时候有放射性麻痛的先问医生。",
+   "risk": [
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-hamstring-stretch-1.svg",
+    "wg-hamstring-stretch-2.svg",
+    "wg-hamstring-stretch-3.svg"
+   ]
+  },
+  {
+   "id": "standing-quad",
+   "zh": "站姿股四头肌拉伸",
+   "en": "Standing Quad Stretch",
+   "src": "wg",
+   "scenes": [
+    "跑后",
+    "髋腿",
+    "平衡"
+   ],
+   "part": "大腿前侧 / 髋前侧",
+   "gear": "徒手,可以扶墙",
+   "steps": [
+    "站直,一只手扶墙或椅背保持稳定。",
+    "另一只手抓住同侧脚踝,把脚跟往臀部方向带。",
+    "两个膝盖并拢,骨盆稍微收一点,大腿前侧有拉开的感觉就停。",
+    "换另一条腿。"
+   ],
+   "cue": "腰不要往前顶,那样拉的是腰不是大腿;抓不到脚踝可以用毛巾套住脚背。",
+   "avoid": "膝盖弯到底就疼的别做,改成弓步下沉的方式拉髋前侧。",
+   "risk": [
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-standing-quad-stretch-1.svg",
+    "wg-standing-quad-stretch-2.svg",
+    "wg-standing-quad-stretch-3.svg"
+   ]
+  },
+  {
+   "id": "wall-calf",
+   "zh": "靠墙小腿拉伸",
+   "en": "Wall Calf Stretch",
+   "src": "wg",
+   "scenes": [
+    "跑后",
+    "髋腿"
+   ],
+   "part": "小腿 / 跟腱",
+   "gear": "一面墙",
+   "steps": [
+    "面对墙站立,两手扶墙。",
+    "一条腿往后撤一大步,脚跟踩实地面,脚尖朝前。",
+    "前腿慢慢屈膝,身体往墙的方向送,后腿小腿有拉开的感觉就停。",
+    "再把后腿膝盖微微弯一点,拉到更深的那一层,然后换边。"
+   ],
+   "cue": "后脚跟不能离地,一离地这个动作就白做了;脚尖要朝正前方,不要外八。",
+   "avoid": "跟腱有伤、踩地就疼的先问医生。",
+   "risk": [
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-wall-calf-stretch-1.svg",
+    "wg-wall-calf-stretch-2.svg",
+    "wg-wall-calf-stretch-3.svg"
+   ]
+  },
+  {
+   "id": "clamshell",
+   "zh": "蚌式开合",
+   "en": "Clamshell",
+   "src": "wg",
+   "scenes": [
+    "髋腿",
+    "力量"
+   ],
+   "part": "臀中肌 / 髋外侧",
+   "gear": "徒手,需要侧躺(图上那条弹力带没有也一样做)",
+   "steps": [
+    "侧躺,两腿屈膝叠在一起,头枕在下面那条手臂上。",
+    "两只脚保持贴着,把上面那个膝盖像开蚌壳一样打开。",
+    "开到臀外侧发力就够了,骨盆不要跟着往后翻。",
+    "慢慢合上,做完换另一侧。"
+   ],
+   "cue": "骨盆保持稳定是关键;身体一往后倒就变成腰在使劲了。",
+   "avoid": "髋关节置换过的先问医生。",
+   "risk": [
+    "髋"
+   ],
    "floor": true,
    "files": [
-    "yoga-11.svg"
+    "wg-clamshell-1.svg",
+    "wg-clamshell-2.svg",
+    "wg-clamshell-3.svg"
+   ]
+  },
+  {
+   "id": "single-leg-calf-raise",
+   "zh": "单腿提踵（平衡）",
+   "en": "Single-Leg Calf Raise",
+   "src": "wg",
+   "scenes": [
+    "平衡",
+    "髋腿"
+   ],
+   "part": "小腿 / 踝 / 平衡",
+   "gear": "徒手,扶着稳固的东西",
+   "steps": [
+    "单腿站立,另一条腿屈膝抬起来,手先扶住桌沿、扶手或墙面。",
+    "慢慢踮起脚跟,到最高处停一下。",
+    "再慢慢落下,全程控制着,不要砸下去。",
+    "站得稳了可以试着松开手,换另一条腿。"
+   ],
+   "cue": "慢慢落下那一段比踮起来更重要;晃是正常的,扶着做同样有效。",
+   "avoid": "踝关节扭伤没好、站着就疼的别做;容易头晕的人一定要扶着。",
+   "risk": [
+    "踝",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-single-leg-calf-raise-1.svg",
+    "wg-single-leg-calf-raise-2.svg",
+    "wg-single-leg-calf-raise-3.svg"
+   ]
+  },
+  {
+   "id": "hip-airplane",
+   "zh": "单腿转髋（平衡）",
+   "en": "Hip Airplane",
+   "src": "wg",
+   "scenes": [
+    "平衡",
+    "髋腿"
+   ],
+   "part": "臀 / 髋 / 平衡",
+   "gear": "徒手,扶着墙或椅背",
+   "steps": [
+    "单腿站立,身体前倾,另一条腿往后伸,像一架飞机。",
+    "一只手扶墙保持稳定,支撑腿膝盖微弯。",
+    "慢慢把骨盆向内转,再向外转,上半身跟着一起动。",
+    "换另一条腿。"
+   ],
+   "cue": "转的是骨盆不是腰;站不稳就把后腿放低一点,或者两只手都扶着。",
+   "avoid": "这个动作难度不低,平衡不好、膝或髋有伤的先做单腿提踵。",
+   "risk": [
+    "髋",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-hip-airplane-1.svg",
+    "wg-hip-airplane-2.svg",
+    "wg-hip-airplane-3.svg"
+   ]
+  },
+  {
+   "id": "calf-raise",
+   "zh": "提踵",
+   "en": "Calf Raise",
+   "src": "wg",
+   "scenes": [
+    "力量",
+    "办公室",
+    "跑后"
+   ],
+   "part": "小腿",
+   "gear": "徒手,扶着桌沿或扶手",
+   "steps": [
+    "两脚与髋同宽站好,一只手扶住桌沿或扶手。",
+    "慢慢踮起脚跟,到最高处停一下。",
+    "再慢慢落回地面。",
+    "整个过程膝盖保持伸直但不锁死。"
+   ],
+   "cue": "久坐之后做这个最舒服;落下那一段慢一点,小腿才真正在工作。",
+   "avoid": "跟腱疼、踝关节肿的时候别做。",
+   "risk": [
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-calf-raise-1.svg",
+    "wg-calf-raise-2.svg",
+    "wg-calf-raise-3.svg"
    ]
   },
   {
    "id": "plank",
    "zh": "平板支撑",
    "en": "Plank",
-   "src": "yoga",
+   "src": "wg",
    "scenes": [
     "核心",
     "力量"
@@ -990,14 +1024,16 @@
    ],
    "floor": false,
    "files": [
-    "yoga-26.svg"
+    "wg-plank-1.svg",
+    "wg-plank-2.svg",
+    "wg-plank-3.svg"
    ]
   },
   {
    "id": "side-plank",
    "zh": "侧平板支撑",
    "en": "Side Plank",
-   "src": "yoga",
+   "src": "wg",
    "scenes": [
     "核心",
     "力量"
@@ -1018,92 +1054,16 @@
    ],
    "floor": false,
    "files": [
-    "yoga-34.svg"
-   ]
-  },
-  {
-   "id": "boat",
-   "zh": "船式（核心）",
-   "en": "Boat",
-   "src": "yoga",
-   "scenes": [
-    "核心"
-   ],
-   "part": "腹部 / 髋屈肌",
-   "gear": "徒手,坐着做",
-   "steps": [
-    "坐好屈膝,双手抓小腿后侧。",
-    "身体稍微后倾,把脚抬离地面,小腿与地面平行。",
-    "背保持挺直,不要驼着。",
-    "行有余力再把手松开往前伸。"
-   ],
-   "cue": "背一驼就没有在练腹部了,宁可脚放低一点。",
-   "avoid": "尾骨、下背不适时不要做。",
-   "risk": [
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-1.svg"
-   ]
-  },
-  {
-   "id": "half-boat",
-   "zh": "半船式",
-   "en": "Half Boat",
-   "src": "yoga",
-   "scenes": [
-    "核心"
-   ],
-   "part": "腹部",
-   "gear": "徒手,坐着做",
-   "steps": [
-    "从船式开始,两腿慢慢往前伸直一些,身体往后放低一点。",
-    "腰不要拱起来离地。",
-    "手臂往前平伸。",
-    "撑不住就回到船式。"
-   ],
-   "cue": "这是船式的进阶,先把船式做稳再来。",
-   "avoid": "腰部有伤不要做。",
-   "risk": [
-    "腰"
-   ],
-   "floor": false,
-   "files": [
-    "yoga-2.svg"
-   ]
-  },
-  {
-   "id": "abdominal-draw-in",
-   "zh": "腹部收紧（呼吸练习）",
-   "en": "Stationary Abdominal Draw In",
-   "src": "ek",
-   "scenes": [
-    "核心",
-    "腰背"
-   ],
-   "part": "深层腹肌",
-   "gear": "徒手,躺着或跪着都行",
-   "steps": [
-    "四点跪好或者平躺,背保持自然中立。",
-    "正常吸气。",
-    "呼气的时候把肚脐轻轻往脊柱方向收,像系紧一条腰带。",
-    "保持呼吸不要憋气,再慢慢放松。"
-   ],
-   "cue": "这是最不起眼但对腰最有用的一个,幅度小到别人看不出来。",
-   "avoid": "几乎没有禁忌;疝气术后先问医生。",
-   "risk": [],
-   "floor": false,
-   "files": [
-    "ek-0027-tension.svg",
-    "ek-0027-relaxation.svg"
+    "wg-side-plank-1.svg",
+    "wg-side-plank-2.svg",
+    "wg-side-plank-3.svg"
    ]
   },
   {
    "id": "crunches",
    "zh": "卷腹",
-   "en": "Crunches",
-   "src": "ek",
+   "en": "Crunch",
+   "src": "wg",
    "scenes": [
     "核心",
     "力量"
@@ -1116,7 +1076,7 @@
     "不要用手把脖子往前拽。",
     "慢慢躺回去,做到动作变形就停。"
    ],
-   "cue": "脖子酸说明是脖子在发力,把下巴和胸口之间留一个拳头的距离。",
+   "cue": "脖子酸说明是脖子在发力,把下巴和胸口之间留一个拳头的距离。（图上把小腿搭在了矮凳上,平躺屈膝踩地做是一样的。）",
    "avoid": "颈椎不适的换成腹部收紧那一条。",
    "risk": [
     "颈",
@@ -1124,15 +1084,16 @@
    ],
    "floor": true,
    "files": [
-    "ek-0291-tension.svg",
-    "ek-0291-relaxation.svg"
+    "wg-crunch-1.svg",
+    "wg-crunch-2.svg",
+    "wg-crunch-3.svg"
    ]
   },
   {
    "id": "air-bike",
    "zh": "空中自行车",
-   "en": "Air Bike",
-   "src": "ek",
+   "en": "Bicycle Crunch",
+   "src": "wg",
    "scenes": [
     "核心"
    ],
@@ -1152,15 +1113,16 @@
    ],
    "floor": true,
    "files": [
-    "ek-0284-tension.svg",
-    "ek-0284-relaxation.svg"
+    "wg-bicycle-crunch-1.svg",
+    "wg-bicycle-crunch-2.svg",
+    "wg-bicycle-crunch-3.svg"
    ]
   },
   {
    "id": "bent-knee-hip-raise",
    "zh": "屈膝提髋（下腹）",
-   "en": "Bent Knee Hip Raise",
-   "src": "ek",
+   "en": "Reverse Crunch",
+   "src": "wg",
    "scenes": [
     "核心"
    ],
@@ -1179,43 +1141,163 @@
    ],
    "floor": true,
    "files": [
-    "ek-0287-tension.svg",
-    "ek-0287-relaxation.svg"
+    "wg-reverse-crunch-1.svg",
+    "wg-reverse-crunch-2.svg",
+    "wg-reverse-crunch-3.svg"
    ]
   },
   {
-   "id": "body-leg-lifts",
-   "zh": "俯卧后抬腿（臀）",
-   "en": "Body Leg Lifts",
-   "src": "ek",
+   "id": "seated-knee-tuck",
+   "zh": "坐姿收膝",
+   "en": "Seated Knee Tuck",
+   "src": "wg",
    "scenes": [
-    "力量",
-    "腰背"
+    "核心"
    ],
-   "part": "臀 / 下背",
-   "gear": "需要趴下",
+   "part": "下腹 / 髋屈肌",
+   "gear": "一把稳固的椅子或长凳",
    "steps": [
-    "趴好,额头枕在手背上。",
-    "一条腿伸直往上抬,幅度不用大。",
-    "抬的时候用臀部发力,骨盆不要跟着翻。",
-    "换腿。"
+    "坐在椅子前沿,两手抓住座面两侧。",
+    "上半身稍微后倾,两条腿并拢伸出去,脚跟不落地。",
+    "屈膝把腿往胸口方向收。",
+    "再慢慢伸回去,腰始终不要塌。"
    ],
-   "cue": "抬到腰开始代偿就已经过了,收小一点。",
-   "avoid": "腰部急性疼痛时不要做。",
+   "cue": "后倾越多越难;腰一塌就把腿收高一点,别硬撑。椅子必须是稳的,带轮子的不行。",
+   "avoid": "尾骨坐着疼、腰椎有伤的先问康复师。",
    "risk": [
     "腰"
    ],
+   "floor": false,
+   "files": [
+    "wg-seated-knee-tuck-1.svg",
+    "wg-seated-knee-tuck-2.svg",
+    "wg-seated-knee-tuck-3.svg"
+   ]
+  },
+  {
+   "id": "hollow-body",
+   "zh": "空心体支撑",
+   "en": "Hollow Body Hold",
+   "src": "wg",
+   "scenes": [
+    "核心"
+   ],
+   "part": "腹直肌 / 深层腹肌",
+   "gear": "徒手,需要躺下",
+   "steps": [
+    "仰卧,先把腰压实地面,不留缝隙。",
+    "两条腿并拢抬离地面一点,两臂在头顶方向伸出去。",
+    "保持腰贴地的前提下停住,呼吸不要憋。",
+    "撑不住之前就收回来,别等到腰拱起来。"
+   ],
+   "cue": "腰离地就说明手和腿放得太低了,把它们抬高一点难度反而降下来;腰贴地是唯一的标准。",
+   "avoid": "腰痛发作期别做;颈部不舒服时头可以枕着地面。",
+   "risk": [
+    "腰",
+    "颈"
+   ],
    "floor": true,
    "files": [
-    "ek-0111-tension.svg",
-    "ek-0111-relaxation.svg"
+    "wg-hollow-body-hold-1.svg",
+    "wg-hollow-body-hold-2.svg",
+    "wg-hollow-body-hold-3.svg"
+   ]
+  },
+  {
+   "id": "mountain-climber",
+   "zh": "登山跑",
+   "en": "Mountain Climber",
+   "src": "wg",
+   "scenes": [
+    "核心",
+    "力量"
+   ],
+   "part": "核心 / 髋屈肌 / 肩",
+   "gear": "徒手",
+   "steps": [
+    "摆成俯卧撑的支撑姿势,肩膀在手的正上方。",
+    "一条腿的膝盖往胸口方向收。",
+    "换另一条腿,像原地跑一样交替。",
+    "整个过程臀部不要拱起来,也不要塌下去。"
+   ],
+   "cue": "先慢慢地做,把腰稳住;快是后面的事,腰一晃就该慢下来。",
+   "avoid": "手腕承重疼、腰痛发作期别做。",
+   "risk": [
+    "腕",
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-mountain-climber-1.svg",
+    "wg-mountain-climber-2.svg",
+    "wg-mountain-climber-3.svg"
+   ]
+  },
+  {
+   "id": "wall-sit",
+   "zh": "靠墙静蹲",
+   "en": "Wall Sit",
+   "src": "wg",
+   "scenes": [
+    "力量",
+    "跑前"
+   ],
+   "part": "大腿 / 臀",
+   "gear": "一面墙",
+   "steps": [
+    "背贴墙站好,两脚往前挪开一段距离。",
+    "沿着墙慢慢往下滑,滑到大腿接近与地面平行。",
+    "膝盖大致在脚踝正上方,不要超过脚尖太多。",
+    "停住,呼吸保持顺畅,腿开始抖得厉害就站起来。"
+   ],
+   "cue": "蹲多深由膝盖说了算,不舒服就少蹲一点;整个背要贴着墙,腰不要拱出一个缝。",
+   "avoid": "膝盖有伤、蹲下就疼的别做。",
+   "risk": [
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-wall-sit-1.svg",
+    "wg-wall-sit-2.svg",
+    "wg-wall-sit-3.svg"
+   ]
+  },
+  {
+   "id": "bodyweight-squat",
+   "zh": "徒手深蹲",
+   "en": "Bodyweight Squat",
+   "src": "wg",
+   "scenes": [
+    "力量",
+    "髋腿"
+   ],
+   "part": "大腿 / 臀",
+   "gear": "徒手,站着做",
+   "steps": [
+    "两脚与肩同宽,脚尖略微向外。",
+    "臀部先往后坐,像要坐一把椅子,同时屈膝下蹲。",
+    "蹲到自己舒服的深度,背保持挺直不弓。",
+    "脚掌踩实地面把身体推起来。"
+   ],
+   "cue": "先往后坐再往下蹲,顺序反了就变成膝盖顶着往前;脚跟不要离地。",
+   "avoid": "膝或髋有伤、下蹲有卡顿感或疼痛的先问医生。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-bodyweight-squat-1.svg",
+    "wg-bodyweight-squat-2.svg",
+    "wg-bodyweight-squat-3.svg"
    ]
   },
   {
    "id": "push-ups",
    "zh": "俯卧撑",
-   "en": "Push Ups",
-   "src": "ek",
+   "en": "Push-up",
+   "src": "wg",
    "scenes": [
     "力量"
    ],
@@ -1235,15 +1317,16 @@
    ],
    "floor": false,
    "files": [
-    "ek-0077-tension.svg",
-    "ek-0077-relaxation.svg"
+    "wg-push-up-1.svg",
+    "wg-push-up-2.svg",
+    "wg-push-up-3.svg"
    ]
   },
   {
    "id": "close-triceps-pushup",
    "zh": "窄距俯卧撑（三头肌）",
-   "en": "Close Triceps Pushup",
-   "src": "ek",
+   "en": "Diamond Push-up",
+   "src": "wg",
    "scenes": [
     "力量"
    ],
@@ -1264,8 +1347,9 @@
    ],
    "floor": false,
    "files": [
-    "ek-0188-tension.svg",
-    "ek-0188-relaxation.svg"
+    "wg-diamond-push-up-1.svg",
+    "wg-diamond-push-up-2.svg",
+    "wg-diamond-push-up-3.svg"
    ]
   }
  ]

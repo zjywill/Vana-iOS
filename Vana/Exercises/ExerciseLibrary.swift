@@ -23,7 +23,10 @@ struct ExerciseMove: Codable, Identifiable, Equatable, Sendable {
     let risk: [String]
     /// 要不要到地上去(躺/跪/趴)。办公室、年纪大的用户、腰不好的人,这一条比部位还硬。
     let floor: Bool
-    /// 资源目录里的图名。两张时是同一动作的两态,卡片上交叉淡入。
+    /// 资源目录里的图名,按动作发生的先后排。多于一张时卡片上交叉淡入。
+    ///
+    /// **一张静图说不出方向。** 最早那一版里有 31 个动作只有一张彩色图标,用户的原话是
+    /// 「不是动作,我都看不懂」——所以现在库里没有单张的动作:`wg` 是三帧,`ek` 是两态。
     let files: [String]
 
     /// SVG 进的是 asset catalog,名字是去掉扩展名的文件名。
@@ -32,8 +35,14 @@ struct ExerciseMove: Codable, Identifiable, Equatable, Sendable {
 
 /// 打进 app 包里的那份动作库。
 ///
-/// **不联网、不按需下载。** 45 个动作连图不到 1MB,而下载要处理失败、要处理下到一半、
+/// **不联网、不按需下载。** 46 个动作连图 3.3MB,而下载要处理失败、要处理下到一半、
 /// 要在用户正等着看图的时候转圈——换来的只是一点包体积。同「照片在本机识别」那条线。
+///
+/// 图源两个,**都是 Everkinetic 那一脉的线稿**,所以混排不打架:`wg` 是
+/// bryllim/workout-guide(三帧、512 见方、单路径,导入时把 `fill="#fff"` 改成
+/// `#333`——原件是给深色底用的,照搬进来在白垫子上是一片空白);`ek` 是 everkinetic
+/// 原件的两态图,只留给 workout-guide 那 302 个动作里**没有**对应动作的那几条
+/// (颈部、踝、膝绕环、毛巾三头、腹部收紧——那份目录是健身房力量库,这几类整类都没有)。
 struct ExerciseLibrary: Sendable {
     let moves: [ExerciseMove]
     let scenes: [String]
@@ -42,11 +51,14 @@ struct ExerciseLibrary: Sendable {
 
     static let shared = ExerciseLibrary()
 
-    /// 出处与授权。`AboutView` 要逐条列出来——CC BY-SA 和 Flaticon 都要求署名,
-    /// 而声明和实际做的事对不上是这一整块唯一的失败模式。
+    /// 出处与授权。`AboutView` 要逐条列出来——CC BY-SA 要求保留出处,而声明和实际做的事
+    /// 对不上是这一整块唯一的失败模式。
+    ///
+    /// **改编者和原始来源都要署。** workout-guide 是 Bryl Lim 在 Everkinetic 上改的
+    /// (重新描线、补了两百多个新动作),CC BY-SA 的传递性要求两个名字都在。
     static let attributions: [String] = [
         "动作图示 · everkinetic/data(CC BY-SA 4.0)",
-        "动作图示 · Yoga icons created by dDara – Flaticon"
+        "动作图示 · bryllim/workout-guide,Bryl Lim(CC BY-SA 4.0,改编自 everkinetic/data)"
     ]
 
     init(bundle: Bundle = .main) {

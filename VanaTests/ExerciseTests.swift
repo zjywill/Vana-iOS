@@ -32,6 +32,17 @@ struct ExerciseTests {
         }
     }
 
+    /// **一张静图说不出方向。** 库里曾经有 31 个动作只有一张彩色图标,用户的原话是
+    /// 「不是动作,我都看不懂」——那正是这个功能最贵的一次失灵:图在、卡片在、步骤也在,
+    /// 屏幕上没有任何一处报错,只是那张图没有回答「我该往哪个方向动」。
+    /// 所以门槛不是「有图」,是**至少两帧**。
+    @Test("每个动作至少两帧,不许有单张的")
+    func everyMoveShowsMotion() {
+        for move in library.moves {
+            #expect(move.files.count >= 2, "\(move.id) 只有一张图,说不出动作方向")
+        }
+    }
+
     /// 每条都要有「什么情况别做」。这是卡片上唯一一句可能拦住伤害的话。
     @Test("每个动作都有步骤、要领和禁忌")
     func everyMoveIsComplete() {
@@ -211,13 +222,17 @@ struct ExerciseTests {
         #expect(text.contains("不要给次数、组数"))
     }
 
-    /// 署名是授权要求,不是礼貌:CC BY-SA 和 Flaticon 都明写要保留出处,而少了那一行
-    /// 是静默的——没人会点进「关于」发现它不见了。
+    /// 署名是授权要求,不是礼貌:CC BY-SA 明写要保留出处,而少了那一行是静默的
+    /// ——没人会点进「关于」发现它不见了。
+    ///
+    /// **改编者和原始来源两个名字都要在。** workout-guide 本身是 Everkinetic 的改编作品,
+    /// CC BY-SA 的传递性要求两级都署;只署一个是这条路上最容易犯的错。
     @Test("两个图源的署名都在")
     func attributionsAreListed() {
         let joined = ExerciseLibrary.attributions.joined()
         #expect(joined.contains("everkinetic"))
-        #expect(joined.contains("dDara"))
+        #expect(joined.contains("workout-guide"))
+        #expect(joined.contains("Bryl Lim"))
         #expect(joined.contains("CC BY-SA"))
     }
 
@@ -232,11 +247,11 @@ struct ExerciseTests {
             name: ExerciseTools.suggestToolName,
             input: #"{"scene":"颈肩"}"#,
             output: "…",
-            exerciseIDs: ["neck-side", "cat"]
+            exerciseIDs: ["neck-side", "cat-cow"]
         )
         let data = try JSONEncoder().encode(call)
         let decoded = try JSONDecoder().decode(ToolCallRecord.self, from: data)
-        #expect(decoded.exerciseIDs == ["neck-side", "cat"])
+        #expect(decoded.exerciseIDs == ["neck-side", "cat-cow"])
         #expect(decoded.report == nil)
 
         let metadata = call.metadataValue

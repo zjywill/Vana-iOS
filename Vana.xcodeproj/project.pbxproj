@@ -745,8 +745,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D3651E4931C6533973704B0F /* VanaTests */,
 				6FDAC064D3618A3C0D7671A7 /* Vana */,
+				D3651E4931C6533973704B0F /* VanaTests */,
 			);
 		};
 /* End PBXProject section */
