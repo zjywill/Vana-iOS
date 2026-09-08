@@ -18,8 +18,97 @@ struct ExerciseTests {
 
     @Test("库能从 app 包里载进来")
     func libraryLoads() {
-        #expect(library.moves.count >= 40)
+        #expect(library.moves.count >= 280)
         #expect(!library.scenes.isEmpty)
+    }
+
+    @Test("部位和器械都在声明过的那一组里")
+    func regionsAndEquipmentAreDeclared() {
+        let regions = Set(ExerciseTools.regions)
+        let kinds = Set(ExerciseTools.equipmentKinds)
+        for move in library.moves {
+            #expect(regions.contains(move.region), "\(move.id) 的部位不在名单里：\(move.region)")
+            #expect(kinds.contains(move.equipment), "\(move.id) 的器械不在名单里：\(move.equipment)")
+        }
+    }
+
+    /// **`equipment` 是硬过滤,所以它必须说的是「没有这个就做不了」。**
+    ///
+    /// 原始目录里 `Bodyweight` 的意思是「不加外部负重」,不是「不需要器材」——引体向上、
+    /// 双杠臂屈伸、山羊挺身在那份数据里全是 Bodyweight。照搬进来的话,一个在家问「练背」
+    /// 的人第一张卡就是引体向上,而他家里没有单杠。这条盯着那次翻译。
+    @Test("标成家里现成的动作，器材那行不许写着健身房的东西")
+    func householdMovesDoNotNeedAGym() throws {
+        let gym = try Regex(#"罗马椅|器械|龙门架|双杠|单杠|杠铃|哑铃|壶铃|绳索|瑜伽球"#)
+        let household = Set(ExerciseLibrary.householdEquipment)
+        for move in library.moves where household.contains(move.equipment) {
+            // 「图上那条弹力带没有也一样做」这类说明是在讲它**不需要**什么，放过。
+            guard !move.gear.contains("没有也") && !move.gear.contains("或背包") else { continue }
+            #expect(
+                try gym.firstMatch(in: move.gear) == nil,
+                "\(move.id) 标着「\(move.equipment)」，但器材写的是：\(move.gear)"
+            )
+        }
+    }
+
+    /// **不问他有什么的时候,给的必须是他多半有的东西。** 这个默认没有出处——用户从没说过
+    /// 「我只有徒手」,是 app 替他假设的,所以假设错了他也无从知道为什么这张卡他做不了。
+    @Test("不指定器械时，每个部位都还挑得到东西")
+    func everyRegionHasSomethingAtHome() {
+        for region in ExerciseTools.regions {
+            let picked = library.suggest(region: region)
+            #expect(!picked.isEmpty, "「\(region)」在家里什么都挑不到")
+            #expect(picked.allSatisfy {
+                ExerciseLibrary.householdEquipment.contains($0.equipment)
+            })
+            #expect(picked.allSatisfy { !$0.advanced })
+        }
+    }
+
+    /// 场合和部位是两把尺子,一把都不给不是「随便来三个」,是这次调用没说清要什么。
+    @Test("场合和部位都不给就什么都不返回")
+    func needsEitherASceneOrARegion() async {
+        #expect(library.suggest().isEmpty)
+        let result = await run("{}")
+        #expect(result.isError == false)
+        #expect(result.output.text.contains("至少要给一个"))
+        #expect(ExerciseSelection.decode(fromToolMetadata: result.output.metadata) == nil)
+    }
+
+    /// **他手边没有的东西,给了就是一张废卡。** 而且这张卡他还得自己看出来为什么没用。
+    @Test("器械是硬过滤，没有的东西一个都不出现")
+    func equipmentIsAHardFilter() {
+        let picked = library.suggest(region: "胸", equipment: ["哑铃"], limit: 4)
+        #expect(!picked.isEmpty)
+        #expect(picked.allSatisfy { $0.equipment == "哑铃" })
+
+        // 传了空数组是「他什么都没有」——那也还剩徒手，不是一个都不给。
+        let bare = library.suggest(region: "核心", equipment: [], limit: 4)
+        #expect(!bare.isEmpty)
+        #expect(bare.allSatisfy { $0.equipment == "徒手" })
+    }
+
+    /// 把 dragon flag 摆在「练核心」的第一张卡上,不是给他一个选择,是给他一次受伤的机会。
+    @Test("高难度动作默认不出现，说了要才给")
+    func advancedMovesAreOptIn() {
+        let normal = library.suggest(region: "核心", equipment: ["徒手"], limit: 4)
+        #expect(normal.allSatisfy { !$0.advanced })
+
+        let advanced = library.moves.filter { $0.advanced }
+        #expect(!advanced.isEmpty, "高难度的整条删掉了？真在练的人会发现这个库里没有他要的东西")
+    }
+
+    /// 挑不到时要说清是被哪一条挡住的——尤其是器械那一档,它有一个**用户从没说过的默认值**,
+    /// 不念回去的话那次落空在他看来毫无道理，而他其实只要补一句「我有哑铃」就有了。
+    @Test("挑不到时把当时的条件念回去")
+    func emptyTextExplainsWhatBlockedIt() {
+        let unspecified = ExerciseTools.emptyText(scene: "", region: "胸")
+        #expect(unspecified.contains("没有指定器械"))
+        #expect(unspecified.contains("徒手"))
+
+        let limited = ExerciseTools.emptyText(scene: "", region: "胸", equipment: ["哑铃"])
+        #expect(limited.contains("哑铃"))
+        #expect(!limited.contains("没有指定器械"))
     }
 
     /// **没有图的动作不进库。** 一条只有文字的卡片,正是模型不用这个库也能写出来的东西——
@@ -50,7 +139,9 @@ struct ExerciseTests {
             #expect(!move.steps.isEmpty, "\(move.id) 没有步骤")
             #expect(!move.cue.isEmpty, "\(move.id) 没有要领")
             #expect(!move.avoid.isEmpty, "\(move.id) 没有禁忌")
-            #expect(!move.scenes.isEmpty, "\(move.id) 没有场景")
+            // **场景可以是空的,部位不能。** 卧推不属于办公室、睡前、跑前任何一个场合——
+            // 硬给它安一个,模型问「在工位上做点什么」时就会挑到它。它靠部位被挑出来。
+            #expect(!move.region.isEmpty, "\(move.id) 没有部位")
         }
     }
 
@@ -90,11 +181,17 @@ struct ExerciseTests {
     ///
     /// 所以判据是**步骤或器材里提没提到趴、跪、躺、卧**。这五条曾经全标着 `false`:
     /// 平板支撑、侧平板、俯卧撑、窄距俯卧撑、登山跑。
+    ///
+    /// 同一句里点了名的支撑物(凳、椅、球、架、机、垫、台)放过:躺在卧推凳上不是到地上去。
+    /// **所以写步骤时那个支撑物必须写出来**——「躺好」和「躺到凳上」在这条判据下不是同一句话,
+    /// 而后者对读卡片的人也更清楚。
     @Test("步骤里要趴要跪要躺的,floor 必须是 true")
     func floorFlagMatchesTheSteps() throws {
         let onTheGround = try Regex(#"[趴跪躺卧]"#)
+        let onSomething = try Regex(#"[凳椅球架机垫台]"#)
         for move in library.moves where !move.floor {
             for line in move.steps + [move.gear] {
+                guard try onSomething.firstMatch(in: line) == nil else { continue }
                 #expect(
                     try onTheGround.firstMatch(in: line) == nil,
                     "\(move.id) 要到地上去,但 floor 标着 false：\(line)"

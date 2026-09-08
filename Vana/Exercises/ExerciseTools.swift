@@ -34,6 +34,20 @@ enum ExerciseTools {
     /// 可以被排除的关节。用户说过哪儿不好,带那个关节的整组根本不返回。
     static let joints = ["颈", "肩", "肘", "腕", "腰", "髋", "膝", "踝"]
 
+    /// 按部位挑时的闭集。**和场景是两把尺子**:「在工位上能做点什么」问的是场合,
+    /// 「练胸」问的是部位,合成一个枚举的话模型每次都要在两类东西里挑一个,而它们
+    /// 根本不互斥。
+    static let regions = [
+        "胸", "背", "肩", "手臂", "核心", "腰背", "臀", "腿", "小腿", "髋", "拉伸"
+    ]
+
+    /// 用户手边可能有什么。**这是硬过滤**:没说的时候只给
+    /// `ExerciseLibrary.householdEquipment` 那几样。
+    static let equipmentKinds = [
+        "徒手", "墙", "门框", "毛巾", "椅子", "长凳", "箱子",
+        "哑铃", "杠铃", "杠铃片", "壶铃", "弹力带", "绳索", "器械", "单杠", "瑜伽球"
+    ]
+
     static func registry(library: ExerciseLibrary = .shared) -> CapabilityRegistry {
         CapabilityRegistry(definitions: [suggestDefinition(library: library)]) { invocation in
             guard invocation.name == suggestToolName else {
@@ -51,8 +65,35 @@ enum ExerciseTools {
     private static func suggestDefinition(library: ExerciseLibrary) -> CapabilityDefinition {
         let scene: RuntimeJSONValue = .object([
             "type": "string",
-            "description": "从哪一类里挑",
+            "description": .string(
+                "什么场合，比如他在工位上、睡前、跑步之前。"
+                    + "和 part 至少给一个；「跑完拉一下腿」这种两个都给"
+            ),
             "enum": .array(library.scenes.map(RuntimeJSONValue.string))
+        ])
+        let part: RuntimeJSONValue = .object([
+            "type": "string",
+            "description": "练哪儿。他说「练胸」「练腿」时用这个，和 scene 至少给一个",
+            "enum": .array(regions.map(RuntimeJSONValue.string))
+        ])
+        let equipment: RuntimeJSONValue = .object([
+            "type": "array",
+            "description": .string(
+                "他手边有什么。**不确定就别传**——不传时只给徒手和家里现成的东西"
+                    + "（墙、门框、毛巾、椅子）。他说了在健身房、或者说了有哑铃有弹力带，"
+                    + "才把对应的几样列进来。列了他没有的，换回来的是一张他做不了的卡"
+            ),
+            "items": .object([
+                "type": "string",
+                "enum": .array(equipmentKinds.map(RuntimeJSONValue.string))
+            ])
+        ])
+        let advanced: RuntimeJSONValue = .object([
+            "type": "boolean",
+            "description": .string(
+                "他明确说了想练难一点的、或者说了自己一直在健身，才传 true。"
+                    + "默认不给单腿深蹲、倒立俯卧撑这一类需要基础的动作"
+            )
         ])
         let excludeJoint: RuntimeJSONValue = .object([
             "type": "array",
@@ -79,11 +120,17 @@ enum ExerciseTools {
             "type": "object",
             "properties": .object([
                 "scene": scene,
+                "part": part,
+                "equipment": equipment,
+                "advanced": advanced,
                 "excludeJoint": excludeJoint,
                 "noFloor": noFloor,
                 "count": count
             ]),
-            "required": .array([.string("scene")]),
+            // scene 和 part 都不是必填,但**至少要有一个**——这一条 JSON Schema 表达不了
+            // (anyOf 在几家 provider 的 strict 模式下都不保证支持),所以写在两处的
+            // description 里,执行那一侧再兜一道:两个都空时照实说这次没说清要什么。
+            "required": .array([]),
             "additionalProperties": .bool(false)
         ])
 
@@ -109,14 +156,23 @@ enum ExerciseTools {
     ) -> CapabilityExecutionResult {
         let input = try? RuntimeJSONValue.decode(from: invocation.input)
         let scene = input?["scene"]?.stringValue ?? ""
+        let region = input?["part"]?.stringValue ?? ""
         let excluded = input?["excludeJoint"]?.arrayValue?.compactMap(\.stringValue) ?? []
         let noFloor = input?["noFloor"]?.boolValue ?? false
+        let advanced = input?["advanced"]?.boolValue ?? false
+        // **没传和传了空数组是两回事。** 没传是「不知道他有什么」,走家里现成的那几样;
+        // 传了空数组是模型明确说了「什么都没有」,那就只剩徒手。分不开的话,一次
+        // `"equipment": []` 会被当成没问过,照样给他一张椅子上的动作。
+        let equipment = input?["equipment"]?.arrayValue.map { $0.compactMap(\.stringValue) }
         let count = input?["count"]?.intValue ?? 3
 
         let picked = library.suggest(
             scene: scene,
+            region: region,
             excludeJoints: excluded,
             avoidsFloor: noFloor,
+            equipment: equipment,
+            includesAdvanced: advanced,
             limit: count
         )
 
@@ -124,7 +180,12 @@ enum ExerciseTools {
         // 模型会以为工具坏了,换个说法再调一次,白花一轮。
         guard !picked.isEmpty else {
             return CapabilityExecutionResult(
-                output: .init(kind: .text, text: emptyText(scene: scene, excluded: excluded))
+                output: .init(kind: .text, text: emptyText(
+                    scene: scene,
+                    region: region,
+                    excluded: excluded,
+                    equipment: equipment
+                ))
             )
         }
 
@@ -139,12 +200,37 @@ enum ExerciseTools {
         )
     }
 
-    static func emptyText(scene: String, excluded: [String]) -> String {
-        var text = "动作库里「\(scene)」这一类"
-        if excluded.isEmpty {
-            text += "暂时没有可推荐的动作。"
+    /// 挑不到时说给模型听的那一段。
+    ///
+    /// **要说清是被哪一条挡住的。** 「没有可推荐的动作」是一句死路:模型只能原样转告,
+    /// 而用户其实只要补一句「我有哑铃」就能拿到一整组。所以把当时的条件念回去——
+    /// 器械那一档尤其要念,因为它有一个**用户从没说过的默认值**(不传就只给徒手和家里
+    /// 现成的),不念的话那次落空在他看来毫无道理。
+    static func emptyText(
+        scene: String,
+        region: String = "",
+        excluded: [String] = [],
+        equipment: [String]? = nil
+    ) -> String {
+        let asked = [scene.isEmpty ? nil : "「\(scene)」", region.isEmpty ? nil : "「\(region)」"]
+            .compactMap { $0 }
+            .joined(separator: "、")
+        guard !asked.isEmpty else {
+            return "这次调用没说要什么：scene（什么场合）和 part（练哪儿）至少要给一个。"
+                + "重新调一次，别自己编一个动作出来。"
+        }
+
+        var text = "动作库里 \(asked) 这一类"
+        if !excluded.isEmpty {
+            text += "，避开\(excluded.joined(separator: "、"))之后"
+        }
+        text += "没有可推荐的动作。"
+        if let equipment {
+            text += "这次限定了只用\(equipment.isEmpty ? "徒手" : equipment.joined(separator: "、"))。"
         } else {
-            text += "里，避开\(excluded.joined(separator: "、"))之后没有剩下可推荐的动作。"
+            text += "这次没有指定器械，所以只找了徒手和家里现成的东西"
+                + "（墙、门框、毛巾、椅子）能做的。他要是在健身房、或者手边有哑铃弹力带，"
+                + "问一句再调一次就有了。"
         }
         return text + "照实告诉用户这次没有能配图的动作，需要的话让他去问康复师或医生。不要自己编一个动作出来。"
     }

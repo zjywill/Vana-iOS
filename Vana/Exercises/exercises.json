@@ -53,7 +53,10 @@
    "files": [
     "ek-0001-tension.svg",
     "ek-0001-relaxation.svg"
-   ]
+   ],
+   "region": "肩",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "neck-side",
@@ -81,7 +84,10 @@
    "files": [
     "ek-0002-tension.svg",
     "ek-0002-relaxation.svg"
-   ]
+   ],
+   "region": "肩",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "shoulder-cross",
@@ -110,7 +116,10 @@
     "wg-cross-body-shoulder-stretch-1.svg",
     "wg-cross-body-shoulder-stretch-2.svg",
     "wg-cross-body-shoulder-stretch-3.svg"
-   ]
+   ],
+   "region": "肩",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "arm-circles",
@@ -140,7 +149,10 @@
     "wg-arm-circles-1.svg",
     "wg-arm-circles-2.svg",
     "wg-arm-circles-3.svg"
-   ]
+   ],
+   "region": "肩",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "triceps-towel",
@@ -168,7 +180,10 @@
    "files": [
     "ek-0202-tension.svg",
     "ek-0202-relaxation.svg"
-   ]
+   ],
+   "region": "手臂",
+   "equipment": "毛巾",
+   "advanced": false
   },
   {
    "id": "doorway-chest",
@@ -198,7 +213,10 @@
     "wg-doorway-chest-stretch-1.svg",
     "wg-doorway-chest-stretch-2.svg",
     "wg-doorway-chest-stretch-3.svg"
-   ]
+   ],
+   "region": "胸",
+   "equipment": "门框",
+   "advanced": false
   },
   {
    "id": "scapular-pushup",
@@ -228,7 +246,10 @@
     "wg-scapular-push-up-1.svg",
     "wg-scapular-push-up-2.svg",
     "wg-scapular-push-up-3.svg"
-   ]
+   ],
+   "region": "背",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "prone-y-raise",
@@ -258,7 +279,10 @@
     "wg-prone-y-raise-1.svg",
     "wg-prone-y-raise-2.svg",
     "wg-prone-y-raise-3.svg"
-   ]
+   ],
+   "region": "背",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "cat-cow",
@@ -289,7 +313,10 @@
     "wg-cat-cow-stretch-1.svg",
     "wg-cat-cow-stretch-2.svg",
     "wg-cat-cow-stretch-3.svg"
-   ]
+   ],
+   "region": "拉伸",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "childs-pose",
@@ -319,7 +346,10 @@
     "wg-childs-pose-1.svg",
     "wg-childs-pose-2.svg",
     "wg-childs-pose-3.svg"
-   ]
+   ],
+   "region": "背",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "abdominal-draw-in",
@@ -345,7 +375,10 @@
    "files": [
     "ek-0027-tension.svg",
     "ek-0027-relaxation.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "bird-dog",
@@ -375,7 +408,10 @@
     "wg-bird-dog-1.svg",
     "wg-bird-dog-2.svg",
     "wg-bird-dog-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "dead-bug",
@@ -404,7 +440,10 @@
     "wg-dead-bug-1.svg",
     "wg-dead-bug-2.svg",
     "wg-dead-bug-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "supermans",
@@ -433,7 +472,10 @@
     "wg-superman-hold-1.svg",
     "wg-superman-hold-2.svg",
     "wg-superman-hold-3.svg"
-   ]
+   ],
+   "region": "腰背",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "low-lunge",
@@ -463,7 +505,10 @@
     "wg-kneeling-hip-flexor-stretch-1.svg",
     "wg-kneeling-hip-flexor-stretch-2.svg",
     "wg-kneeling-hip-flexor-stretch-3.svg"
-   ]
+   ],
+   "region": "髋",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "glute-bridge",
@@ -493,7 +538,10 @@
     "wg-glute-bridge-1.svg",
     "wg-glute-bridge-2.svg",
     "wg-glute-bridge-3.svg"
-   ]
+   ],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "donkey-kick",
@@ -523,7 +571,10 @@
     "wg-donkey-kick-1.svg",
     "wg-donkey-kick-2.svg",
     "wg-donkey-kick-3.svg"
-   ]
+   ],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "ankle-circles",
@@ -552,7 +603,10 @@
    "files": [
     "ek-0270-tension.svg",
     "ek-0270-relaxation.svg"
-   ]
+   ],
+   "region": "小腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "knee-circles",
@@ -580,7 +634,10 @@
    "files": [
     "ek-0277-tension.svg",
     "ek-0277-relaxation.svg"
-   ]
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "leg-swings",
@@ -609,7 +666,10 @@
     "wg-leg-swings-stretch-1.svg",
     "wg-leg-swings-stretch-2.svg",
     "wg-leg-swings-stretch-3.svg"
-   ]
+   ],
+   "region": "拉伸",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "high-knees",
@@ -638,7 +698,10 @@
     "wg-high-knees-1.svg",
     "wg-high-knees-2.svg",
     "wg-high-knees-3.svg"
-   ]
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "inchworm",
@@ -669,7 +732,10 @@
     "wg-inchworm-1.svg",
     "wg-inchworm-2.svg",
     "wg-inchworm-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "worlds-greatest",
@@ -700,7 +766,10 @@
     "wg-worlds-greatest-stretch-1.svg",
     "wg-worlds-greatest-stretch-2.svg",
     "wg-worlds-greatest-stretch-3.svg"
-   ]
+   ],
+   "region": "拉伸",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "forward-lunge",
@@ -731,7 +800,10 @@
     "wg-forward-lunge-1.svg",
     "wg-forward-lunge-2.svg",
     "wg-forward-lunge-3.svg"
-   ]
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "butterfly",
@@ -760,7 +832,10 @@
     "wg-butterfly-stretch-1.svg",
     "wg-butterfly-stretch-2.svg",
     "wg-butterfly-stretch-3.svg"
-   ]
+   ],
+   "region": "髋",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "seated-forward-bend",
@@ -790,7 +865,10 @@
     "wg-seated-forward-fold-stretch-1.svg",
     "wg-seated-forward-fold-stretch-2.svg",
     "wg-seated-forward-fold-stretch-3.svg"
-   ]
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "hamstring-stretch",
@@ -819,7 +897,10 @@
     "wg-hamstring-stretch-1.svg",
     "wg-hamstring-stretch-2.svg",
     "wg-hamstring-stretch-3.svg"
-   ]
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "standing-quad",
@@ -849,7 +930,10 @@
     "wg-standing-quad-stretch-1.svg",
     "wg-standing-quad-stretch-2.svg",
     "wg-standing-quad-stretch-3.svg"
-   ]
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "wall-calf",
@@ -878,7 +962,10 @@
     "wg-wall-calf-stretch-1.svg",
     "wg-wall-calf-stretch-2.svg",
     "wg-wall-calf-stretch-3.svg"
-   ]
+   ],
+   "region": "小腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "clamshell",
@@ -907,7 +994,10 @@
     "wg-clamshell-1.svg",
     "wg-clamshell-2.svg",
     "wg-clamshell-3.svg"
-   ]
+   ],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "single-leg-calf-raise",
@@ -937,7 +1027,10 @@
     "wg-single-leg-calf-raise-1.svg",
     "wg-single-leg-calf-raise-2.svg",
     "wg-single-leg-calf-raise-3.svg"
-   ]
+   ],
+   "region": "小腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "hip-airplane",
@@ -967,7 +1060,10 @@
     "wg-hip-airplane-1.svg",
     "wg-hip-airplane-2.svg",
     "wg-hip-airplane-3.svg"
-   ]
+   ],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "calf-raise",
@@ -997,7 +1093,10 @@
     "wg-calf-raise-1.svg",
     "wg-calf-raise-2.svg",
     "wg-calf-raise-3.svg"
-   ]
+   ],
+   "region": "小腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "plank",
@@ -1027,7 +1126,10 @@
     "wg-plank-1.svg",
     "wg-plank-2.svg",
     "wg-plank-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "side-plank",
@@ -1057,7 +1159,10 @@
     "wg-side-plank-1.svg",
     "wg-side-plank-2.svg",
     "wg-side-plank-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "crunches",
@@ -1087,7 +1192,10 @@
     "wg-crunch-1.svg",
     "wg-crunch-2.svg",
     "wg-crunch-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "air-bike",
@@ -1116,7 +1224,10 @@
     "wg-bicycle-crunch-1.svg",
     "wg-bicycle-crunch-2.svg",
     "wg-bicycle-crunch-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "bent-knee-hip-raise",
@@ -1144,7 +1255,10 @@
     "wg-reverse-crunch-1.svg",
     "wg-reverse-crunch-2.svg",
     "wg-reverse-crunch-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "seated-knee-tuck",
@@ -1172,7 +1286,10 @@
     "wg-seated-knee-tuck-1.svg",
     "wg-seated-knee-tuck-2.svg",
     "wg-seated-knee-tuck-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "hollow-body",
@@ -1201,7 +1318,10 @@
     "wg-hollow-body-hold-1.svg",
     "wg-hollow-body-hold-2.svg",
     "wg-hollow-body-hold-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "mountain-climber",
@@ -1232,7 +1352,10 @@
     "wg-mountain-climber-1.svg",
     "wg-mountain-climber-2.svg",
     "wg-mountain-climber-3.svg"
-   ]
+   ],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "wall-sit",
@@ -1261,7 +1384,10 @@
     "wg-wall-sit-1.svg",
     "wg-wall-sit-2.svg",
     "wg-wall-sit-3.svg"
-   ]
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "bodyweight-squat",
@@ -1291,7 +1417,10 @@
     "wg-bodyweight-squat-1.svg",
     "wg-bodyweight-squat-2.svg",
     "wg-bodyweight-squat-3.svg"
-   ]
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "push-ups",
@@ -1320,7 +1449,10 @@
     "wg-push-up-1.svg",
     "wg-push-up-2.svg",
     "wg-push-up-3.svg"
-   ]
+   ],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": false
   },
   {
    "id": "close-triceps-pushup",
@@ -1350,6 +1482,7368 @@
     "wg-diamond-push-up-1.svg",
     "wg-diamond-push-up-2.svg",
     "wg-diamond-push-up-3.svg"
+   ],
+   "region": "手臂",
+   "equipment": "徒手",
+   "advanced": false
+  },
+  {
+   "id": "bench-press",
+   "zh": "杠铃卧推",
+   "en": "Bench Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "胸 / 三头肌 / 肩前侧",
+   "gear": "杠铃和卧推凳，最好有人保护",
+   "steps": [
+    "躺在卧推凳上，两脚踩实地面，肩胛骨向后向下收紧贴住凳面。",
+    "握距比肩略宽，把杠铃从架上取下，停在胸口正上方。",
+    "控制着让杠铃下降到胸口中下部，手肘略微收向身体，不要完全外张。",
+    "碰到胸口后推回起点，全程不要让腰拱离凳面太多。"
+   ],
+   "cue": "肩胛骨收紧是这个动作的地基，松了肩膀就开始替胸受力。一个人练时用保护架，别练到力竭。",
+   "avoid": "肩前侧疼、做过肩部手术、胸壁或肋骨有伤的先问医生。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-bench-press-1.svg",
+    "wg-bench-press-2.svg",
+    "wg-bench-press-3.svg"
+   ]
+  },
+  {
+   "id": "incline-bench-press",
+   "zh": "上斜杠铃卧推",
+   "en": "Incline Bench Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "胸上部 / 肩前侧",
+   "gear": "可调卧推凳和杠铃",
+   "steps": [
+    "把凳子调成一个不大的上斜角度，躺好，两脚踩实地面。",
+    "肩胛骨收紧贴住凳面，取下杠铃停在锁骨稍下方的位置。",
+    "控制着下降到胸上部，再推回起点。"
+   ],
+   "cue": "角度越大肩膀分走的越多，一个不大的斜度就够打到胸上部。",
+   "avoid": "肩前侧不适的先降角度或换哑铃。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-incline-bench-press-1.svg",
+    "wg-incline-bench-press-2.svg",
+    "wg-incline-bench-press-3.svg"
+   ]
+  },
+  {
+   "id": "incline-dumbbell-press",
+   "zh": "上斜哑铃卧推",
+   "en": "Incline Dumbbell Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "胸上部 / 肩前侧",
+   "gear": "一对哑铃和可调卧推凳",
+   "steps": [
+    "把凳子调成一个不大的上斜角度，坐下，哑铃放在大腿上。",
+    "顺势躺到凳上，同时把哑铃带到肩膀两侧，手肘略低于肩。",
+    "向上推到两只哑铃靠近但不相撞，再控制着放回来。"
+   ],
+   "cue": "哑铃比杠铃更迁就肩关节自己的轨迹，肩不舒服的人先从这个开始。放回来的那一段要慢。",
+   "avoid": "肩前侧疼、肩袖有伤的先问康复师。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-incline-dumbbell-press-1.svg",
+    "wg-incline-dumbbell-press-2.svg",
+    "wg-incline-dumbbell-press-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-bench-press",
+   "zh": "哑铃卧推",
+   "en": "Dumbbell Bench Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "胸 / 三头肌",
+   "gear": "一对哑铃和卧推凳",
+   "steps": [
+    "坐在凳子一端，哑铃放在大腿上，顺势躺下把它们带到胸口两侧。",
+    "两脚踩实地面，肩胛骨收紧。",
+    "向上推到接近伸直，再控制着放回到胸口两侧。"
+   ],
+   "cue": "下放的深度以肩膀不别扭为准，不用刻意追求放到最低。结束时先把哑铃放到大腿再坐起来。",
+   "avoid": "肩前侧疼、肩关节脱位过的先问医生。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-bench-press-1.svg",
+    "wg-dumbbell-bench-press-2.svg",
+    "wg-dumbbell-bench-press-3.svg"
+   ]
+  },
+  {
+   "id": "decline-bench-press",
+   "zh": "下斜杠铃卧推",
+   "en": "Decline Bench Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "胸下部 / 三头肌",
+   "gear": "下斜卧推凳和杠铃，最好有人保护",
+   "steps": [
+    "把腿固定在下斜凳的挡垫上躺好，头略低于髋。",
+    "肩胛骨收紧，取下杠铃停在胸口下部正上方。",
+    "控制着下降到胸口下部，再推回起点。"
+   ],
+   "cue": "头低位会让人有点充血感，起身要慢。一个人练时尤其需要保护架。",
+   "avoid": "血压高、有反流、头晕史的别做这个角度。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-decline-bench-press-1.svg",
+    "wg-decline-bench-press-2.svg",
+    "wg-decline-bench-press-3.svg"
+   ]
+  },
+  {
+   "id": "machine-chest-press",
+   "zh": "器械推胸",
+   "en": "Machine Chest Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "胸 / 三头肌",
+   "gear": "推胸器械",
+   "steps": [
+    "调座椅高度，让手柄大致在胸口的高度。",
+    "背贴住靠垫坐好，握住手柄。",
+    "向前推到接近伸直但不锁死，再控制着收回来。"
+   ],
+   "cue": "器械帮你稳住了轨迹，所以更该把注意力放在放回来那一段的控制上。",
+   "avoid": "肩前侧疼的先调低手柄高度或换别的动作。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-machine-chest-press-1.svg",
+    "wg-machine-chest-press-2.svg",
+    "wg-machine-chest-press-3.svg"
+   ]
+  },
+  {
+   "id": "pec-deck",
+   "zh": "蝴蝶机夹胸",
+   "en": "Pec Deck",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "胸",
+   "gear": "蝴蝶机",
+   "steps": [
+    "调座椅高度，让手柄大致与肩同高。",
+    "背贴靠垫，前臂或手掌贴住臂垫。",
+    "把两侧手柄向身体中线合拢，再慢慢打开到胸前有拉伸感的位置。"
+   ],
+   "cue": "打开的幅度以胸口有拉开的感觉为准，过头就是把力交给肩关节了。",
+   "avoid": "肩前侧有过撞击或脱位史的减小打开幅度，或者先问康复师。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-pec-deck-1.svg",
+    "wg-pec-deck-2.svg",
+    "wg-pec-deck-3.svg"
+   ]
+  },
+  {
+   "id": "cable-fly",
+   "zh": "绳索夹胸",
+   "en": "Cable Fly",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "胸",
+   "gear": "龙门架",
+   "steps": [
+    "把两侧滑轮调到高于肩的位置，各握一个手柄，站成前后小弓步。",
+    "手肘保持一个固定的微弯角度，从两侧向身体前下方画弧合拢。",
+    "在身体前方合到最紧，再慢慢让两臂回到打开的位置。"
+   ],
+   "cue": "手肘的角度从头到尾不变——一弯一伸就变成推的动作了。",
+   "avoid": "肩前侧不适的减小打开幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-fly-1.svg",
+    "wg-cable-fly-2.svg",
+    "wg-cable-fly-3.svg"
+   ]
+  },
+  {
+   "id": "weighted-push-up",
+   "zh": "负重俯卧撑",
+   "en": "Weighted Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "胸 / 三头肌 / 核心",
+   "gear": "徒手加一个负重（杠铃片或背包）",
+   "steps": [
+    "摆成俯卧撑姿势，请人把重物放在上背，或者背一个装了东西的背包。",
+    "身体从头到脚跟保持一条线，收紧腹部。",
+    "屈肘下降到胸口接近地面，再推回起点。"
+   ],
+   "cue": "负重之前先确认徒手的俯卧撑做起来轻松且姿势不变形。重物要放在上背，不是腰上。",
+   "avoid": "腰有伤、手腕承重疼的别做。",
+   "risk": [
+    "腕",
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-weighted-push-up-1.svg",
+    "wg-weighted-push-up-2.svg",
+    "wg-weighted-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-fly",
+   "zh": "哑铃飞鸟",
+   "en": "Dumbbell Fly",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "胸",
+   "gear": "一对哑铃和卧推凳",
+   "steps": [
+    "躺在凳上，两只哑铃在胸口上方相对，手肘保持微弯。",
+    "手臂沿弧线向两侧慢慢打开，直到胸口有拉伸感。",
+    "保持同样的弧线把哑铃合回胸口上方。"
+   ],
+   "cue": "这个动作用的重量本来就该比卧推轻很多；打开到有拉伸感就收，别追求更低。",
+   "avoid": "肩前侧疼、肩关节松弛的别做，换器械夹胸。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-fly-1.svg",
+    "wg-dumbbell-fly-2.svg",
+    "wg-dumbbell-fly-3.svg"
+   ]
+  },
+  {
+   "id": "incline-cable-fly",
+   "zh": "上斜绳索夹胸",
+   "en": "Incline Cable Fly",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "胸上部",
+   "gear": "龙门架和可调卧推凳",
+   "steps": [
+    "把可调凳放在龙门架中间，调成一个不大的上斜角度。",
+    "躺到凳上，两手各握一个低位手柄，手肘保持微弯。",
+    "沿弧线把两手在胸口上方合拢，再慢慢打开。"
+   ],
+   "cue": "绳索的好处是从头到尾都有张力，所以不需要用大重量。",
+   "avoid": "肩前侧不适的减小打开幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-incline-cable-fly-1.svg",
+    "wg-incline-cable-fly-2.svg",
+    "wg-incline-cable-fly-3.svg"
+   ]
+  },
+  {
+   "id": "decline-dumbbell-press",
+   "zh": "下斜哑铃卧推",
+   "en": "Decline Dumbbell Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "胸下部 / 三头肌",
+   "gear": "一对哑铃和下斜卧推凳",
+   "steps": [
+    "腿固定好躺在下斜凳上，哑铃带到胸口两侧。",
+    "向上推到接近伸直，两只哑铃靠近但不相撞。",
+    "控制着放回到胸口两侧。"
+   ],
+   "cue": "头低位起身要慢；哑铃在这个角度上更难控制，重量宁可保守。",
+   "avoid": "血压高、有反流、头晕史的别做这个角度。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-decline-dumbbell-press-1.svg",
+    "wg-decline-dumbbell-press-2.svg",
+    "wg-decline-dumbbell-press-3.svg"
+   ]
+  },
+  {
+   "id": "smith-machine-bench-press",
+   "zh": "史密斯机卧推",
+   "en": "Smith Machine Bench Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "胸 / 三头肌",
+   "gear": "史密斯机和卧推凳",
+   "steps": [
+    "把凳子放在史密斯机下方，躺好，让杠铃大致在胸口正上方。",
+    "肩胛骨收紧，转动手腕解锁挂钩。",
+    "控制着下降到胸口，再推回起点，结束时转腕挂回。"
+   ],
+   "cue": "轨迹是固定的，所以凳子的位置决定了杠铃落在胸口哪儿——先空杆试一次。一个人练时它比自由杠铃安全。",
+   "avoid": "肩前侧疼的先问医生。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-smith-machine-bench-press-1.svg",
+    "wg-smith-machine-bench-press-2.svg",
+    "wg-smith-machine-bench-press-3.svg"
+   ]
+  },
+  {
+   "id": "chest-dip",
+   "zh": "双杠臂屈伸（偏胸）",
+   "en": "Chest Dip",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "器械",
+   "advanced": true,
+   "part": "胸下部 / 三头肌",
+   "gear": "双杠",
+   "steps": [
+    "双手撑住双杠把身体支起来，上半身略微前倾。",
+    "屈肘下降，让身体保持前倾，直到胸口有拉伸感。",
+    "推回起点，全程保持前倾的角度。"
+   ],
+   "cue": "前倾偏胸、直立偏三头，这一条是两者的区别。下降到肩膀低于手肘就够了，再深是拿肩关节冒险。",
+   "avoid": "肩前侧疼、锁骨或胸壁有伤的别做。",
+   "risk": [
+    "肩",
+    "腕",
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-chest-dip-1.svg",
+    "wg-chest-dip-2.svg",
+    "wg-chest-dip-3.svg"
+   ]
+  },
+  {
+   "id": "incline-push-up",
+   "zh": "上斜俯卧撑（手撑高）",
+   "en": "Incline Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "胸 / 三头肌",
+   "gear": "一个稳固的台面、桌沿或长凳",
+   "steps": [
+    "双手撑在桌沿或长凳上，比肩略宽，身体退成一条斜线。",
+    "从头到脚跟保持一条线，收紧腹部。",
+    "屈肘让胸口靠近台面，再推回起点。"
+   ],
+   "cue": "撑得越高越省力，这是徒手俯卧撑最好用的那一档降级——比跪姿更接近真正的俯卧撑。",
+   "avoid": "手腕承重疼的改成握拳或用支撑架。",
+   "risk": [
+    "腕",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-incline-push-up-1.svg",
+    "wg-incline-push-up-2.svg",
+    "wg-incline-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "knee-push-up",
+   "zh": "跪姿俯卧撑",
+   "en": "Knee Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "胸 / 三头肌",
+   "gear": "徒手，需要跪下",
+   "steps": [
+    "跪在垫子上，双手撑地比肩略宽，脚踝交叠抬起。",
+    "从膝盖到头保持一条线，收紧腹部，不要塌腰翘臀。",
+    "屈肘下降到胸口接近地面，再推回起点。"
+   ],
+   "cue": "膝盖越往后撑越难；线不要在髋那儿折断，那是这个动作最常见的走样。",
+   "avoid": "膝盖跪着疼的垫厚一点，或改成手撑高的上斜俯卧撑。",
+   "risk": [
+    "腕",
+    "肩",
+    "膝"
+   ],
+   "floor": true,
+   "files": [
+    "wg-knee-push-up-1.svg",
+    "wg-knee-push-up-2.svg",
+    "wg-knee-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "wide-push-up",
+   "zh": "宽距俯卧撑",
+   "en": "Wide Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "胸 / 肩前侧",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "摆成俯卧撑姿势，双手比肩宽出不少。",
+    "身体保持一条线，收紧腹部。",
+    "屈肘下降，手肘自然向两侧张开，再推回起点。"
+   ],
+   "cue": "宽握把胸分走得更多，同时肩关节的压力也更大——肩不舒服就收窄一点。",
+   "avoid": "肩前侧疼的别做宽距，用常规握距。",
+   "risk": [
+    "腕",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-wide-push-up-1.svg",
+    "wg-wide-push-up-2.svg",
+    "wg-wide-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "decline-push-up",
+   "zh": "下斜俯卧撑（脚垫高）",
+   "en": "Decline Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "胸上部 / 肩",
+   "gear": "徒手加一个矮凳或台阶，需要趴下",
+   "steps": [
+    "双脚搭在矮凳或台阶上，双手撑地比肩略宽。",
+    "身体从头到脚跟保持一条线，收紧腹部。",
+    "屈肘下降到胸口接近地面，再推回起点。"
+   ],
+   "cue": "脚垫得越高越难，也越偏胸上部和肩。腰一塌就说明现在这个高度还太难。",
+   "avoid": "肩、手腕不适的先做平地的。",
+   "risk": [
+    "腕",
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-decline-push-up-1.svg",
+    "wg-decline-push-up-2.svg",
+    "wg-decline-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "archer-push-up",
+   "zh": "射手俯卧撑",
+   "en": "Archer Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "胸 / 三头肌",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "摆成比肩宽很多的俯卧撑姿势。",
+    "下降时把重心移到一侧，那条手臂屈肘，另一条尽量保持伸直。",
+    "推回起点，换另一侧重心再做一次。"
+   ],
+   "cue": "这是往单手俯卧撑走的过渡动作，伸直那侧只是撑着不发力。",
+   "avoid": "肩、手腕有伤的别做；常规俯卧撑还不轻松就先别练这个。",
+   "risk": [
+    "腕",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-archer-push-up-1.svg",
+    "wg-archer-push-up-2.svg",
+    "wg-archer-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "typewriter-push-up",
+   "zh": "打字机俯卧撑",
+   "en": "Typewriter Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "胸 / 三头肌",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "摆成比肩宽很多的俯卧撑姿势，先下降到底。",
+    "保持在低位，把身体横向平移到一侧手的上方。",
+    "再平移到另一侧，最后推回起点。"
+   ],
+   "cue": "难在低位停留的那一段，肩膀的压力比普通俯卧撑大得多。",
+   "avoid": "肩、手腕有伤的别做。",
+   "risk": [
+    "腕",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-typewriter-push-up-1.svg",
+    "wg-typewriter-push-up-2.svg",
+    "wg-typewriter-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "explosive-push-up",
+   "zh": "爆发式俯卧撑",
+   "en": "Explosive Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "胸 / 三头肌",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "摆成俯卧撑姿势，收紧腹部。",
+    "下降到底之后用力推起，让双手离开地面。",
+    "落地时手肘微弯缓冲，接着做下一个。"
+   ],
+   "cue": "落地那一下靠手肘和肩膀吸收，所以要轻。累了就停——这个动作变形的代价比普通俯卧撑大。",
+   "avoid": "手腕、肩、肘有伤的别做。",
+   "risk": [
+    "腕",
+    "肩",
+    "肘"
+   ],
+   "floor": true,
+   "files": [
+    "wg-explosive-push-up-1.svg",
+    "wg-explosive-push-up-2.svg",
+    "wg-explosive-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "hindu-push-up",
+   "zh": "印度式俯卧撑",
+   "en": "Hindu Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "胸 / 肩 / 脊柱",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "从臀部高高抬起的倒 V 形开始，双手撑地。",
+    "屈肘让身体像从一道低矮的门下钻过去一样向前下方划过。",
+    "到前方时抬起胸口，手臂伸直，髋接近地面。",
+    "再沿原路推回倒 V 形。"
+   ],
+   "cue": "它同时活动了肩和脊柱，所以要慢；腰不好的人抬胸那一下不要抬到底。",
+   "avoid": "腰往后仰会疼、肩有伤的别做。",
+   "risk": [
+    "腕",
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-hindu-push-up-1.svg",
+    "wg-hindu-push-up-2.svg",
+    "wg-hindu-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "wall-push-up",
+   "zh": "靠墙俯卧撑",
+   "en": "Wall Push-up",
+   "src": "wg",
+   "scenes": [
+    "办公室",
+    "力量"
+   ],
+   "region": "胸",
+   "equipment": "墙",
+   "advanced": false,
+   "part": "胸 / 三头肌",
+   "gear": "一面墙",
+   "steps": [
+    "面对墙站立，双手撑墙，比肩略宽，与肩同高。",
+    "两脚往后退一小步，身体成一条斜线。",
+    "屈肘让胸口靠近墙面，再推回起点。"
+   ],
+   "cue": "这是俯卧撑最轻的一档，站得离墙越远越难。上了年纪、刚开始练、手腕不好的人从这个开始。",
+   "avoid": "肩膀抬起来就疼的先问医生。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-wall-push-up-1.svg",
+    "wg-wall-push-up-2.svg",
+    "wg-wall-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "seal-jack",
+   "zh": "海豹跳",
+   "en": "Seal Jack",
+   "src": "wg",
+   "scenes": [
+    "跑前"
+   ],
+   "region": "胸",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "胸 / 肩 / 全身",
+   "gear": "徒手，站着做",
+   "steps": [
+    "站直，两臂在身体前方伸直平举，掌心相对。",
+    "跳起时两脚分开，同时两臂向身体两侧张开。",
+    "再跳回并拢，两臂在胸前合拢。",
+    "保持节奏，落地轻一点。"
+   ],
+   "cue": "它是开合跳的变式，张开那一下顺带打开了胸口——久坐之后做很舒服。",
+   "avoid": "膝、踝有伤、跳起来就疼的改成不跳的版本，只做手臂开合。",
+   "risk": [
+    "膝",
+    "踝",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-seal-jack-1.svg",
+    "wg-seal-jack-2.svg",
+    "wg-seal-jack-3.svg"
+   ]
+  },
+  {
+   "id": "face-pull",
+   "zh": "绳索面拉",
+   "en": "Face Pull",
+   "src": "wg",
+   "scenes": [
+    "颈肩"
+   ],
+   "region": "背",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "肩后侧 / 上背",
+   "gear": "龙门架和绳索把手",
+   "steps": [
+    "把滑轮调到略高于头的位置，双手握住绳索两端。",
+    "后退半步拉出张力，两臂伸直朝向滑轮。",
+    "把绳索往脸的方向拉，两手在耳侧分开，肩胛骨向中间收。",
+    "慢慢送回起点。"
+   ],
+   "cue": "久坐圆肩的人最该做的一个。拉的是肩后侧不是二头，手肘要保持在肩的高度。",
+   "avoid": "肩前侧疼、肩袖有伤的先问康复师。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-face-pull-1.svg",
+    "wg-face-pull-2.svg",
+    "wg-face-pull-3.svg"
+   ]
+  },
+  {
+   "id": "barbell-row",
+   "zh": "杠铃划船",
+   "en": "Barbell Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "背 / 后链",
+   "gear": "杠铃",
+   "steps": [
+    "双脚与髋同宽站好，屈髋前倾到上身接近与地面成一个不小的角度，背保持挺直。",
+    "两手正握杠铃，比肩略宽，手臂自然下垂。",
+    "把杠铃拉向腹部，肩胛骨向中间收。",
+    "控制着放回去。"
+   ],
+   "cue": "上身的角度从头到尾不变——一边拉一边直起来，就是腰在替背发力。",
+   "avoid": "腰痛发作期、腰椎有伤的别做，换胸靠垫的划船。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-barbell-row-1.svg",
+    "wg-barbell-row-2.svg",
+    "wg-barbell-row-3.svg"
+   ]
+  },
+  {
+   "id": "t-bar-row",
+   "zh": "T 杠划船",
+   "en": "T-Bar Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "背 / 后链",
+   "gear": "T 杠划船架",
+   "steps": [
+    "站在器械上，屈髋前倾，背保持挺直，握住手柄。",
+    "把手柄拉向腹部，肩胛骨向中间收。",
+    "控制着放回去。"
+   ],
+   "cue": "比杠铃划船好稳一点，但腰的要求是一样的：背一圆就停。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-t-bar-row-1.svg",
+    "wg-t-bar-row-2.svg",
+    "wg-t-bar-row-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-bent-over-row",
+   "zh": "哑铃俯身划船",
+   "en": "Dumbbell Bent Over Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "背 / 后链",
+   "gear": "一对哑铃",
+   "steps": [
+    "两手各持一只哑铃，屈髋前倾，背保持挺直，手臂自然下垂。",
+    "把两只哑铃拉向髋部两侧，肩胛骨向中间收。",
+    "控制着放回去。"
+   ],
+   "cue": "想着用手肘往后带，而不是用手去拉——手先动的话练的是二头。",
+   "avoid": "腰痛发作期别做，换单手撑凳的版本。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-bent-over-row-1.svg",
+    "wg-dumbbell-bent-over-row-2.svg",
+    "wg-dumbbell-bent-over-row-3.svg"
+   ]
+  },
+  {
+   "id": "one-arm-dumbbell-row",
+   "zh": "单臂哑铃划船",
+   "en": "One-Arm Dumbbell Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "背 / 后链",
+   "gear": "一只哑铃和一个长凳",
+   "steps": [
+    "一只手和同侧膝盖撑在凳上，另一条腿踩地，背保持平的。",
+    "另一只手持哑铃自然下垂。",
+    "把哑铃拉向髋部，手肘贴着身体往后走。",
+    "控制着放回去，换另一侧。"
+   ],
+   "cue": "撑着凳子把腰卸掉了，所以腰不好的人从这个开始。身体不要跟着转。",
+   "avoid": "肩、腰有伤的先问康复师。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-one-arm-dumbbell-row-1.svg",
+    "wg-one-arm-dumbbell-row-2.svg",
+    "wg-one-arm-dumbbell-row-3.svg"
+   ]
+  },
+  {
+   "id": "chest-supported-row",
+   "zh": "俯卧撑凳划船",
+   "en": "Chest Supported Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "背 / 后链",
+   "gear": "上斜凳和一对哑铃",
+   "steps": [
+    "胸口贴住上斜凳趴好，两手各持一只哑铃自然下垂。",
+    "把哑铃拉向髋部两侧，肩胛骨向中间收。",
+    "控制着放回去。"
+   ],
+   "cue": "胸靠着凳子，腰完全不参与——这是所有划船里对腰最友好的一个。",
+   "avoid": "肩前侧疼的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-chest-supported-row-1.svg",
+    "wg-chest-supported-row-2.svg",
+    "wg-chest-supported-row-3.svg"
+   ]
+  },
+  {
+   "id": "seated-row",
+   "zh": "坐姿绳索划船",
+   "en": "Seated Cable Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "背 / 后链",
+   "gear": "坐姿划船器",
+   "steps": [
+    "坐好，双脚蹬住踏板，膝盖微弯，握住手柄。",
+    "背挺直，把手柄拉向腹部，肩胛骨向中间收。",
+    "控制着送回去，不要让上身被拉着往前倒。"
+   ],
+   "cue": "送回去的时候上身可以稍微前倾一点让背拉开，但腰不要跟着弓。",
+   "avoid": "腰痛发作期减小前倾幅度或先问医生。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-seated-row-1.svg",
+    "wg-seated-row-2.svg",
+    "wg-seated-row-3.svg"
+   ]
+  },
+  {
+   "id": "machine-row",
+   "zh": "器械划船",
+   "en": "Machine Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "背 / 后链",
+   "gear": "划船器械",
+   "steps": [
+    "调好座椅和胸垫高度，胸口贴住靠垫坐好。",
+    "握住手柄往后拉，肩胛骨向中间收。",
+    "控制着送回去。"
+   ],
+   "cue": "有胸垫兜着，腰基本不参与；把注意力放在肩胛骨收和放上。",
+   "avoid": "肩前侧疼的换窄握或中立握。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-machine-row-1.svg",
+    "wg-machine-row-2.svg",
+    "wg-machine-row-3.svg"
+   ]
+  },
+  {
+   "id": "lat-pulldown",
+   "zh": "高位下拉",
+   "en": "Lat Pulldown",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "背阔肌 / 上背",
+   "gear": "高位下拉器械",
+   "steps": [
+    "调好腿垫压住大腿，两手比肩略宽握住横杆。",
+    "上身略微后仰，把横杆拉向锁骨，肩胛骨向下向后。",
+    "控制着让横杆回到头顶上方。"
+   ],
+   "cue": "拉到锁骨就够了，不要往脖子后面拉——那个版本对肩关节不友好，收益也没有更多。",
+   "avoid": "肩有伤的减小幅度或换中立握。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-lat-pulldown-1.svg",
+    "wg-lat-pulldown-2.svg",
+    "wg-lat-pulldown-3.svg"
+   ]
+  },
+  {
+   "id": "close-grip-lat-pulldown",
+   "zh": "窄握高位下拉",
+   "en": "Close-Grip Lat Pulldown",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "背阔肌",
+   "gear": "高位下拉器械和 V 形把手",
+   "steps": [
+    "挂上 V 形把手，腿垫压住大腿坐好。",
+    "两手握住把手，上身略微后仰，拉向胸口上部。",
+    "控制着送回头顶上方。"
+   ],
+   "cue": "窄握把背阔肌下部分走得更多，肩关节也更舒服。",
+   "avoid": "肩、肘不适的减小重量。",
+   "risk": [
+    "肩",
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-close-grip-lat-pulldown-1.svg",
+    "wg-close-grip-lat-pulldown-2.svg",
+    "wg-close-grip-lat-pulldown-3.svg"
+   ]
+  },
+  {
+   "id": "straight-arm-pulldown",
+   "zh": "直臂下压",
+   "en": "Straight-Arm Pulldown",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "背阔肌",
+   "gear": "龙门架",
+   "steps": [
+    "面对高位滑轮站立，两手握住横杆，手臂伸直，身体略微前倾。",
+    "手臂保持伸直，把横杆沿弧线压到大腿前方。",
+    "控制着让它回到起点。"
+   ],
+   "cue": "手肘从头到尾不弯——一弯就变成下拉了。这是少数只练背阔不带二头的动作。",
+   "avoid": "肩前侧不适的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-straight-arm-pulldown-1.svg",
+    "wg-straight-arm-pulldown-2.svg",
+    "wg-straight-arm-pulldown-3.svg"
+   ]
+  },
+  {
+   "id": "pull-up",
+   "zh": "引体向上",
+   "en": "Pull-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "单杠",
+   "advanced": true,
+   "part": "背阔肌 / 上背 / 二头肌",
+   "gear": "单杠",
+   "steps": [
+    "正握单杠，比肩略宽，身体自然悬垂。",
+    "肩胛骨先向下沉，再屈肘把身体拉起来，直到下巴过杠。",
+    "控制着放下来，回到完全悬垂。"
+   ],
+   "cue": "先沉肩再拉——直接屈肘会把整个动作交给手臂。拉不上去就先做离心（跳上去慢慢放）。",
+   "avoid": "肩、肘有伤的别做；体重较大时先从辅助引体或斜身引体开始。",
+   "risk": [
+    "肩",
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-pull-up-1.svg",
+    "wg-pull-up-2.svg",
+    "wg-pull-up-3.svg"
+   ]
+  },
+  {
+   "id": "assisted-pull-up",
+   "zh": "辅助引体向上",
+   "en": "Assisted Pull-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "背阔肌 / 上背",
+   "gear": "辅助引体器械",
+   "steps": [
+    "选一个配重（配重越大越省力），跪或站在机器的踏板上。",
+    "握住上方把手，肩胛骨下沉，把身体拉起来到下巴过杠。",
+    "控制着放下来。"
+   ],
+   "cue": "这是通往引体向上最直接的一条路：配重一档一档减。",
+   "avoid": "肩、肘有伤的先问康复师。",
+   "risk": [
+    "肩",
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-assisted-pull-up-1.svg",
+    "wg-assisted-pull-up-2.svg",
+    "wg-assisted-pull-up-3.svg"
+   ]
+  },
+  {
+   "id": "weighted-pull-up",
+   "zh": "负重引体向上",
+   "en": "Weighted Pull-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "单杠",
+   "advanced": true,
+   "part": "背阔肌 / 上背",
+   "gear": "单杠加负重腰带或背包",
+   "steps": [
+    "挂上负重，正握单杠悬垂。",
+    "肩胛骨下沉，拉到下巴过杠。",
+    "控制着放下来。"
+   ],
+   "cue": "徒手引体做起来还很勉强就别加负重，先把徒手的数量堆上去。",
+   "avoid": "肩、肘、腕有伤的别做。",
+   "risk": [
+    "肩",
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-weighted-pull-up-1.svg",
+    "wg-weighted-pull-up-2.svg",
+    "wg-weighted-pull-up-3.svg"
+   ]
+  },
+  {
+   "id": "shrug",
+   "zh": "杠铃耸肩",
+   "en": "Barbell Shrug",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "斜方肌上部",
+   "gear": "杠铃",
+   "steps": [
+    "两手正握杠铃站直，手臂自然下垂。",
+    "肩膀垂直往耳朵方向耸起，到顶停一下。",
+    "慢慢放下来。"
+   ],
+   "cue": "只有上下，不要绕圈——绕圈对颈椎没有额外好处，风险倒是有。",
+   "avoid": "颈椎病、颈肩放射痛的别做。",
+   "risk": [
+    "颈",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-shrug-1.svg",
+    "wg-shrug-2.svg",
+    "wg-shrug-3.svg"
+   ]
+  },
+  {
+   "id": "pendlay-row",
+   "zh": "潘德莱划船",
+   "en": "Pendlay Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "背 / 后链",
+   "gear": "杠铃",
+   "steps": [
+    "屈髋前倾到上身接近与地面平行，背挺直，握住地面上的杠铃。",
+    "爆发式把杠铃拉到腹部。",
+    "把杠铃完全放回地面，每一次都从静止开始。"
+   ],
+   "cue": "每一次都从地面重新开始，所以腰的姿势要在每一次起手时重新确认。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-pendlay-row-1.svg",
+    "wg-pendlay-row-2.svg",
+    "wg-pendlay-row-3.svg"
+   ]
+  },
+  {
+   "id": "inverted-row",
+   "zh": "斜身引体",
+   "en": "Inverted Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "背 / 上背",
+   "gear": "史密斯机横杆或稳固的低杆",
+   "steps": [
+    "把横杆调到腰的高度，仰面躺到史密斯机的横杆下方，两手比肩略宽握住。",
+    "身体从头到脚跟保持一条线，脚跟撑地。",
+    "把胸口拉向横杆，肩胛骨向中间收，再控制着放下来。"
+   ],
+   "cue": "杆越高越省力——这是引体向上最好用的降级。脚往前走一步就难一档。",
+   "avoid": "肩、腕不适的换中立握。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-inverted-row-1.svg",
+    "wg-inverted-row-2.svg",
+    "wg-inverted-row-3.svg"
+   ]
+  },
+  {
+   "id": "meadows-row",
+   "zh": "梅德斯划船",
+   "en": "Meadows Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "背 / 后链",
+   "gear": "杠铃和一个杠铃支点",
+   "steps": [
+    "杠铃一端固定在角落或支架上，侧身站在另一端旁边。",
+    "屈髋前倾，单手握住杠铃末端。",
+    "把杠铃拉向髋部，手肘往后上方走。",
+    "控制着放回去，换另一侧。"
+   ],
+   "cue": "单侧发力，身体容易跟着转——用另一只手撑住膝盖稳住。",
+   "avoid": "腰有伤的别做。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-meadows-row-1.svg",
+    "wg-meadows-row-2.svg",
+    "wg-meadows-row-3.svg"
+   ]
+  },
+  {
+   "id": "single-arm-cable-row",
+   "zh": "单臂绳索划船",
+   "en": "Single-Arm Cable Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "背 / 后链",
+   "gear": "龙门架",
+   "steps": [
+    "面对滑轮站或坐好，单手握住手柄。",
+    "把手柄拉向髋部，肩胛骨往后往下。",
+    "控制着送回去，让肩胛骨被拉着往前送一点，再换另一侧。"
+   ],
+   "cue": "单侧能拉到更大的活动范围，送回去那一段别急着收。",
+   "avoid": "肩前侧不适的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-single-arm-cable-row-1.svg",
+    "wg-single-arm-cable-row-2.svg",
+    "wg-single-arm-cable-row-3.svg"
+   ]
+  },
+  {
+   "id": "wide-grip-lat-pulldown",
+   "zh": "宽握高位下拉",
+   "en": "Wide-Grip Lat Pulldown",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "背阔肌",
+   "gear": "高位下拉器械",
+   "steps": [
+    "腿垫压住大腿坐好，两手宽握横杆。",
+    "上身略微后仰，拉向锁骨，肩胛骨向下向后。",
+    "控制着送回去。"
+   ],
+   "cue": "宽握更偏背阔的宽度；肩膀不舒服就换回略宽于肩的握距。",
+   "avoid": "肩有伤的别用太宽的握距。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-wide-grip-lat-pulldown-1.svg",
+    "wg-wide-grip-lat-pulldown-2.svg",
+    "wg-wide-grip-lat-pulldown-3.svg"
+   ]
+  },
+  {
+   "id": "neutral-grip-pull-up",
+   "zh": "对握引体向上",
+   "en": "Neutral-Grip Pull-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "单杠",
+   "advanced": true,
+   "part": "背阔肌 / 二头肌",
+   "gear": "单杠上的对握把手",
+   "steps": [
+    "两手掌心相对握住把手，身体自然悬垂。",
+    "肩胛骨下沉，拉到下巴过杠。",
+    "控制着放下来。"
+   ],
+   "cue": "对握是肩关节最舒服的角度，肩不好的人优先选它。",
+   "avoid": "肘有伤的减少幅度或先做辅助版本。",
+   "risk": [
+    "肩",
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-neutral-grip-pull-up-1.svg",
+    "wg-neutral-grip-pull-up-2.svg",
+    "wg-neutral-grip-pull-up-3.svg"
+   ]
+  },
+  {
+   "id": "rack-pull",
+   "zh": "架上拉",
+   "en": "Rack Pull",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "后链 / 上背",
+   "gear": "深蹲架和杠铃",
+   "steps": [
+    "把杠铃架在膝盖上下的高度，站到杠前，屈髋握住。",
+    "背挺直，伸髋把杠铃拉起来站直。",
+    "控制着放回架上。"
+   ],
+   "cue": "它是硬拉的上半程，行程短所以腰的容错高一点，但背圆了照样伤腰。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-rack-pull-1.svg",
+    "wg-rack-pull-2.svg",
+    "wg-rack-pull-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-shrug",
+   "zh": "哑铃耸肩",
+   "en": "Dumbbell Shrug",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "斜方肌上部",
+   "gear": "一对哑铃",
+   "steps": [
+    "两手各持一只哑铃站直，手臂自然下垂。",
+    "肩膀垂直往耳朵方向耸起，到顶停一下。",
+    "慢慢放下来。"
+   ],
+   "cue": "只有上下，不要绕圈；哑铃比杠铃更容易让肩膀走在正上方。",
+   "avoid": "颈椎病、颈肩放射痛的别做。",
+   "risk": [
+    "颈",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-shrug-1.svg",
+    "wg-dumbbell-shrug-2.svg",
+    "wg-dumbbell-shrug-3.svg"
+   ]
+  },
+  {
+   "id": "doorway-row",
+   "zh": "门框划船",
+   "en": "Doorway Row",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "背",
+   "equipment": "门框",
+   "advanced": false,
+   "part": "背 / 上背",
+   "gear": "一个稳固的门框",
+   "steps": [
+    "两手抓住门框两侧，脚往前踩到门框附近。",
+    "身体向后倾，手臂伸直。",
+    "把身体拉向门框，肩胛骨向中间收，再慢慢送回去。"
+   ],
+   "cue": "家里没有任何器械时练背的办法。脚越往前越难。先确认门框是稳的。",
+   "avoid": "手腕、肩有伤的别做。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-doorway-row-1.svg",
+    "wg-doorway-row-2.svg",
+    "wg-doorway-row-3.svg"
+   ]
+  },
+  {
+   "id": "towel-row",
+   "zh": "毛巾划船",
+   "en": "Towel Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "毛巾",
+   "advanced": false,
+   "part": "背 / 上背",
+   "gear": "一条毛巾和一个稳固的固定点",
+   "steps": [
+    "把毛巾绕过一个稳固的立柱或门把，两手各握一端。",
+    "身体向后倾，手臂伸直。",
+    "把身体拉过去，肩胛骨向中间收，再慢慢送回。"
+   ],
+   "cue": "出门在外练背的办法。固定点必须结实——这一条比动作本身重要。",
+   "avoid": "手腕、肩有伤的别做。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-towel-row-1.svg",
+    "wg-towel-row-2.svg",
+    "wg-towel-row-3.svg"
+   ]
+  },
+  {
+   "id": "prone-t-raise",
+   "zh": "俯卧 T 字抬举",
+   "en": "Prone T Raise",
+   "src": "wg",
+   "scenes": [
+    "颈肩"
+   ],
+   "region": "背",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "肩后侧 / 上背",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "趴在垫子上，额头轻贴地面，两臂向身体两侧伸开成一个 T。",
+    "大拇指朝上，肩胛骨先往下往后收。",
+    "把两臂抬离地面一点，停一下再慢慢放下。"
+   ],
+   "cue": "抬的高度不重要，肩胛骨往下往后才是；脖子不要跟着仰。",
+   "avoid": "腰不舒服可以在肚子下面垫一个薄枕头。",
+   "risk": [
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-prone-t-raise-1.svg",
+    "wg-prone-t-raise-2.svg",
+    "wg-prone-t-raise-3.svg"
+   ]
+  },
+  {
+   "id": "reverse-snow-angel",
+   "zh": "俯卧反向雪天使",
+   "en": "Reverse Snow Angel",
+   "src": "wg",
+   "scenes": [
+    "颈肩"
+   ],
+   "region": "背",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "肩后侧 / 上背",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "趴好，两臂贴在身体两侧，掌心朝下。",
+    "把两臂抬离地面，沿着地面画弧一直滑到头顶上方。",
+    "再沿原路滑回身体两侧，全程手臂不落地。"
+   ],
+   "cue": "慢一点，卡住的那一段正是最需要练的角度。",
+   "avoid": "肩膀抬起来就疼的减小幅度。",
+   "risk": [
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-reverse-snow-angel-1.svg",
+    "wg-reverse-snow-angel-2.svg",
+    "wg-reverse-snow-angel-3.svg"
+   ]
+  },
+  {
+   "id": "active-hang",
+   "zh": "主动悬垂",
+   "en": "Active Hang",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "单杠",
+   "advanced": false,
+   "part": "背阔肌 / 上背 / 握力",
+   "gear": "单杠",
+   "steps": [
+    "正握单杠，让身体自然悬垂。",
+    "不屈肘，只把肩胛骨往下沉，让身体略微上升一点。",
+    "保持住，再放松回到完全悬垂。"
+   ],
+   "cue": "引体向上的第一步就是这个；久挂着还能顺带把肩和背拉开。",
+   "avoid": "肩有伤、手腕承重疼的别做。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-active-hang-1.svg",
+    "wg-active-hang-2.svg",
+    "wg-active-hang-3.svg"
+   ]
+  },
+  {
+   "id": "scapular-pull-up",
+   "zh": "肩胛引体",
+   "en": "Scapular Pull-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "单杠",
+   "advanced": false,
+   "part": "背阔肌 / 上背",
+   "gear": "单杠",
+   "steps": [
+    "正握单杠悬垂，手臂全程伸直。",
+    "只用肩胛骨下沉把身体拉高一点点。",
+    "再慢慢放松回到悬垂，来回做。"
+   ],
+   "cue": "手肘一弯就变成引体了。它教的正是引体向上最容易漏掉的第一下。",
+   "avoid": "肩有伤的别做。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-scapular-pull-up-1.svg",
+    "wg-scapular-pull-up-2.svg",
+    "wg-scapular-pull-up-3.svg"
+   ]
+  },
+  {
+   "id": "negative-pull-up",
+   "zh": "离心引体向上",
+   "en": "Negative Pull-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "单杠",
+   "advanced": false,
+   "part": "背阔肌 / 上背",
+   "gear": "单杠和一个踏台",
+   "steps": [
+    "踩着台子让下巴先高过杠，双手握好。",
+    "离开台子，用尽量慢的速度把身体放下来。",
+    "放到完全悬垂后再踩上台子重新开始。"
+   ],
+   "cue": "拉不上去的人靠这个建立力量：慢慢放下来那一段是可以先练的。",
+   "avoid": "肩、肘有伤的别做。",
+   "risk": [
+    "肩",
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-negative-pull-up-1.svg",
+    "wg-negative-pull-up-2.svg",
+    "wg-negative-pull-up-3.svg"
+   ]
+  },
+  {
+   "id": "commando-pull-up",
+   "zh": "交叉握引体",
+   "en": "Commando Pull-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "单杠",
+   "advanced": true,
+   "part": "背阔肌 / 核心",
+   "gear": "单杠",
+   "steps": [
+    "身体侧对单杠，两手一前一后握住杠，掌心相对。",
+    "把身体拉起来，让头从杠的一侧上去。",
+    "放下来，换另一侧再拉一次。"
+   ],
+   "cue": "身体会想转，核心要一直收着。普通引体还做不轻松就先别练它。",
+   "avoid": "肩、肘、颈有伤的别做。",
+   "risk": [
+    "肩",
+    "肘",
+    "颈"
+   ],
+   "floor": false,
+   "files": [
+    "wg-commando-pull-up-1.svg",
+    "wg-commando-pull-up-2.svg",
+    "wg-commando-pull-up-3.svg"
+   ]
+  },
+  {
+   "id": "l-sit-pull-up",
+   "zh": "L 型引体向上",
+   "en": "L-Sit Pull-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "单杠",
+   "advanced": true,
+   "part": "背阔肌 / 核心",
+   "gear": "单杠",
+   "steps": [
+    "正握单杠悬垂，两条腿并拢向前抬到与地面平行。",
+    "保持这个腿的位置，把身体拉到下巴过杠。",
+    "控制着放下来，腿始终不落。"
+   ],
+   "cue": "难点其实在腹部，腿一掉就说明该换回普通引体了。",
+   "avoid": "腰、肩、髋有伤的别做。",
+   "risk": [
+    "肩",
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-l-sit-pull-up-1.svg",
+    "wg-l-sit-pull-up-2.svg",
+    "wg-l-sit-pull-up-3.svg"
+   ]
+  },
+  {
+   "id": "towel-pull-up",
+   "zh": "毛巾引体向上",
+   "en": "Towel Pull-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "背",
+   "equipment": "单杠",
+   "advanced": true,
+   "part": "背阔肌 / 握力 / 前臂",
+   "gear": "单杠和两条毛巾",
+   "steps": [
+    "把两条毛巾搭在单杠上，两手各握一条。",
+    "肩胛骨下沉，把身体拉起来到手接近肩的高度。",
+    "控制着放下来。"
+   ],
+   "cue": "握力是这里的瓶颈，多半先于背力竭——那正是它的用处。",
+   "avoid": "手腕、手肘有伤的别做。",
+   "risk": [
+    "腕",
+    "肘",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-towel-pull-up-1.svg",
+    "wg-towel-pull-up-2.svg",
+    "wg-towel-pull-up-3.svg"
+   ]
+  },
+  {
+   "id": "band-pull-apart",
+   "zh": "弹力带扩胸",
+   "en": "Band Pull-Apart",
+   "src": "wg",
+   "scenes": [
+    "颈肩",
+    "办公室"
+   ],
+   "region": "背",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "肩后侧 / 上背",
+   "gear": "一条弹力带",
+   "steps": [
+    "两手与肩同宽握住弹力带，手臂在身体前方伸直抬到肩高。",
+    "手臂保持伸直，把带子向身体两侧拉开，肩胛骨向中间收。",
+    "慢慢回到起点。"
+   ],
+   "cue": "久坐圆肩最好上手的一个，一条带子在工位上就能做。手肘不要弯。",
+   "avoid": "肩前侧疼的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-band-pull-apart-1.svg",
+    "wg-band-pull-apart-2.svg",
+    "wg-band-pull-apart-3.svg"
+   ]
+  },
+  {
+   "id": "banded-face-pull",
+   "zh": "弹力带面拉",
+   "en": "Banded Face Pull",
+   "src": "wg",
+   "scenes": [
+    "颈肩",
+    "办公室"
+   ],
+   "region": "背",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "肩后侧 / 上背",
+   "gear": "一条弹力带和一个固定点",
+   "steps": [
+    "把弹力带固定在略高于头的位置，两手各握一端。",
+    "后退拉出张力，两臂伸直朝向固定点。",
+    "把带子往脸的方向拉，两手在耳侧分开。",
+    "慢慢送回。"
+   ],
+   "cue": "和绳索面拉是同一件事，家里版本。手肘保持在肩的高度。",
+   "avoid": "肩前侧疼的先问康复师。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-face-pull-1.svg",
+    "wg-banded-face-pull-2.svg",
+    "wg-banded-face-pull-3.svg"
+   ]
+  },
+  {
+   "id": "banded-row",
+   "zh": "弹力带划船",
+   "en": "Banded Row",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "背",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "背 / 后链",
+   "gear": "一条弹力带",
+   "steps": [
+    "坐在地上，两腿伸直，把弹力带绕过两只脚掌，两手各握一端。",
+    "背挺直，把带子拉向腹部，肩胛骨向中间收。",
+    "慢慢送回去。"
+   ],
+   "cue": "也可以站着把带子固定在门上做。腰要挺住，别靠身体后倒去拉。",
+   "avoid": "腰痛发作期减小幅度。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-banded-row-1.svg",
+    "wg-banded-row-2.svg",
+    "wg-banded-row-3.svg"
+   ]
+  },
+  {
+   "id": "banded-lat-pulldown",
+   "zh": "弹力带高位下拉",
+   "en": "Banded Lat Pulldown",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "背",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "背阔肌",
+   "gear": "一条弹力带和一个高处固定点",
+   "steps": [
+    "把弹力带固定在门框顶或高处，跪下或坐下，两手各握一端。",
+    "手臂伸直向上，肩胛骨先下沉。",
+    "把带子拉向锁骨的高度，再慢慢送回去。"
+   ],
+   "cue": "家里版的高位下拉。跪着做能把身体固定住，不然人会被带子拉起来。",
+   "avoid": "肩有伤的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-banded-lat-pulldown-1.svg",
+    "wg-banded-lat-pulldown-2.svg",
+    "wg-banded-lat-pulldown-3.svg"
+   ]
+  },
+  {
+   "id": "overhead-press",
+   "zh": "杠铃站姿推举",
+   "en": "Overhead Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "肩 / 三头肌 / 核心",
+   "gear": "杠铃",
+   "steps": [
+    "两脚与髋同宽站好，杠铃停在锁骨前方，两手略宽于肩。",
+    "收紧腹部和臀部，把杠铃垂直向上推过头顶。",
+    "推到手臂伸直、杠铃在头顶正上方，再控制着放回锁骨前。"
+   ],
+   "cue": "推的时候头稍微往后收让出路线，杠过了额头再把头送回去。腰不要往后仰去借力。",
+   "avoid": "肩有撞击痛、腰椎有伤的别做，换坐姿。",
+   "risk": [
+    "肩",
+    "腰",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-overhead-press-1.svg",
+    "wg-overhead-press-2.svg",
+    "wg-overhead-press-3.svg"
+   ]
+  },
+  {
+   "id": "seated-dumbbell-press",
+   "zh": "坐姿哑铃推举",
+   "en": "Dumbbell Seated Shoulder Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "肩 / 三头肌",
+   "gear": "一对哑铃和有靠背的凳子",
+   "steps": [
+    "坐好，背贴靠垫，两只哑铃举到耳朵两侧，掌心朝前。",
+    "向上推到手臂接近伸直，哑铃靠近但不相撞。",
+    "控制着放回耳侧。"
+   ],
+   "cue": "有靠背兜着腰，这是推举里最稳的一档。下放到手肘略低于肩就够。",
+   "avoid": "肩前侧疼、抬手过头就疼的先问康复师。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-seated-dumbbell-press-1.svg",
+    "wg-seated-dumbbell-press-2.svg",
+    "wg-seated-dumbbell-press-3.svg"
+   ]
+  },
+  {
+   "id": "arnold-press",
+   "zh": "阿诺德推举",
+   "en": "Arnold Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "肩 / 三头肌",
+   "gear": "一对哑铃",
+   "steps": [
+    "坐好，两只哑铃举在胸前，掌心朝向自己。",
+    "一边向上推一边把手腕转过来，到顶时掌心朝前。",
+    "沿原路转回来，回到掌心朝向自己的起点。"
+   ],
+   "cue": "转腕的那一段要跟推同步，不是推到一半再转。重量比普通推举轻一档。",
+   "avoid": "肩关节不适的先做普通推举。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-arnold-press-1.svg",
+    "wg-arnold-press-2.svg",
+    "wg-arnold-press-3.svg"
+   ]
+  },
+  {
+   "id": "lateral-raise",
+   "zh": "哑铃侧平举",
+   "en": "Lateral Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "三角肌中束",
+   "gear": "一对哑铃",
+   "steps": [
+    "站直，两手各持一只哑铃垂在身侧，手肘保持微弯。",
+    "把手臂向身体两侧抬起，抬到大约与肩同高。",
+    "在顶端停一下，再慢慢放下来。"
+   ],
+   "cue": "重量小得多才对——一甩起来就是斜方肌在干活。想着用手肘带，不是用手。",
+   "avoid": "肩峰撞击、抬到侧上方就疼的减小幅度或先问医生。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-lateral-raise-1.svg",
+    "wg-lateral-raise-2.svg",
+    "wg-lateral-raise-3.svg"
+   ]
+  },
+  {
+   "id": "cable-lateral-raise",
+   "zh": "绳索侧平举",
+   "en": "Cable Lateral Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "三角肌中束",
+   "gear": "龙门架",
+   "steps": [
+    "把滑轮调到最低，侧身站好，用外侧的手从身体前方握住手柄。",
+    "手肘微弯，把手臂向身体外侧抬到肩高。",
+    "慢慢放回去，换另一侧。"
+   ],
+   "cue": "绳索在最低点也有张力，这正是哑铃版本最弱的地方。",
+   "avoid": "肩峰撞击的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-lateral-raise-1.svg",
+    "wg-cable-lateral-raise-2.svg",
+    "wg-cable-lateral-raise-3.svg"
+   ]
+  },
+  {
+   "id": "front-raise",
+   "zh": "哑铃前平举",
+   "en": "Front Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "三角肌前束",
+   "gear": "一对哑铃",
+   "steps": [
+    "站直，两只哑铃放在大腿前方，掌心朝向身体。",
+    "手肘微弯，把一只或两只哑铃向前抬到肩高。",
+    "慢慢放下来。"
+   ],
+   "cue": "身体不要跟着前后晃——晃起来就是腰在帮忙。抬到肩高就够，不用过头。",
+   "avoid": "肩前侧疼的别做，多数人的肩前侧在推的动作里已经够用了。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-front-raise-1.svg",
+    "wg-front-raise-2.svg",
+    "wg-front-raise-3.svg"
+   ]
+  },
+  {
+   "id": "rear-delt-fly",
+   "zh": "哑铃俯身反向飞鸟",
+   "en": "Rear Delt Fly",
+   "src": "wg",
+   "scenes": [
+    "颈肩"
+   ],
+   "region": "肩",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "肩后侧 / 上背",
+   "gear": "一对哑铃",
+   "steps": [
+    "屈髋前倾到上身接近与地面平行，背保持挺直，两只哑铃垂在身前。",
+    "手肘保持微弯，把两臂向身体两侧抬起。",
+    "到与肩同高时停一下，再慢慢放下。"
+   ],
+   "cue": "久坐圆肩的人和面拉一样值得做。重量要小，抬起来的时候肩膀不要耸。",
+   "avoid": "腰痛发作期改成坐姿俯身或趴在上斜凳上做。",
+   "risk": [
+    "肩",
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-rear-delt-fly-1.svg",
+    "wg-rear-delt-fly-2.svg",
+    "wg-rear-delt-fly-3.svg"
+   ]
+  },
+  {
+   "id": "reverse-pec-deck",
+   "zh": "反向蝴蝶机",
+   "en": "Reverse Pec Deck",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "肩后侧 / 上背",
+   "gear": "蝴蝶机",
+   "steps": [
+    "面对靠垫坐好，胸口贴住，两手握住前方手柄。",
+    "手肘微弯，把两臂向身体后方打开。",
+    "慢慢收回来。"
+   ],
+   "cue": "有胸垫兜着，身体没法借力，这是练肩后侧最干净的一个。",
+   "avoid": "肩前侧疼的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-reverse-pec-deck-1.svg",
+    "wg-reverse-pec-deck-2.svg",
+    "wg-reverse-pec-deck-3.svg"
+   ]
+  },
+  {
+   "id": "upright-row",
+   "zh": "杠铃直立划船",
+   "en": "Upright Row",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "三角肌中束 / 斜方肌",
+   "gear": "杠铃",
+   "steps": [
+    "两手比肩略宽正握杠铃，垂在身前。",
+    "把杠铃沿身体前方拉到胸口高度，手肘领先向上。",
+    "慢慢放下来。"
+   ],
+   "cue": "握距窄、拉得高最容易撞到肩——用略宽的握距，拉到胸口就停。",
+   "avoid": "肩峰撞击、肩关节有伤的别做，换侧平举。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-upright-row-1.svg",
+    "wg-upright-row-2.svg",
+    "wg-upright-row-3.svg"
+   ]
+  },
+  {
+   "id": "landmine-press",
+   "zh": "杠铃单端推举",
+   "en": "Landmine Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "肩 / 核心",
+   "gear": "杠铃一端固定在角落或支架上",
+   "steps": [
+    "单手握住杠铃末端，举在肩前，另一只手叉腰或扶住身体。",
+    "把杠铃沿斜上方推出去，手臂接近伸直。",
+    "控制着收回肩前，换另一侧。"
+   ],
+   "cue": "推的路线是斜的不是垂直的，肩膀因此比过顶推举舒服很多——抬手过头会疼的人试这个。",
+   "avoid": "腰有伤的收紧腹部，不要跟着转身。",
+   "risk": [
+    "肩",
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-landmine-press-1.svg",
+    "wg-landmine-press-2.svg",
+    "wg-landmine-press-3.svg"
+   ]
+  },
+  {
+   "id": "machine-shoulder-press",
+   "zh": "器械肩推",
+   "en": "Machine Shoulder Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "肩 / 三头肌",
+   "gear": "肩推器械",
+   "steps": [
+    "调座椅高度，让手柄大致在肩的高度。",
+    "背贴靠垫坐好，握住手柄。",
+    "向上推到接近伸直，再控制着收回来。"
+   ],
+   "cue": "轨迹固定，是过顶推举里最省心的一档；下放到手肘略低于肩就够。",
+   "avoid": "肩前侧疼的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-machine-shoulder-press-1.svg",
+    "wg-machine-shoulder-press-2.svg",
+    "wg-machine-shoulder-press-3.svg"
+   ]
+  },
+  {
+   "id": "standing-dumbbell-press",
+   "zh": "站姿哑铃推举",
+   "en": "Standing Dumbbell Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "肩 / 三头肌 / 核心",
+   "gear": "一对哑铃",
+   "steps": [
+    "站直，收紧腹部和臀部，两只哑铃举到耳朵两侧。",
+    "向上推到手臂接近伸直。",
+    "控制着放回耳侧。"
+   ],
+   "cue": "站着做核心也要干活，所以腰更容易往后仰——腹部先收紧再推。",
+   "avoid": "腰椎有伤的换坐姿。",
+   "risk": [
+    "肩",
+    "腰",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-standing-dumbbell-press-1.svg",
+    "wg-standing-dumbbell-press-2.svg",
+    "wg-standing-dumbbell-press-3.svg"
+   ]
+  },
+  {
+   "id": "push-press",
+   "zh": "借力推举",
+   "en": "Push Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "肩 / 腿 / 全身",
+   "gear": "杠铃",
+   "steps": [
+    "杠铃停在锁骨前，站直。",
+    "膝盖快速下沉一点再猛地蹬直，用这股力把杠铃送过头顶。",
+    "手臂在顶端接管并伸直，再控制着放回锁骨前。"
+   ],
+   "cue": "腿是发动机，手臂只是接住。它比严格推举能用更大的重量，但也更需要先会严格推举。",
+   "avoid": "肩、腰、膝有伤的别做。",
+   "risk": [
+    "肩",
+    "腰",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-push-press-1.svg",
+    "wg-push-press-2.svg",
+    "wg-push-press-3.svg"
+   ]
+  },
+  {
+   "id": "machine-lateral-raise",
+   "zh": "器械侧平举",
+   "en": "Machine Lateral Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "三角肌中束",
+   "gear": "侧平举器械",
+   "steps": [
+    "调好座椅高度坐好，手臂或手肘顶住臂垫。",
+    "把两臂向身体两侧抬到肩高。",
+    "慢慢放回来。"
+   ],
+   "cue": "器械挡住了甩动，所以能把重量控制得比哑铃版本更干净。",
+   "avoid": "肩峰撞击的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-machine-lateral-raise-1.svg",
+    "wg-machine-lateral-raise-2.svg",
+    "wg-machine-lateral-raise-3.svg"
+   ]
+  },
+  {
+   "id": "cable-front-raise",
+   "zh": "绳索前平举",
+   "en": "Cable Front Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "三角肌前束",
+   "gear": "龙门架",
+   "steps": [
+    "背对低位滑轮站立，从两腿之间握住手柄。",
+    "手肘微弯，把手臂向前抬到肩高。",
+    "慢慢放下来。"
+   ],
+   "cue": "全程有张力，所以重量可以比哑铃更轻。身体不要前后晃。",
+   "avoid": "肩前侧疼的别做。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-front-raise-1.svg",
+    "wg-cable-front-raise-2.svg",
+    "wg-cable-front-raise-3.svg"
+   ]
+  },
+  {
+   "id": "plate-front-raise",
+   "zh": "杠铃片前平举",
+   "en": "Plate Front Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "杠铃片",
+   "advanced": false,
+   "part": "三角肌前束",
+   "gear": "一片杠铃片",
+   "steps": [
+    "两手抓住一片杠铃片的两侧，垂在大腿前方。",
+    "手肘微弯，把杠铃片向前抬到肩高。",
+    "慢慢放下来。"
+   ],
+   "cue": "两手一起抓着，轨迹比哑铃更稳；同样不要靠身体晃动去甩。",
+   "avoid": "肩前侧疼的别做。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-plate-front-raise-1.svg",
+    "wg-plate-front-raise-2.svg",
+    "wg-plate-front-raise-3.svg"
+   ]
+  },
+  {
+   "id": "bent-over-rear-delt-raise",
+   "zh": "俯身侧平举",
+   "en": "Bent-Over Rear Delt Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "肩后侧",
+   "gear": "一对哑铃",
+   "steps": [
+    "坐在凳子前沿，上身前倾贴近大腿，两只哑铃垂在小腿两侧。",
+    "手肘微弯，把两臂向身体两侧抬起。",
+    "慢慢放下来。"
+   ],
+   "cue": "坐着做把腰卸掉了，肩后侧更容易找到感觉。",
+   "avoid": "肩前侧疼的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-bent-over-rear-delt-raise-1.svg",
+    "wg-bent-over-rear-delt-raise-2.svg",
+    "wg-bent-over-rear-delt-raise-3.svg"
+   ]
+  },
+  {
+   "id": "cable-rear-delt-fly",
+   "zh": "绳索反向飞鸟",
+   "en": "Cable Rear Delt Fly",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "肩后侧 / 上背",
+   "gear": "龙门架",
+   "steps": [
+    "两侧滑轮调到肩高，交叉握住对侧手柄。",
+    "手肘微弯，把两臂向身体后外方打开。",
+    "慢慢收回来。"
+   ],
+   "cue": "交叉之后张力方向正对肩后侧，这是它比哑铃版本好的地方。",
+   "avoid": "肩前侧疼的减小幅度。",
+   "risk": [
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-rear-delt-fly-1.svg",
+    "wg-cable-rear-delt-fly-2.svg",
+    "wg-cable-rear-delt-fly-3.svg"
+   ]
+  },
+  {
+   "id": "pike-push-up",
+   "zh": "俯身推举（倒 V 俯卧撑）",
+   "en": "Pike Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "肩 / 三头肌",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "从俯卧撑姿势把臀部高高抬起，成一个倒 V。",
+    "屈肘让头顶向地面靠近。",
+    "再推回起点。"
+   ],
+   "cue": "徒手练肩最有效的一个。臀抬得越高越偏肩。",
+   "avoid": "手腕承重疼、肩有伤的别做；血压问题头晕的人起身要慢。",
+   "risk": [
+    "腕",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-pike-push-up-1.svg",
+    "wg-pike-push-up-2.svg",
+    "wg-pike-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "feet-elevated-pike-push-up",
+   "zh": "脚垫高俯身推举",
+   "en": "Feet-Elevated Pike Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "肩 / 三头肌",
+   "gear": "徒手加一个矮凳，需要到地上",
+   "steps": [
+    "双脚搭在矮凳上，双手撑地，把臀部高高抬起成倒 V。",
+    "屈肘让头顶向地面靠近。",
+    "再推回起点。"
+   ],
+   "cue": "比平地版本难一档，是通往倒立俯卧撑的中间站。",
+   "avoid": "手腕、肩有伤的别做。",
+   "risk": [
+    "腕",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-feet-elevated-pike-push-up-1.svg",
+    "wg-feet-elevated-pike-push-up-2.svg",
+    "wg-feet-elevated-pike-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "wall-walk",
+   "zh": "爬墙倒立",
+   "en": "Wall Walk",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "墙",
+   "advanced": true,
+   "part": "肩 / 核心",
+   "gear": "一面墙，需要到地上",
+   "steps": [
+    "面对墙趴下，双脚踩在墙根，双手撑地。",
+    "脚沿着墙往上走，同时两手一步步向墙靠近。",
+    "走到自己能控制的高度就停，再原路走回来。"
+   ],
+   "cue": "上去容易下来难，所以只走到还能稳稳退回来的高度。",
+   "avoid": "肩、手腕有伤、血压问题的别做。",
+   "risk": [
+    "腕",
+    "肩",
+    "颈"
+   ],
+   "floor": true,
+   "files": [
+    "wg-wall-walk-1.svg",
+    "wg-wall-walk-2.svg",
+    "wg-wall-walk-3.svg"
+   ]
+  },
+  {
+   "id": "wall-handstand-push-up",
+   "zh": "靠墙倒立俯卧撑",
+   "en": "Wall Handstand Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "墙",
+   "advanced": true,
+   "part": "肩 / 三头肌",
+   "gear": "一面墙，需要到地上",
+   "steps": [
+    "在墙边撑成倒立，脚靠住墙保持稳定。",
+    "屈肘让头顶慢慢接近地面。",
+    "再推回伸直。"
+   ],
+   "cue": "下降到头轻触地面就够；这个动作对肩和颈的要求很高。",
+   "avoid": "肩、颈、手腕有伤、血压问题、头晕史的别做。",
+   "risk": [
+    "腕",
+    "肩",
+    "颈"
+   ],
+   "floor": true,
+   "files": [
+    "wg-wall-handstand-push-up-1.svg",
+    "wg-wall-handstand-push-up-2.svg",
+    "wg-wall-handstand-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "handstand-push-up",
+   "zh": "倒立俯卧撑",
+   "en": "Handstand Push-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "肩",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "肩 / 三头肌 / 核心",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "撑成自由倒立，身体收紧成一条线。",
+    "屈肘让头顶慢慢接近地面。",
+    "再推回伸直。"
+   ],
+   "cue": "需要先能稳定地自由倒立；不确定就一直在靠墙那一版上练。",
+   "avoid": "肩、颈、手腕有伤、血压问题、头晕史的别做。",
+   "risk": [
+    "腕",
+    "肩",
+    "颈"
+   ],
+   "floor": true,
+   "files": [
+    "wg-handstand-push-up-1.svg",
+    "wg-handstand-push-up-2.svg",
+    "wg-handstand-push-up-3.svg"
+   ]
+  },
+  {
+   "id": "standing-calf-raise",
+   "zh": "站姿提踵器械",
+   "en": "Standing Calf Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "小腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "小腿（腓肠肌）",
+   "gear": "站姿提踵器械",
+   "steps": [
+    "肩膀顶住肩垫，前脚掌踩在踏板边缘，脚跟悬空。",
+    "脚跟慢慢下沉到有拉伸感。",
+    "再踮到最高，停一下。"
+   ],
+   "cue": "下沉那一段和踮起来一样重要，很多人只做了上半程。膝盖保持伸直但不锁死。",
+   "avoid": "跟腱有伤、踝关节肿的别做。",
+   "risk": [
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-standing-calf-raise-1.svg",
+    "wg-standing-calf-raise-2.svg",
+    "wg-standing-calf-raise-3.svg"
+   ]
+  },
+  {
+   "id": "seated-calf-raise",
+   "zh": "坐姿提踵器械",
+   "en": "Seated Calf Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "小腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "小腿（比目鱼肌）",
+   "gear": "坐姿提踵器械",
+   "steps": [
+    "坐好，大腿顶住腿垫，前脚掌踩在踏板上。",
+    "脚跟慢慢下沉到有拉伸感。",
+    "再踮到最高，停一下。"
+   ],
+   "cue": "屈膝的姿势练的是小腿更深的那一层，和站姿版本不重复。",
+   "avoid": "膝盖被压着疼的调整腿垫位置。",
+   "risk": [
+    "踝",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-seated-calf-raise-1.svg",
+    "wg-seated-calf-raise-2.svg",
+    "wg-seated-calf-raise-3.svg"
+   ]
+  },
+  {
+   "id": "donkey-calf-raise",
+   "zh": "驴式提踵",
+   "en": "Donkey Calf Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "小腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "小腿（腓肠肌）",
+   "gear": "驴式提踵器械或一个可以扶的台面",
+   "steps": [
+    "上身前倾扶住台面或顶住器械腰垫，前脚掌踩在台阶边缘。",
+    "脚跟下沉到有拉伸感。",
+    "再踮到最高。"
+   ],
+   "cue": "前倾的姿势让小腿被拉得更开，行程比站姿更长。",
+   "avoid": "腰有伤的别做前倾版本，换站姿。",
+   "risk": [
+    "踝",
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-donkey-calf-raise-1.svg",
+    "wg-donkey-calf-raise-2.svg",
+    "wg-donkey-calf-raise-3.svg"
+   ]
+  },
+  {
+   "id": "leg-press-calf-raise",
+   "zh": "蹬腿机提踵",
+   "en": "Leg Press Calf Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "小腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "小腿",
+   "gear": "蹬腿机",
+   "steps": [
+    "坐进蹬腿机，前脚掌踩在踏板下缘，腿伸直但不锁死。",
+    "让踏板把脚踝压到有拉伸感。",
+    "再用前脚掌把踏板推远。"
+   ],
+   "cue": "务必挂好安全锁扣再做；这个动作的膝盖是伸直的，别让它被压弯。",
+   "avoid": "膝盖不能完全伸直、跟腱有伤的别做。",
+   "risk": [
+    "踝",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-leg-press-calf-raise-1.svg",
+    "wg-leg-press-calf-raise-2.svg",
+    "wg-leg-press-calf-raise-3.svg"
+   ]
+  },
+  {
+   "id": "fast-feet",
+   "zh": "原地快频踩步",
+   "en": "Fast Feet",
+   "src": "wg",
+   "scenes": [
+    "跑前"
+   ],
+   "region": "小腿",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "小腿 / 心肺",
+   "gear": "徒手，站着做",
+   "steps": [
+    "两脚与髋同宽，膝盖微弯，重心放在前脚掌。",
+    "原地快速交替踩步，幅度很小。",
+    "两臂自然摆动，落地轻一点。"
+   ],
+   "cue": "热身或者久坐之后活动一下都合适。追求的是频率不是高度。",
+   "avoid": "踝、膝有伤的别做。",
+   "risk": [
+    "踝",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-fast-feet-1.svg",
+    "wg-fast-feet-2.svg",
+    "wg-fast-feet-3.svg"
+   ]
+  },
+  {
+   "id": "back-extension",
+   "zh": "山羊挺身",
+   "en": "Back Extension",
+   "src": "wg",
+   "scenes": [],
+   "region": "腰背",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "下背 / 臀 / 大腿后侧",
+   "gear": "罗马椅",
+   "steps": [
+    "把髋部卡在垫子上，脚固定好，上身自然下垂。",
+    "收紧臀部，把上身抬起到和腿成一条线。",
+    "慢慢下降回起点。"
+   ],
+   "cue": "抬到一条线就停，再往上仰是把腰椎往后压。想着用臀带，不是用腰甩。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-back-extension-1.svg",
+    "wg-back-extension-2.svg",
+    "wg-back-extension-3.svg"
+   ]
+  },
+  {
+   "id": "superman",
+   "zh": "超人式（手脚同抬）",
+   "en": "Superman",
+   "src": "wg",
+   "scenes": [
+    "腰背",
+    "力量"
+   ],
+   "region": "腰背",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "下背 / 臀 / 肩",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "趴在垫子上，两臂向前伸直，两腿并拢伸直。",
+    "同时把手臂和腿抬离地面一点，胸口略微离地。",
+    "停一下，再慢慢放下来。"
+   ],
+   "cue": "抬得低一点没关系，脖子不要跟着仰，眼睛看地面。",
+   "avoid": "腰往后仰会疼的先问医生；可以先只抬手或只抬腿。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-superman-1.svg",
+    "wg-superman-2.svg",
+    "wg-superman-3.svg"
+   ]
+  },
+  {
+   "id": "torso-twist-stretch",
+   "zh": "坐姿转体",
+   "en": "Torso Twists",
+   "src": "wg",
+   "scenes": [
+    "腰背"
+   ],
+   "region": "拉伸",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "侧腰 / 脊柱",
+   "gear": "徒手，坐在地上",
+   "steps": [
+    "坐在垫子上，两腿屈膝，脚跟点地，上身略微后倾。",
+    "两手在胸前相握，慢慢把上身转向一侧。",
+    "再慢慢转向另一侧，来回做。"
+   ],
+   "cue": "转的是胸椎不是腰；慢比幅度重要，不要靠惯性甩。图上那个人手里拿了一块杠铃片，徒手做是一样的。",
+   "avoid": "腰扭伤没好、转身就疼的别做。",
+   "risk": [
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-torso-twist-stretch-1.svg",
+    "wg-torso-twist-stretch-2.svg",
+    "wg-torso-twist-stretch-3.svg"
+   ]
+  },
+  {
+   "id": "chin-up",
+   "zh": "反握引体向上",
+   "en": "Chin-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "单杠",
+   "advanced": true,
+   "part": "二头肌 / 背阔肌",
+   "gear": "单杠",
+   "steps": [
+    "反握单杠（掌心朝自己），与肩同宽，身体自然悬垂。",
+    "肩胛骨先下沉，再屈肘把身体拉到下巴过杠。",
+    "控制着放下来。"
+   ],
+   "cue": "反握让二头分走更多，多数人反握比正握做得多。拉不上去先做离心。",
+   "avoid": "肘、腕不适的换对握；肩有伤的先问康复师。",
+   "risk": [
+    "肘",
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-chin-up-1.svg",
+    "wg-chin-up-2.svg",
+    "wg-chin-up-3.svg"
+   ]
+  },
+  {
+   "id": "bicep-curl",
+   "zh": "哑铃弯举",
+   "en": "Bicep Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "二头肌",
+   "gear": "一对哑铃",
+   "steps": [
+    "站直，两手各持一只哑铃垂在身侧，掌心朝前。",
+    "手肘固定在身体两侧，把哑铃弯举到肩前。",
+    "慢慢放回去，手臂接近伸直。"
+   ],
+   "cue": "手肘不要往前跑，跑了就是肩在帮忙。放下来那一段慢一点。",
+   "avoid": "肘部有伤、肌腱炎的减小重量或先问医生。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-bicep-curl-1.svg",
+    "wg-bicep-curl-2.svg",
+    "wg-bicep-curl-3.svg"
+   ]
+  },
+  {
+   "id": "hammer-curl",
+   "zh": "锤式弯举",
+   "en": "Hammer Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "二头肌 / 前臂",
+   "gear": "一对哑铃",
+   "steps": [
+    "站直，两手各持一只哑铃垂在身侧，掌心相对。",
+    "保持掌心相对，把哑铃弯举到肩前。",
+    "慢慢放回去。"
+   ],
+   "cue": "掌心相对的握法对手腕和肘更友好，普通弯举做着肘疼的人换它。",
+   "avoid": "肘部疼痛加重就停。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-hammer-curl-1.svg",
+    "wg-hammer-curl-2.svg",
+    "wg-hammer-curl-3.svg"
+   ]
+  },
+  {
+   "id": "preacher-curl",
+   "zh": "牧师凳弯举",
+   "en": "Preacher Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "二头肌",
+   "gear": "牧师凳和杠铃或哑铃",
+   "steps": [
+    "坐好，上臂完全贴住斜垫，手臂自然伸直。",
+    "把重量弯举到接近肩的高度。",
+    "慢慢放回到接近伸直，但不要完全放松。"
+   ],
+   "cue": "上臂被垫子固定住，身体想借力也借不了——这是它存在的理由。伸直那一端不要猛地放到底。",
+   "avoid": "肘部有伤、伸直到底会疼的减小幅度。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-preacher-curl-1.svg",
+    "wg-preacher-curl-2.svg",
+    "wg-preacher-curl-3.svg"
+   ]
+  },
+  {
+   "id": "cable-curl",
+   "zh": "绳索弯举",
+   "en": "Cable Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "二头肌",
+   "gear": "龙门架",
+   "steps": [
+    "面对低位滑轮站立，握住直杆或曲杆手柄。",
+    "手肘固定在身侧，把手柄弯举到肩前。",
+    "慢慢放回去。"
+   ],
+   "cue": "全程张力恒定，最低点也不松——哑铃在最低点是几乎没有负荷的。",
+   "avoid": "肘部有伤的减小重量。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-curl-1.svg",
+    "wg-cable-curl-2.svg",
+    "wg-cable-curl-3.svg"
+   ]
+  },
+  {
+   "id": "reverse-curl",
+   "zh": "反握弯举",
+   "en": "Reverse Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "前臂 / 二头肌",
+   "gear": "杠铃或曲杆",
+   "steps": [
+    "正握（掌心朝下）握住杠铃，垂在大腿前方。",
+    "手肘固定在身侧，把杠铃弯举到肩前。",
+    "慢慢放回去。"
+   ],
+   "cue": "重量要比普通弯举轻不少。它练的是前臂上侧，网球肘的人在康复师指导下常用到。",
+   "avoid": "肘外侧疼痛加重就停。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-reverse-curl-1.svg",
+    "wg-reverse-curl-2.svg",
+    "wg-reverse-curl-3.svg"
+   ]
+  },
+  {
+   "id": "wrist-curl",
+   "zh": "腕屈举",
+   "en": "Wrist Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "前臂内侧",
+   "gear": "杠铃或哑铃和一个长凳",
+   "steps": [
+    "坐好，前臂搁在大腿或凳面上，手腕悬在外侧，掌心朝上。",
+    "让重量把手腕慢慢向下拉开。",
+    "再用手腕把它卷回来。"
+   ],
+   "cue": "幅度小、重量轻，靠的是手腕自己动，前臂不要跟着抬。",
+   "avoid": "腕管综合征、手腕疼的先问医生。",
+   "risk": [
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-wrist-curl-1.svg",
+    "wg-wrist-curl-2.svg",
+    "wg-wrist-curl-3.svg"
+   ]
+  },
+  {
+   "id": "tricep-pushdown",
+   "zh": "绳索下压",
+   "en": "Tricep Pushdown",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "三头肌",
+   "gear": "龙门架",
+   "steps": [
+    "面对高位滑轮站立，握住直杆，手肘夹在身体两侧。",
+    "手肘固定，把手柄向下压到手臂伸直。",
+    "慢慢让它回到起点。"
+   ],
+   "cue": "手肘一往前后跑就变成背在发力了。上身可以略微前倾但不要摇。",
+   "avoid": "肘部有伤的减小重量。",
+   "risk": [
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-tricep-pushdown-1.svg",
+    "wg-tricep-pushdown-2.svg",
+    "wg-tricep-pushdown-3.svg"
+   ]
+  },
+  {
+   "id": "overhead-tricep-extension",
+   "zh": "绳索过顶臂屈伸",
+   "en": "Overhead Tricep Extension",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "三头肌长头",
+   "gear": "龙门架",
+   "steps": [
+    "背对滑轮，两手握住绳索举过头顶，手肘朝前弯着。",
+    "手肘固定，把绳索向前上方推到手臂伸直。",
+    "慢慢屈肘回到起点。"
+   ],
+   "cue": "过顶的角度练的是三头最长的那一束，下压练不到。手肘尽量不要外张。",
+   "avoid": "肩膀抬手过头就疼的别做，换下压。",
+   "risk": [
+    "肘",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-overhead-tricep-extension-1.svg",
+    "wg-overhead-tricep-extension-2.svg",
+    "wg-overhead-tricep-extension-3.svg"
+   ]
+  },
+  {
+   "id": "skull-crusher",
+   "zh": "仰卧臂屈伸",
+   "en": "Skull Crusher",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "三头肌",
+   "gear": "曲杆和卧推凳",
+   "steps": [
+    "躺在凳上，两手握住曲杆举在胸口上方，手臂伸直。",
+    "手肘固定，只屈肘让杠往额头方向下降。",
+    "再伸肘推回起点。"
+   ],
+   "cue": "上臂从头到尾垂直不动；肘疼是这个动作最常见的问题，用曲杆并且把重量放轻。",
+   "avoid": "肘部有伤的别做，换绳索下压。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-skull-crusher-1.svg",
+    "wg-skull-crusher-2.svg",
+    "wg-skull-crusher-3.svg"
+   ]
+  },
+  {
+   "id": "close-grip-bench-press",
+   "zh": "窄握卧推",
+   "en": "Close-Grip Bench Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "三头肌 / 胸",
+   "gear": "杠铃和卧推凳",
+   "steps": [
+    "躺到卧推凳上，两手与肩同宽握住杠铃（不要更窄）。",
+    "手肘收在身体两侧，控制着下降到胸口下部。",
+    "推回起点。"
+   ],
+   "cue": "握得太窄手腕会难受，与肩同宽就够了，关键是手肘收着走。",
+   "avoid": "手腕、肘部有伤的别做。",
+   "risk": [
+    "腕",
+    "肘",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-close-grip-bench-press-1.svg",
+    "wg-close-grip-bench-press-2.svg",
+    "wg-close-grip-bench-press-3.svg"
+   ]
+  },
+  {
+   "id": "dip",
+   "zh": "双杠臂屈伸",
+   "en": "Dip",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "器械",
+   "advanced": true,
+   "part": "三头肌 / 胸",
+   "gear": "双杠",
+   "steps": [
+    "双手撑住双杠把身体支起来，上身尽量保持直立。",
+    "屈肘下降到肩膀略低于手肘。",
+    "推回起点。"
+   ],
+   "cue": "直立偏三头，前倾偏胸。下降到肩略低于肘就停，再深是拿肩关节冒险。",
+   "avoid": "肩前侧疼、肘有伤的别做。",
+   "risk": [
+    "肩",
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dip-1.svg",
+    "wg-dip-2.svg",
+    "wg-dip-3.svg"
+   ]
+  },
+  {
+   "id": "assisted-dip",
+   "zh": "辅助双杠臂屈伸",
+   "en": "Assisted Dip",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "三头肌 / 胸",
+   "gear": "辅助器械",
+   "steps": [
+    "选一个配重，跪或站在机器的踏板上，双手撑住把手。",
+    "屈肘下降到肩略低于肘。",
+    "推回起点。"
+   ],
+   "cue": "配重越大越省力，一档一档减下去就通向徒手版本。",
+   "avoid": "肩前侧疼的别做。",
+   "risk": [
+    "肩",
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-assisted-dip-1.svg",
+    "wg-assisted-dip-2.svg",
+    "wg-assisted-dip-3.svg"
+   ]
+  },
+  {
+   "id": "weighted-dip",
+   "zh": "负重双杠臂屈伸",
+   "en": "Weighted Dip",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "器械",
+   "advanced": true,
+   "part": "三头肌 / 胸",
+   "gear": "双杠加负重腰带",
+   "steps": [
+    "挂上负重，双手撑住双杠支起身体。",
+    "屈肘下降到肩略低于肘。",
+    "推回起点。"
+   ],
+   "cue": "徒手还做不轻松就先别加负重。",
+   "avoid": "肩、肘、腕有伤的别做。",
+   "risk": [
+    "肩",
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-weighted-dip-1.svg",
+    "wg-weighted-dip-2.svg",
+    "wg-weighted-dip-3.svg"
+   ]
+  },
+  {
+   "id": "assisted-chin-up",
+   "zh": "辅助反握引体",
+   "en": "Assisted Chin-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "二头肌 / 背阔肌",
+   "gear": "辅助引体器械",
+   "steps": [
+    "选一个配重，跪或站在机器的踏板上。",
+    "反握上方把手，肩胛骨下沉，拉到下巴过杠。",
+    "控制着放下来。"
+   ],
+   "cue": "通向徒手反握引体最直接的一条路。",
+   "avoid": "肘、肩有伤的先问康复师。",
+   "risk": [
+    "肘",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-assisted-chin-up-1.svg",
+    "wg-assisted-chin-up-2.svg",
+    "wg-assisted-chin-up-3.svg"
+   ]
+  },
+  {
+   "id": "weighted-chin-up",
+   "zh": "负重反握引体",
+   "en": "Weighted Chin-up",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "单杠",
+   "advanced": true,
+   "part": "二头肌 / 背阔肌",
+   "gear": "单杠加负重腰带或背包",
+   "steps": [
+    "挂上负重，反握单杠悬垂。",
+    "肩胛骨下沉，拉到下巴过杠。",
+    "控制着放下来。"
+   ],
+   "cue": "徒手做起来还勉强就先堆徒手的数量。",
+   "avoid": "肘、肩、腕有伤的别做。",
+   "risk": [
+    "肘",
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-weighted-chin-up-1.svg",
+    "wg-weighted-chin-up-2.svg",
+    "wg-weighted-chin-up-3.svg"
+   ]
+  },
+  {
+   "id": "incline-dumbbell-curl",
+   "zh": "上斜哑铃弯举",
+   "en": "Incline Dumbbell Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "二头肌",
+   "gear": "一对哑铃和可调卧推凳",
+   "steps": [
+    "把凳子调成后仰的角度，靠着坐好，两臂自然垂在身体后方。",
+    "手肘固定，把哑铃弯举到肩前。",
+    "慢慢放回去。"
+   ],
+   "cue": "手臂垂在身体后方，起点被拉得更开——这是它和站姿弯举的区别。",
+   "avoid": "肩前侧被拉着疼的减小后仰角度。",
+   "risk": [
+    "肘",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-incline-dumbbell-curl-1.svg",
+    "wg-incline-dumbbell-curl-2.svg",
+    "wg-incline-dumbbell-curl-3.svg"
+   ]
+  },
+  {
+   "id": "concentration-curl",
+   "zh": "集中弯举",
+   "en": "Concentration Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "二头肌",
+   "gear": "一只哑铃和一个凳子",
+   "steps": [
+    "坐在凳上，两腿分开，持哑铃那侧的手肘顶住同侧大腿内侧。",
+    "把哑铃弯举到肩前。",
+    "慢慢放回去，换另一只手。"
+   ],
+   "cue": "手肘被大腿顶住，身体一点也借不上力，最容易找到二头的感觉。",
+   "avoid": "肘部有伤的减小重量。",
+   "risk": [
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-concentration-curl-1.svg",
+    "wg-concentration-curl-2.svg",
+    "wg-concentration-curl-3.svg"
+   ]
+  },
+  {
+   "id": "ez-bar-curl",
+   "zh": "曲杆弯举",
+   "en": "EZ-Bar Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "二头肌",
+   "gear": "曲杆",
+   "steps": [
+    "两手握住曲杆内侧的弯折处，垂在大腿前方。",
+    "手肘固定在身侧，把杠弯举到肩前。",
+    "慢慢放回去。"
+   ],
+   "cue": "曲杆让手腕稍微内旋，直杆做着手腕疼的人换它。",
+   "avoid": "肘、腕疼痛加重就停。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-ez-bar-curl-1.svg",
+    "wg-ez-bar-curl-2.svg",
+    "wg-ez-bar-curl-3.svg"
+   ]
+  },
+  {
+   "id": "spider-curl",
+   "zh": "蜘蛛弯举",
+   "en": "Spider Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "二头肌",
+   "gear": "一对哑铃和上斜凳",
+   "steps": [
+    "胸口贴住上斜凳趴好，两臂垂在凳子前方。",
+    "手肘固定，把哑铃弯举到肩前。",
+    "慢慢放回到接近伸直。"
+   ],
+   "cue": "趴着让身体完全没法借力；顶端那一下收缩感最明显。",
+   "avoid": "肘部有伤的减小重量。",
+   "risk": [
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-spider-curl-1.svg",
+    "wg-spider-curl-2.svg",
+    "wg-spider-curl-3.svg"
+   ]
+  },
+  {
+   "id": "rope-hammer-curl",
+   "zh": "绳索锤式弯举",
+   "en": "Rope Hammer Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "二头肌 / 前臂",
+   "gear": "龙门架和绳索把手",
+   "steps": [
+    "面对低位滑轮站立，两手握住绳索两端，掌心相对。",
+    "手肘固定，把绳索弯举到肩前。",
+    "慢慢放回去。"
+   ],
+   "cue": "对握加恒定张力，肘和腕都比直杆舒服。",
+   "avoid": "肘部疼痛加重就停。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-rope-hammer-curl-1.svg",
+    "wg-rope-hammer-curl-2.svg",
+    "wg-rope-hammer-curl-3.svg"
+   ]
+  },
+  {
+   "id": "drag-curl",
+   "zh": "拖拉弯举",
+   "en": "Drag Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "二头肌",
+   "gear": "杠铃",
+   "steps": [
+    "正常握住杠铃垂在身前。",
+    "把手肘往身后拉，让杠铃贴着身体向上「拖」到胸口。",
+    "再沿原路慢慢放回去。"
+   ],
+   "cue": "和普通弯举的区别是手肘主动往后走，杠始终贴着身体。重量要轻。",
+   "avoid": "肩前侧不适的别做。",
+   "risk": [
+    "肘",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-drag-curl-1.svg",
+    "wg-drag-curl-2.svg",
+    "wg-drag-curl-3.svg"
+   ]
+  },
+  {
+   "id": "rope-tricep-pushdown",
+   "zh": "绳索三头下压（绳把）",
+   "en": "Rope Tricep Pushdown",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "三头肌",
+   "gear": "龙门架和绳索把手",
+   "steps": [
+    "面对高位滑轮，两手握住绳索两端，手肘夹在身侧。",
+    "向下压到手臂伸直，同时把两手向外分开。",
+    "慢慢回到起点。"
+   ],
+   "cue": "末端分开那一下能把三头收得更紧，是绳把比直杆多出来的一点。",
+   "avoid": "肘部有伤的减小重量。",
+   "risk": [
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-rope-tricep-pushdown-1.svg",
+    "wg-rope-tricep-pushdown-2.svg",
+    "wg-rope-tricep-pushdown-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-skull-crusher",
+   "zh": "双哑铃仰卧臂屈伸",
+   "en": "Two Dumbbell Skullcrusher",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "三头肌",
+   "gear": "一对哑铃和卧推凳",
+   "steps": [
+    "躺在凳上，两只哑铃举在胸口上方，掌心相对。",
+    "手肘固定，只屈肘让哑铃下降到耳侧。",
+    "再伸肘推回起点。"
+   ],
+   "cue": "哑铃比杠铃更迁就手腕；上臂从头到尾垂直不动。",
+   "avoid": "肘部有伤的别做。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-skull-crusher-1.svg",
+    "wg-dumbbell-skull-crusher-2.svg",
+    "wg-dumbbell-skull-crusher-3.svg"
+   ]
+  },
+  {
+   "id": "single-dumbbell-skullcrusher",
+   "zh": "单哑铃仰卧臂屈伸",
+   "en": "Single Dumbbell Skullcrusher",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "三头肌",
+   "gear": "一只哑铃和卧推凳",
+   "steps": [
+    "躺到凳上，两手共同托住一只哑铃举在胸口上方。",
+    "手肘固定，屈肘让哑铃下降到额头上方。",
+    "再伸肘推回。"
+   ],
+   "cue": "两手一起托更稳，适合刚开始练这个动作的时候。",
+   "avoid": "肘部有伤的别做。",
+   "risk": [
+    "肘",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-single-dumbbell-skullcrusher-1.svg",
+    "wg-single-dumbbell-skullcrusher-2.svg",
+    "wg-single-dumbbell-skullcrusher-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-overhead-tricep-extension",
+   "zh": "哑铃过顶臂屈伸",
+   "en": "Dumbbell Overhead Tricep Extension",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "三头肌长头",
+   "gear": "一只哑铃",
+   "steps": [
+    "坐或站好，两手共同托住一只哑铃举过头顶。",
+    "手肘固定朝前，屈肘让哑铃下降到脑后。",
+    "再伸肘推回头顶上方。"
+   ],
+   "cue": "手肘尽量不要外张；下降到脑后有拉伸感就够。",
+   "avoid": "肩膀抬手过头就疼的别做。",
+   "risk": [
+    "肘",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-overhead-tricep-extension-1.svg",
+    "wg-dumbbell-overhead-tricep-extension-2.svg",
+    "wg-dumbbell-overhead-tricep-extension-3.svg"
+   ]
+  },
+  {
+   "id": "single-arm-dumbbell-tricep-extension",
+   "zh": "单臂哑铃过顶臂屈伸",
+   "en": "Single Arm Dumbbell Tricep Extension",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "三头肌长头",
+   "gear": "一只哑铃",
+   "steps": [
+    "坐或站好，单手持哑铃举过头顶。",
+    "手肘固定，屈肘让哑铃下降到脑后。",
+    "再伸肘推回，换另一只手。"
+   ],
+   "cue": "另一只手可以扶住同侧手肘帮它不外张。",
+   "avoid": "肩膀抬手过头就疼的别做。",
+   "risk": [
+    "肘",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-single-arm-dumbbell-tricep-extension-1.svg",
+    "wg-single-arm-dumbbell-tricep-extension-2.svg",
+    "wg-single-arm-dumbbell-tricep-extension-3.svg"
+   ]
+  },
+  {
+   "id": "bench-dip",
+   "zh": "凳上反屈伸",
+   "en": "Bench Dip",
+   "src": "wg",
+   "scenes": [
+    "办公室",
+    "力量"
+   ],
+   "region": "手臂",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "三头肌",
+   "gear": "一个稳固的长凳或椅子",
+   "steps": [
+    "背对长凳坐在边缘，两手撑住凳沿，臀部移出凳外。",
+    "屈肘让身体垂直下降。",
+    "再推回起点。"
+   ],
+   "cue": "腿伸得越直越难。肩膀往前塌的话就是下降太深了，肩前侧会不舒服。",
+   "avoid": "肩前侧疼的别做。",
+   "risk": [
+    "肩",
+    "腕",
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-bench-dip-1.svg",
+    "wg-bench-dip-2.svg",
+    "wg-bench-dip-3.svg"
+   ]
+  },
+  {
+   "id": "tricep-kickback",
+   "zh": "哑铃后踢臂屈伸",
+   "en": "Tricep Kickback",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "三头肌",
+   "gear": "一只哑铃和一个长凳",
+   "steps": [
+    "一只手和同侧膝盖撑在凳上，另一只手持哑铃，上臂贴住身侧抬起。",
+    "上臂不动，只伸肘把哑铃向后送到手臂伸直。",
+    "慢慢屈肘收回，换另一侧。"
+   ],
+   "cue": "上臂必须一直贴着身体保持抬起——一掉下来这个动作就没了。重量很轻就够。",
+   "avoid": "腰有伤的先问康复师。",
+   "risk": [
+    "肘",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-tricep-kickback-1.svg",
+    "wg-tricep-kickback-2.svg",
+    "wg-tricep-kickback-3.svg"
+   ]
+  },
+  {
+   "id": "wrist-extension",
+   "zh": "腕伸举",
+   "en": "Wrist Extension",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "前臂外侧",
+   "gear": "一只轻哑铃和一个长凳",
+   "steps": [
+    "坐好，前臂搁在大腿或凳面上，手腕悬在外侧，掌心朝下。",
+    "让手腕慢慢向下放。",
+    "再用手腕把它抬起来。"
+   ],
+   "cue": "重量非常轻就够。久用鼠标、网球肘的人常做这个，但要在康复师指导下。",
+   "avoid": "手腕、肘外侧疼痛加重就停，先问医生。",
+   "risk": [
+    "腕",
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-wrist-extension-1.svg",
+    "wg-wrist-extension-2.svg",
+    "wg-wrist-extension-3.svg"
+   ]
+  },
+  {
+   "id": "farmer-carry",
+   "zh": "农夫行走",
+   "en": "Farmer Carry",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "前臂 / 核心 / 全身",
+   "gear": "一对哑铃",
+   "steps": [
+    "两手各持一只哑铃垂在身侧。",
+    "肩膀往下往后收，收紧腹部，站直。",
+    "保持这个姿势往前走，走到握不住就放下。"
+   ],
+   "cue": "全身都在工作但看起来什么都没做。别耸肩，别塌腰，眼睛看前方。",
+   "avoid": "腰有伤的减轻重量；地面要防滑。",
+   "risk": [
+    "腰",
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-farmer-carry-1.svg",
+    "wg-farmer-carry-2.svg",
+    "wg-farmer-carry-3.svg"
+   ]
+  },
+  {
+   "id": "chair-dip",
+   "zh": "椅子反屈伸",
+   "en": "Chair Dip",
+   "src": "wg",
+   "scenes": [
+    "办公室",
+    "力量"
+   ],
+   "region": "手臂",
+   "equipment": "椅子",
+   "advanced": false,
+   "part": "三头肌",
+   "gear": "一把稳固的椅子",
+   "steps": [
+    "背对椅子，两手撑住椅面前沿，臀部移出椅外。",
+    "屈肘让身体垂直下降。",
+    "再推回起点。"
+   ],
+   "cue": "办公室里练三头的办法。椅子必须是稳的，带轮子的不行。",
+   "avoid": "肩前侧疼的别做。",
+   "risk": [
+    "肩",
+    "腕",
+    "肘"
+   ],
+   "floor": false,
+   "files": [
+    "wg-chair-dip-1.svg",
+    "wg-chair-dip-2.svg",
+    "wg-chair-dip-3.svg"
+   ]
+  },
+  {
+   "id": "dead-hang",
+   "zh": "悬垂",
+   "en": "Dead Hang",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "单杠",
+   "advanced": false,
+   "part": "握力 / 肩 / 背",
+   "gear": "单杠",
+   "steps": [
+    "正握单杠，让身体完全放松地垂下来。",
+    "肩膀不用刻意收，让身体的重量把肩和背拉开。",
+    "呼吸保持顺畅，握不住之前就下来。"
+   ],
+   "cue": "它顺带把肩和上背拉开了，久坐之后挂一会儿很舒服。脚下留出空间，别跳下来。",
+   "avoid": "肩关节不稳、脱位过的先问康复师。",
+   "risk": [
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dead-hang-1.svg",
+    "wg-dead-hang-2.svg",
+    "wg-dead-hang-3.svg"
+   ]
+  },
+  {
+   "id": "crab-walk",
+   "zh": "螃蟹爬行",
+   "en": "Crab Walk",
+   "src": "wg",
+   "scenes": [],
+   "region": "手臂",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "三头肌 / 臀 / 核心",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "坐在地上，两手撑在身后，屈膝踩地，把臀部抬离地面。",
+    "保持臀部抬起，用手和脚交替向前或向后走。",
+    "臀不要掉下来。"
+   ],
+   "cue": "肩前侧会有点吃力，手指朝向臀部会舒服一些。",
+   "avoid": "手腕承重疼、肩前侧疼的别做。",
+   "risk": [
+    "腕",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-crab-walk-1.svg",
+    "wg-crab-walk-2.svg",
+    "wg-crab-walk-3.svg"
+   ]
+  },
+  {
+   "id": "hanging-leg-raise",
+   "zh": "悬垂举腿",
+   "en": "Hanging Leg Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "单杠",
+   "advanced": true,
+   "part": "下腹 / 髋屈肌",
+   "gear": "单杠",
+   "steps": [
+    "正握单杠悬垂，肩胛骨先下沉。",
+    "两腿并拢伸直，慢慢抬到与地面平行。",
+    "控制着放下来，不要让身体荡起来。"
+   ],
+   "cue": "荡起来就说明该换屈膝版本了。慢慢放下来那一段才是练到腹部的地方。",
+   "avoid": "腰痛发作期、肩有伤的别做。",
+   "risk": [
+    "腰",
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-hanging-leg-raise-1.svg",
+    "wg-hanging-leg-raise-2.svg",
+    "wg-hanging-leg-raise-3.svg"
+   ]
+  },
+  {
+   "id": "cable-crunch",
+   "zh": "绳索卷腹",
+   "en": "Cable Crunch",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "腹直肌",
+   "gear": "龙门架和绳索把手",
+   "steps": [
+    "跪在高位滑轮前，两手把绳索拉到额头两侧。",
+    "髋部固定不动，只用腹部把上背卷向大腿。",
+    "慢慢回到起点。"
+   ],
+   "cue": "动的是脊柱不是髋——屁股一往后坐就变成拉背了。",
+   "avoid": "颈椎不适的不要用手拽头。",
+   "risk": [
+    "腰",
+    "颈"
+   ],
+   "floor": true,
+   "files": [
+    "wg-cable-crunch-1.svg",
+    "wg-cable-crunch-2.svg",
+    "wg-cable-crunch-3.svg"
+   ]
+  },
+  {
+   "id": "ab-wheel",
+   "zh": "健腹轮",
+   "en": "Ab Wheel Rollout",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "核心 / 背阔肌",
+   "gear": "健腹轮，需要跪下",
+   "steps": [
+    "跪在垫子上，两手握住健腹轮把手，放在膝盖前方。",
+    "收紧腹部和臀部，让轮子慢慢向前滚出去。",
+    "滚到腰快要塌之前停住，再收腹把轮子拉回来。"
+   ],
+   "cue": "腰一塌就是滚过头了——这是这个动作唯一的判据，也是它最容易伤腰的地方。先从很小的幅度开始。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-ab-wheel-1.svg",
+    "wg-ab-wheel-2.svg",
+    "wg-ab-wheel-3.svg"
+   ]
+  },
+  {
+   "id": "russian-twist",
+   "zh": "俄罗斯转体",
+   "en": "Russian Twist",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "腹斜肌",
+   "gear": "徒手，坐在地上",
+   "steps": [
+    "坐好，屈膝，脚跟点地或抬起，上身略微后倾。",
+    "两手在胸前相握，把上身连同手臂转向一侧。",
+    "再转向另一侧，来回做。"
+   ],
+   "cue": "转的是躯干不是手臂；后倾越多越难，腰一塌就坐直一点。",
+   "avoid": "腰痛发作期、腰椎有伤的别做。",
+   "risk": [
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-russian-twist-1.svg",
+    "wg-russian-twist-2.svg",
+    "wg-russian-twist-3.svg"
+   ]
+  },
+  {
+   "id": "pallof-press",
+   "zh": "帕洛夫推举",
+   "en": "Pallof Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "核心（抗旋转）",
+   "gear": "龙门架",
+   "steps": [
+    "侧身站在滑轮旁，两手在胸前握住手柄，后退拉出张力。",
+    "收紧腹部，把手柄从胸前直直推出去。",
+    "顶住不让身体被拉着转，再收回胸前，换另一侧。"
+   ],
+   "cue": "它练的是「不动」——身体一被拉转就说明重量太大了。腰不好的人最该练这一类。",
+   "avoid": "腰痛发作期减小重量。",
+   "risk": [
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-pallof-press-1.svg",
+    "wg-pallof-press-2.svg",
+    "wg-pallof-press-3.svg"
+   ]
+  },
+  {
+   "id": "cable-woodchop",
+   "zh": "绳索劈砍",
+   "en": "Cable Woodchop",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "腹斜肌 / 核心",
+   "gear": "龙门架",
+   "steps": [
+    "把滑轮调到高位，侧身站好，两手一起握住手柄。",
+    "从高处沿斜线把手柄拉向对侧的髋部，转的是躯干。",
+    "控制着送回起点，换另一侧。"
+   ],
+   "cue": "脚跟可以随着转动微微离地，但膝盖别扭着；用躯干带手臂。",
+   "avoid": "腰扭伤没好、转身就疼的别做。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-woodchop-1.svg",
+    "wg-cable-woodchop-2.svg",
+    "wg-cable-woodchop-3.svg"
+   ]
+  },
+  {
+   "id": "half-kneeling-pallof-press",
+   "zh": "半跪帕洛夫推举",
+   "en": "Half-Kneeling Pallof Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "核心（抗旋转）",
+   "gear": "龙门架，需要跪下",
+   "steps": [
+    "侧对滑轮半跪（一腿跪地一腿屈膝在前），两手在胸前握住手柄。",
+    "收紧腹部和臀部，把手柄直直推出去。",
+    "顶住不让身体转，收回胸前，换另一侧。"
+   ],
+   "cue": "半跪把腿的借力也去掉了，比站姿更纯。",
+   "avoid": "膝盖跪着疼的垫毛巾。",
+   "risk": [
+    "腰",
+    "膝"
+   ],
+   "floor": true,
+   "files": [
+    "wg-half-kneeling-pallof-press-1.svg",
+    "wg-half-kneeling-pallof-press-2.svg",
+    "wg-half-kneeling-pallof-press-3.svg"
+   ]
+  },
+  {
+   "id": "cable-pallof-hold",
+   "zh": "帕洛夫静态支撑",
+   "en": "Cable Pallof Hold",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "核心（抗旋转）",
+   "gear": "龙门架",
+   "steps": [
+    "侧身站在滑轮旁，两手握住手柄推到胸前伸直。",
+    "保持这个姿势不动，顶住把你往回转的力。",
+    "顶不住之前收回来，换另一侧。"
+   ],
+   "cue": "推举版本是动态的，这个是静态的——顶住那一段正是核心真正的工作方式。",
+   "avoid": "腰痛发作期减小重量。",
+   "risk": [
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-pallof-hold-1.svg",
+    "wg-cable-pallof-hold-2.svg",
+    "wg-cable-pallof-hold-3.svg"
+   ]
+  },
+  {
+   "id": "hanging-knee-raise",
+   "zh": "悬垂屈膝举腿",
+   "en": "Hanging Knee Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "单杠",
+   "advanced": false,
+   "part": "下腹 / 髋屈肌",
+   "gear": "单杠",
+   "steps": [
+    "正握单杠悬垂，肩胛骨下沉。",
+    "屈膝把膝盖抬向胸口。",
+    "控制着放下来，不要荡。"
+   ],
+   "cue": "比直腿版本容易得多，从这个开始。膝盖抬过髋才算数。",
+   "avoid": "腰痛发作期、肩有伤的别做。",
+   "risk": [
+    "腰",
+    "肩",
+    "腕"
+   ],
+   "floor": false,
+   "files": [
+    "wg-hanging-knee-raise-1.svg",
+    "wg-hanging-knee-raise-2.svg",
+    "wg-hanging-knee-raise-3.svg"
+   ]
+  },
+  {
+   "id": "captains-chair-knee-raise",
+   "zh": "罗马椅屈膝举腿",
+   "en": "Captain's Chair Knee Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "下腹 / 髋屈肌",
+   "gear": "罗马椅（举腿架）",
+   "steps": [
+    "前臂撑在垫子上，背贴靠垫，身体垂直悬着。",
+    "屈膝把膝盖抬向胸口。",
+    "控制着放下来。"
+   ],
+   "cue": "不用握力兜底，所以能比悬垂版本练得更久。背要贴住靠垫。",
+   "avoid": "腰痛发作期、肩有伤的别做。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-captains-chair-knee-raise-1.svg",
+    "wg-captains-chair-knee-raise-2.svg",
+    "wg-captains-chair-knee-raise-3.svg"
+   ]
+  },
+  {
+   "id": "decline-sit-up",
+   "zh": "下斜仰卧起坐",
+   "en": "Decline Sit-Up",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "长凳",
+   "advanced": false,
+   "part": "腹直肌 / 髋屈肌",
+   "gear": "下斜长凳",
+   "steps": [
+    "把腿固定在下斜凳的挡垫上躺好。",
+    "用腹部把上身卷起来，一节一节地起。",
+    "控制着躺回凳面，不要摔下去。"
+   ],
+   "cue": "别用手拽脖子。腰不好的人先做卷腹，这个动作髋屈肌参与得多。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "颈"
+   ],
+   "floor": false,
+   "files": [
+    "wg-decline-sit-up-1.svg",
+    "wg-decline-sit-up-2.svg",
+    "wg-decline-sit-up-3.svg"
+   ]
+  },
+  {
+   "id": "weighted-crunch",
+   "zh": "负重卷腹",
+   "en": "Weighted Crunch",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "杠铃片",
+   "advanced": false,
+   "part": "腹直肌",
+   "gear": "一片杠铃片，需要躺下",
+   "steps": [
+    "躺好屈膝，双脚踩地，把杠铃片抱在胸前或举在头顶上方。",
+    "呼气，用腹部把肩胛骨卷离地面。",
+    "慢慢躺回去。"
+   ],
+   "cue": "幅度还是很小，负重只是让同样的小幅度更吃力。别用手拽脖子。",
+   "avoid": "腰椎有伤、颈椎不适的别做。",
+   "risk": [
+    "腰",
+    "颈"
+   ],
+   "floor": true,
+   "files": [
+    "wg-weighted-crunch-1.svg",
+    "wg-weighted-crunch-2.svg",
+    "wg-weighted-crunch-3.svg"
+   ]
+  },
+  {
+   "id": "weighted-russian-twist",
+   "zh": "负重俄罗斯转体",
+   "en": "Weighted Russian Twist",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "腹斜肌",
+   "gear": "一只哑铃，坐在地上",
+   "steps": [
+    "坐好屈膝，上身略微后倾，两手一起持一只哑铃。",
+    "把哑铃随躯干转向一侧，再转向另一侧。",
+    "来回做。"
+   ],
+   "cue": "重量让人更想用手臂甩——一甩腰就跟着扭。慢一点，转的是躯干。",
+   "avoid": "腰痛发作期、腰扭伤没好的别做。",
+   "risk": [
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-weighted-russian-twist-1.svg",
+    "wg-weighted-russian-twist-2.svg",
+    "wg-weighted-russian-twist-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-side-bend",
+   "zh": "哑铃体侧屈",
+   "en": "Dumbbell Side Bend",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "腹斜肌 / 侧腰",
+   "gear": "一只哑铃",
+   "steps": [
+    "站直，单手持一只哑铃垂在体侧，另一只手叉腰。",
+    "身体向持哑铃那一侧慢慢侧屈下去。",
+    "再用侧腰的力量把身体拉回直立，换另一侧。"
+   ],
+   "cue": "只在冠状面里动，身体不要前后转。两只手都拿哑铃就等于互相抵消，只拿一只。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-side-bend-1.svg",
+    "wg-dumbbell-side-bend-2.svg",
+    "wg-dumbbell-side-bend-3.svg"
+   ]
+  },
+  {
+   "id": "push-up-shoulder-tap",
+   "zh": "俯卧撑加拍肩",
+   "en": "Push-up Shoulder Tap",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "核心 / 胸 / 肩",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "摆成俯卧撑姿势，两脚比肩略宽站稳。",
+    "做一个俯卧撑，起来之后用一只手拍对侧肩膀。",
+    "换手再拍一次，然后做下一个俯卧撑。"
+   ],
+   "cue": "拍肩那一下臀部不许左右摇——那正是核心在被考的地方。脚分得越开越稳。",
+   "avoid": "手腕承重疼、肩有伤的别做。",
+   "risk": [
+    "腕",
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-push-up-shoulder-tap-1.svg",
+    "wg-push-up-shoulder-tap-2.svg",
+    "wg-push-up-shoulder-tap-3.svg"
+   ]
+  },
+  {
+   "id": "banded-pallof-press",
+   "zh": "弹力带帕洛夫推举",
+   "en": "Banded Pallof Press",
+   "src": "wg",
+   "scenes": [
+    "腰背",
+    "力量"
+   ],
+   "region": "核心",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "核心（抗旋转）",
+   "gear": "一条弹力带和一个固定点",
+   "steps": [
+    "把弹力带固定在胸口高度，侧身站好，两手在胸前握住带子。",
+    "后退拉出张力，把手直直推出去。",
+    "顶住不让身体转，再收回胸前，换另一侧。"
+   ],
+   "cue": "家里版的帕洛夫推举。练的是「不动」，被拉转了就往固定点走近一步。",
+   "avoid": "腰痛发作期减小张力。",
+   "risk": [
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-pallof-press-1.svg",
+    "wg-banded-pallof-press-2.svg",
+    "wg-banded-pallof-press-3.svg"
+   ]
+  },
+  {
+   "id": "banded-woodchop",
+   "zh": "弹力带劈砍",
+   "en": "Banded Woodchop",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "核心",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "腹斜肌 / 核心",
+   "gear": "一条弹力带和一个高处固定点",
+   "steps": [
+    "把带子固定在高处，侧身站好，两手一起握住。",
+    "沿斜线把带子拉向对侧髋部，转的是躯干。",
+    "控制着送回，换另一侧。"
+   ],
+   "cue": "用躯干带手臂，不是用手臂拽。",
+   "avoid": "腰扭伤没好的别做。",
+   "risk": [
+    "腰",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-woodchop-1.svg",
+    "wg-banded-woodchop-2.svg",
+    "wg-banded-woodchop-3.svg"
+   ]
+  },
+  {
+   "id": "banded-dead-bug",
+   "zh": "弹力带死虫式",
+   "en": "Banded Dead Bug",
+   "src": "wg",
+   "scenes": [
+    "腰背"
+   ],
+   "region": "核心",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "深层腹肌 / 核心",
+   "gear": "一条弹力带和一个头顶方向的固定点，需要躺下",
+   "steps": [
+    "仰卧，两手握住从头顶方向拉过来的带子，手臂伸直指向天花板。",
+    "髋膝弯成直角抬起，腰压实地面。",
+    "手臂顶住带子的拉力不动，一条腿慢慢伸出去再收回，换另一条。"
+   ],
+   "cue": "带子一直想把你的手拉过头顶，手不许动——这就是它比徒手死虫式多出来的那一层。",
+   "avoid": "腰椎有伤的先做徒手版本。",
+   "risk": [
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-banded-dead-bug-1.svg",
+    "wg-banded-dead-bug-2.svg",
+    "wg-banded-dead-bug-3.svg"
+   ]
+  },
+  {
+   "id": "hollow-rock",
+   "zh": "空心体摇摆",
+   "en": "Hollow Rock",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "腹直肌 / 核心",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧，腰压实地面，两腿并拢抬起，两臂伸向头顶方向。",
+    "保持这个「香蕉形」不变，让身体像摇椅一样前后摇。",
+    "腰始终不离地。"
+   ],
+   "cue": "先能稳稳撑住空心体再来摇；一摇腰就离地的话说明还不到时候。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "颈"
+   ],
+   "floor": true,
+   "files": [
+    "wg-hollow-rock-1.svg",
+    "wg-hollow-rock-2.svg",
+    "wg-hollow-rock-3.svg"
+   ]
+  },
+  {
+   "id": "v-up",
+   "zh": "V 字两头起",
+   "en": "V-Up",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "腹直肌 / 髋屈肌",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧，两臂伸向头顶方向，两腿伸直。",
+    "同时把上身和腿抬起，两手去够脚，身体成一个 V。",
+    "控制着躺回去。"
+   ],
+   "cue": "腰会在这个动作里承受不少，做不了就先做屈膝版本或卷腹。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "颈"
+   ],
+   "floor": true,
+   "files": [
+    "wg-v-up-1.svg",
+    "wg-v-up-2.svg",
+    "wg-v-up-3.svg"
+   ]
+  },
+  {
+   "id": "flutter-kick",
+   "zh": "交替打腿",
+   "en": "Flutter Kick",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "下腹 / 髋屈肌",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧，两手放在臀部下方，腰压实地面。",
+    "两腿伸直抬离地面一点，交替上下小幅打动。",
+    "腰一离地就把腿抬高一点。"
+   ],
+   "cue": "腿放得越低越难；判据永远是腰有没有贴着地。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-flutter-kick-1.svg",
+    "wg-flutter-kick-2.svg",
+    "wg-flutter-kick-3.svg"
+   ]
+  },
+  {
+   "id": "lying-leg-raise",
+   "zh": "仰卧举腿",
+   "en": "Lying Leg Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "下腹 / 髋屈肌",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧，两手放在臀部下方，两腿并拢伸直。",
+    "把腿抬到与地面垂直。",
+    "慢慢放下来，快碰到地面时停住再抬。"
+   ],
+   "cue": "放下去那一段最容易塌腰，也最练腹部——控制不住就屈膝做。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-lying-leg-raise-1.svg",
+    "wg-lying-leg-raise-2.svg",
+    "wg-lying-leg-raise-3.svg"
+   ]
+  },
+  {
+   "id": "toe-touch",
+   "zh": "仰卧摸脚尖",
+   "en": "Toe Touch",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "腹直肌上部",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧，两腿伸直向上举起。",
+    "呼气，把肩胛骨卷离地面，两手去够脚尖。",
+    "慢慢躺回去。"
+   ],
+   "cue": "幅度很小，够不到脚尖也没关系——肩胛骨离地那一下才是重点。",
+   "avoid": "颈椎不适的不要用力仰头。",
+   "risk": [
+    "腰",
+    "颈"
+   ],
+   "floor": true,
+   "files": [
+    "wg-toe-touch-1.svg",
+    "wg-toe-touch-2.svg",
+    "wg-toe-touch-3.svg"
+   ]
+  },
+  {
+   "id": "heel-tap",
+   "zh": "仰卧交替触脚跟",
+   "en": "Heel Tap",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "腹斜肌",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧屈膝，双脚踩地，肩胛骨微微卷离地面。",
+    "身体向一侧侧屈，用手去碰同侧脚跟。",
+    "再换另一侧，来回做。"
+   ],
+   "cue": "肩胛骨全程不落地，落了就白做了。幅度小、次数多的一个动作。",
+   "avoid": "颈椎不适的把头枕回地面休息一下再继续。",
+   "risk": [
+    "腰",
+    "颈"
+   ],
+   "floor": true,
+   "files": [
+    "wg-heel-tap-1.svg",
+    "wg-heel-tap-2.svg",
+    "wg-heel-tap-3.svg"
+   ]
+  },
+  {
+   "id": "plank-shoulder-tap",
+   "zh": "平板支撑拍肩",
+   "en": "Plank Shoulder Tap",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "核心（抗旋转）/ 肩",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "摆成手撑平板支撑，两脚比肩略宽。",
+    "用一只手拍对侧肩膀，臀部保持不动。",
+    "换手，交替进行。"
+   ],
+   "cue": "臀部左右摇是最常见的走样。脚分得越开越容易稳住。",
+   "avoid": "手腕承重疼、腰痛发作期别做。",
+   "risk": [
+    "腕",
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-plank-shoulder-tap-1.svg",
+    "wg-plank-shoulder-tap-2.svg",
+    "wg-plank-shoulder-tap-3.svg"
+   ]
+  },
+  {
+   "id": "plank-jack",
+   "zh": "平板支撑开合跳",
+   "en": "Plank Jack",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "核心 / 心肺",
+   "gear": "徒手，需要趴下",
+   "steps": [
+    "摆成前臂平板支撑。",
+    "两脚跳开到比肩宽，再跳回并拢。",
+    "臀部保持不动，不要拱起来。"
+   ],
+   "cue": "跳的是脚，动的不该是腰。累了臀部会开始翘起来，那就是该停的信号。",
+   "avoid": "腰痛发作期、膝踝有伤的改成交替向外迈步不跳。",
+   "risk": [
+    "腰",
+    "踝",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-plank-jack-1.svg",
+    "wg-plank-jack-2.svg",
+    "wg-plank-jack-3.svg"
+   ]
+  },
+  {
+   "id": "bear-plank",
+   "zh": "熊式支撑",
+   "en": "Bear Plank",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "深层核心 / 肩",
+   "gear": "徒手，需要跪下",
+   "steps": [
+    "四点跪撑，手在肩下，膝在髋下。",
+    "收紧腹部，把两个膝盖抬离地面一点点。",
+    "保持住，呼吸不要憋。"
+   ],
+   "cue": "膝盖只抬起一点点就够，背要保持平的。它比平板支撑更能练到深层。",
+   "avoid": "手腕承重疼的改成拳撑。",
+   "risk": [
+    "腕",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-bear-plank-1.svg",
+    "wg-bear-plank-2.svg",
+    "wg-bear-plank-3.svg"
+   ]
+  },
+  {
+   "id": "bear-crawl",
+   "zh": "熊爬",
+   "en": "Bear Crawl",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "核心 / 肩 / 全身",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "从熊式支撑开始，膝盖离地一点点。",
+    "对角的手和脚同时向前移动一小步。",
+    "保持臀部不左右摇，向前爬，再向后爬回来。"
+   ],
+   "cue": "臀部像端着一杯水一样不能晃；步子小一点更稳。",
+   "avoid": "手腕承重疼、腰痛发作期别做。",
+   "risk": [
+    "腕",
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-bear-crawl-1.svg",
+    "wg-bear-crawl-2.svg",
+    "wg-bear-crawl-3.svg"
+   ]
+  },
+  {
+   "id": "l-sit-hold",
+   "zh": "L 型支撑",
+   "en": "L-Sit Hold",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "核心 / 髋屈肌 / 三头肌",
+   "gear": "徒手或两个支撑块，需要到地上",
+   "steps": [
+    "坐在地上，两手撑在髋部两侧，把臀部撑离地面。",
+    "两腿并拢伸直向前抬起，身体成一个 L。",
+    "保持住，撑不住就放下来。"
+   ],
+   "cue": "很难。做不到就先屈膝，或者用两个支撑块把身体垫高一点。",
+   "avoid": "手腕承重疼、腰痛发作期别做。",
+   "risk": [
+    "腕",
+    "腰",
+    "肩"
+   ],
+   "floor": true,
+   "files": [
+    "wg-l-sit-hold-1.svg",
+    "wg-l-sit-hold-2.svg",
+    "wg-l-sit-hold-3.svg"
+   ]
+  },
+  {
+   "id": "side-plank-hip-dip",
+   "zh": "侧平板沉髋",
+   "en": "Side Plank Hip Dip",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "侧腹 / 核心",
+   "gear": "徒手，需要侧躺撑地",
+   "steps": [
+    "摆成侧平板支撑，手肘在肩膀正下方。",
+    "让髋部慢慢向地面下沉一点。",
+    "再用侧腹的力量把它抬回一条线，换另一侧。"
+   ],
+   "cue": "下沉不用碰到地面，抬回来时不要超过一条线。",
+   "avoid": "肩、腰有伤的先做静态侧平板。",
+   "risk": [
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-side-plank-hip-dip-1.svg",
+    "wg-side-plank-hip-dip-2.svg",
+    "wg-side-plank-hip-dip-3.svg"
+   ]
+  },
+  {
+   "id": "copenhagen-plank",
+   "zh": "哥本哈根侧平板",
+   "en": "Copenhagen Plank",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "大腿内侧 / 侧腹",
+   "gear": "一个长凳，需要侧躺撑地",
+   "steps": [
+    "侧躺，手肘撑地，把上面那条腿的小腿或膝盖搭在长凳上。",
+    "撑起身体成一条线，下面那条腿悬空或屈膝支撑。",
+    "保持住，换另一侧。"
+   ],
+   "cue": "大腿内侧会很快抗议——这正是它练的地方。先用膝盖搭凳的简化版。",
+   "avoid": "腹股沟拉伤没好的别做。",
+   "risk": [
+    "髋",
+    "肩",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-copenhagen-plank-1.svg",
+    "wg-copenhagen-plank-2.svg",
+    "wg-copenhagen-plank-3.svg"
+   ]
+  },
+  {
+   "id": "dragon-flag",
+   "zh": "龙旗",
+   "en": "Dragon Flag",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "核心（全段）",
+   "gear": "一个稳固的长凳，需要躺下",
+   "steps": [
+    "躺在凳上，两手抓住头顶后方的凳沿。",
+    "把整个身体从肩膀以下抬起，成一条直线指向天花板。",
+    "保持身体笔直，慢慢下降到接近凳面，再抬起来。"
+   ],
+   "cue": "这是最难的核心动作之一，腰一塌就是失控。先从屈膝的版本开始，而且要有把握再做。",
+   "avoid": "腰椎有伤、颈椎不适的别做；核心没有相当基础不要尝试。",
+   "risk": [
+    "腰",
+    "颈",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dragon-flag-1.svg",
+    "wg-dragon-flag-2.svg",
+    "wg-dragon-flag-3.svg"
+   ]
+  },
+  {
+   "id": "half-burpee",
+   "zh": "半程波比",
+   "en": "Half Burpee",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "核心 / 全身 / 心肺",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "从站立开始，蹲下把两手撑在脚前的地面上。",
+    "两脚向后跳成平板支撑姿势。",
+    "再跳回蹲姿，站起来。"
+   ],
+   "cue": "比完整波比少了俯卧撑和跳起，膝盖和肩的压力小很多。",
+   "avoid": "手腕、膝有伤的把跳换成一条腿一条腿地走。",
+   "risk": [
+    "腕",
+    "膝",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-half-burpee-1.svg",
+    "wg-half-burpee-2.svg",
+    "wg-half-burpee-3.svg"
+   ]
+  },
+  {
+   "id": "squat-thrust",
+   "zh": "蹲撑跳",
+   "en": "Squat Thrust",
+   "src": "wg",
+   "scenes": [],
+   "region": "核心",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "核心 / 全身 / 心肺",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "站好，蹲下两手撑地。",
+    "两脚向后跳成平板支撑。",
+    "再跳回蹲姿，站直但不跳起。"
+   ],
+   "cue": "和半程波比几乎一样，节奏可以更快。落地轻一点。",
+   "avoid": "手腕、膝有伤的把跳换成走。",
+   "risk": [
+    "腕",
+    "膝",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-squat-thrust-1.svg",
+    "wg-squat-thrust-2.svg",
+    "wg-squat-thrust-3.svg"
+   ]
+  },
+  {
+   "id": "hip-thrust",
+   "zh": "杠铃臀推",
+   "en": "Hip Thrust",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "臀 / 后链",
+   "gear": "杠铃、护垫和一个长凳",
+   "steps": [
+    "上背靠在长凳边缘坐好，杠铃隔着护垫压在髋部上方。",
+    "两脚踩实地面，与髋同宽。",
+    "收紧臀部把髋顶起来，到身体从肩到膝成一条线。",
+    "控制着放回来。"
+   ],
+   "cue": "顶到一条线就停，再往上是腰在往后仰。下巴微收，眼睛看前方而不是天花板。",
+   "avoid": "腰椎有伤、腰痛发作期别做；护垫一定要有。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-hip-thrust-1.svg",
+    "wg-hip-thrust-2.svg",
+    "wg-hip-thrust-3.svg"
+   ]
+  },
+  {
+   "id": "cable-kickback",
+   "zh": "绳索后踢腿",
+   "en": "Cable Kickback",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "臀大肌",
+   "gear": "龙门架和脚踝绑带",
+   "steps": [
+    "把绑带系在一只脚踝上，面对滑轮站好，扶住机器。",
+    "支撑腿微弯，把绑带那条腿向后蹬出去。",
+    "收紧臀部停一下，再控制着收回，换另一条腿。"
+   ],
+   "cue": "腰不要跟着往后仰去帮忙——那是这个动作最常见的走样。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-kickback-1.svg",
+    "wg-cable-kickback-2.svg",
+    "wg-cable-kickback-3.svg"
+   ]
+  },
+  {
+   "id": "hip-abduction-machine",
+   "zh": "髋外展机",
+   "en": "Hip Abduction Machine",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "臀中肌 / 髋外侧",
+   "gear": "髋外展器械",
+   "steps": [
+    "坐进器械，两条大腿外侧贴住挡垫。",
+    "把两腿向外撑开到臀外侧发力。",
+    "慢慢收回来。"
+   ],
+   "cue": "上身可以略微前倾，臀外侧的感觉会更明显。收回来那一段别让配重砸下去。",
+   "avoid": "髋关节置换过的先问医生。",
+   "risk": [
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-hip-abduction-machine-1.svg",
+    "wg-hip-abduction-machine-2.svg",
+    "wg-hip-abduction-machine-3.svg"
+   ]
+  },
+  {
+   "id": "single-leg-glute-bridge",
+   "zh": "单腿臀桥",
+   "en": "Single-Leg Glute Bridge",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "臀 / 后链",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧屈膝，一只脚踩地，另一条腿伸直或屈膝抬起。",
+    "踩地那侧收紧臀部把髋顶起来。",
+    "顶到身体成一条线，再控制着放下来，换另一条腿。"
+   ],
+   "cue": "比双腿版本难一档，而且能看出两边的差距。骨盆不要往抬腿那一侧掉。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-single-leg-glute-bridge-1.svg",
+    "wg-single-leg-glute-bridge-2.svg",
+    "wg-single-leg-glute-bridge-3.svg"
+   ]
+  },
+  {
+   "id": "barbell-glute-bridge",
+   "zh": "杠铃臀桥",
+   "en": "Barbell Glute Bridge",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "臀 / 后链",
+   "gear": "杠铃和护垫，需要躺下",
+   "steps": [
+    "躺在地上屈膝，杠铃隔着护垫压在髋部上方。",
+    "两脚踩实，收紧臀部把髋顶起来。",
+    "顶到大腿和身体成一条线，再放下来。"
+   ],
+   "cue": "和臀推的区别是背贴着地，行程短一些，腰的负担也小一些。",
+   "avoid": "腰椎有伤的减轻重量；护垫一定要有。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-barbell-glute-bridge-1.svg",
+    "wg-barbell-glute-bridge-2.svg",
+    "wg-barbell-glute-bridge-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-glute-bridge",
+   "zh": "哑铃臀桥",
+   "en": "Dumbbell Glute Bridge",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "臀 / 后链",
+   "gear": "一只哑铃，需要躺下",
+   "steps": [
+    "躺在地上屈膝，两手把一只哑铃扶在髋部上方。",
+    "两脚踩实，收紧臀部把髋顶起来。",
+    "控制着放下来。"
+   ],
+   "cue": "家里最容易做到的臀部负重动作。哑铃要扶稳。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-dumbbell-glute-bridge-1.svg",
+    "wg-dumbbell-glute-bridge-2.svg",
+    "wg-dumbbell-glute-bridge-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-hip-thrust",
+   "zh": "哑铃臀推",
+   "en": "Dumbbell Hip Thrust",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "臀 / 后链",
+   "gear": "一只哑铃和一个长凳",
+   "steps": [
+    "上背靠在凳沿，两手把哑铃扶在髋部上方。",
+    "两脚踩实，收紧臀部把髋顶起来到一条线。",
+    "控制着放回来。"
+   ],
+   "cue": "比杠铃版本好上手，重量到了一定程度就该换杠铃了。",
+   "avoid": "腰椎有伤的减轻重量。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-hip-thrust-1.svg",
+    "wg-dumbbell-hip-thrust-2.svg",
+    "wg-dumbbell-hip-thrust-3.svg"
+   ]
+  },
+  {
+   "id": "smith-machine-hip-thrust",
+   "zh": "史密斯机臀推",
+   "en": "Smith Machine Hip Thrust",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "臀 / 后链",
+   "gear": "史密斯机、护垫和长凳",
+   "steps": [
+    "把凳子摆在史密斯机下方，上背靠住凳沿。",
+    "杠隔着护垫压在髋上，解锁挂钩。",
+    "收紧臀部顶到一条线，再放回来，结束时挂回。"
+   ],
+   "cue": "轨迹固定，一个人练时比自由杠铃容易上下。位置要先空杆试一次。",
+   "avoid": "腰椎有伤的减轻重量。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-smith-machine-hip-thrust-1.svg",
+    "wg-smith-machine-hip-thrust-2.svg",
+    "wg-smith-machine-hip-thrust-3.svg"
+   ]
+  },
+  {
+   "id": "cable-pull-through",
+   "zh": "绳索前屈后拉",
+   "en": "Cable Pull-Through",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "臀 / 大腿后侧",
+   "gear": "龙门架和绳索把手",
+   "steps": [
+    "背对低位滑轮站立，从两腿之间握住绳索，向前走两步拉出张力。",
+    "屈髋把臀部向后送，背保持挺直，感觉大腿后侧被拉开。",
+    "再收紧臀部把髋顶回直立。"
+   ],
+   "cue": "学「屈髋」这件事最好的动作——膝盖几乎不动，动的是髋。硬拉之前先练它。",
+   "avoid": "腰痛发作期减小幅度。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-pull-through-1.svg",
+    "wg-cable-pull-through-2.svg",
+    "wg-cable-pull-through-3.svg"
+   ]
+  },
+  {
+   "id": "machine-glute-kickback",
+   "zh": "臀部后踢器械",
+   "en": "Machine Glute Kickback",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "臀大肌",
+   "gear": "臀踢器械",
+   "steps": [
+    "面向器械站好或跪在踏垫上，一只脚踩住踏板。",
+    "收紧臀部把踏板向后蹬出去。",
+    "慢慢收回来，换另一条腿。"
+   ],
+   "cue": "器械把腰固定住了，比绳索版本更容易只用到臀。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-machine-glute-kickback-1.svg",
+    "wg-machine-glute-kickback-2.svg",
+    "wg-machine-glute-kickback-3.svg"
+   ]
+  },
+  {
+   "id": "cable-standing-hip-abduction",
+   "zh": "绳索站姿髋外展",
+   "en": "Cable Standing Hip Abduction",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "臀中肌 / 髋外侧",
+   "gear": "龙门架和脚踝绑带",
+   "steps": [
+    "绑带系在外侧那条脚踝上，侧身站好，扶住机器。",
+    "支撑腿微弯，把绑带那条腿向身体外侧抬起。",
+    "慢慢放回来，换另一侧。"
+   ],
+   "cue": "身体不要向另一侧倒过去借力，那样抬得高但臀外侧没吃到。",
+   "avoid": "髋关节置换过的先问医生。",
+   "risk": [
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-standing-hip-abduction-1.svg",
+    "wg-cable-standing-hip-abduction-2.svg",
+    "wg-cable-standing-hip-abduction-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-sumo-squat",
+   "zh": "哑铃相扑深蹲",
+   "en": "Dumbbell Sumo Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "臀 / 大腿内侧",
+   "gear": "一只哑铃",
+   "steps": [
+    "两脚比肩宽站好，脚尖向外打开，两手在身前一起握住哑铃。",
+    "臀部向下向后坐，膝盖顺着脚尖的方向打开。",
+    "蹲到舒服的深度，再蹬地站起来。"
+   ],
+   "cue": "膝盖要跟着脚尖走，不要向内塌。宽站距让臀和大腿内侧分走更多。",
+   "avoid": "膝、髋有伤的减小深度或先问医生。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-sumo-squat-1.svg",
+    "wg-dumbbell-sumo-squat-2.svg",
+    "wg-dumbbell-sumo-squat-3.svg"
+   ]
+  },
+  {
+   "id": "deficit-reverse-lunge",
+   "zh": "垫高后撤弓步",
+   "en": "Deficit Reverse Lunge",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "哑铃",
+   "advanced": true,
+   "part": "臀 / 大腿",
+   "gear": "一对哑铃和一个矮台",
+   "steps": [
+    "站在矮台上，两手各持一只哑铃。",
+    "一条腿向后下方撤步，膝盖接近地面。",
+    "前脚掌用力把身体拉回台上，换另一条腿。"
+   ],
+   "cue": "站在台上让行程更长，臀被拉得更开。台子要稳，不确定就在平地做。",
+   "avoid": "膝有伤、平衡不好的先在平地做。",
+   "risk": [
+    "膝",
+    "髋",
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-deficit-reverse-lunge-1.svg",
+    "wg-deficit-reverse-lunge-2.svg",
+    "wg-deficit-reverse-lunge-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-curtsy-lunge",
+   "zh": "哑铃屈膝礼弓步",
+   "en": "Dumbbell Curtsy Lunge",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "臀中肌 / 大腿",
+   "gear": "一对哑铃",
+   "steps": [
+    "站直，两手各持一只哑铃。",
+    "一条腿向斜后方交叉撤步，像行屈膝礼一样下蹲。",
+    "前脚掌蹬地回到直立，换另一条腿。"
+   ],
+   "cue": "交叉的角度让臀外侧吃力；膝盖不要向内塌。",
+   "avoid": "膝盖有伤、平衡不好的别做。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-curtsy-lunge-1.svg",
+    "wg-dumbbell-curtsy-lunge-2.svg",
+    "wg-dumbbell-curtsy-lunge-3.svg"
+   ]
+  },
+  {
+   "id": "kettlebell-swing",
+   "zh": "壶铃摆荡",
+   "en": "Kettlebell Swing",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "壶铃",
+   "advanced": true,
+   "part": "臀 / 后链 / 心肺",
+   "gear": "一只壶铃",
+   "steps": [
+    "两脚略宽于肩站好，壶铃放在身前一步远。",
+    "屈髋把壶铃从两腿之间向后荡，背保持挺直。",
+    "猛地伸髋收紧臀部，让壶铃靠这股力荡到胸口高度。",
+    "让它自然落回两腿之间，接着下一次。"
+   ],
+   "cue": "是髋在爆发，不是手臂在举。壶铃到胸口高度就够，不用过头。学会屈髋之后再练它。",
+   "avoid": "腰椎有伤、腰痛发作期别做；场地前后要留空。",
+   "risk": [
+    "腰",
+    "髋",
+    "肩"
+   ],
+   "floor": false,
+   "files": [
+    "wg-kettlebell-swing-1.svg",
+    "wg-kettlebell-swing-2.svg",
+    "wg-kettlebell-swing-3.svg"
+   ]
+  },
+  {
+   "id": "glute-focused-back-extension",
+   "zh": "臀主导山羊挺身",
+   "en": "Glute-Focused Back Extension",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "臀 / 下背",
+   "gear": "罗马椅",
+   "steps": [
+    "把髋卡在垫子上，脚固定好，背略微含着不要挺得太直。",
+    "收紧臀部把上身抬起到和腿成一条线。",
+    "慢慢下降。"
+   ],
+   "cue": "和普通山羊挺身的区别是刻意让背保持圆一点，把活交给臀。抬到一条线就停。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-glute-focused-back-extension-1.svg",
+    "wg-glute-focused-back-extension-2.svg",
+    "wg-glute-focused-back-extension-3.svg"
+   ]
+  },
+  {
+   "id": "reverse-hyperextension",
+   "zh": "反向挺身",
+   "en": "Reverse Hyperextension",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "臀 / 下背",
+   "gear": "反向挺身器械",
+   "steps": [
+    "上身趴在垫子上，两手抓住把手，两腿垂在后方。",
+    "收紧臀部把两腿向后上方抬到和身体成一条线。",
+    "控制着放下来。"
+   ],
+   "cue": "上身固定、腿在动，和山羊挺身正好相反。抬过一条线没有额外好处。",
+   "avoid": "腰椎有伤的先问康复师。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-reverse-hyperextension-1.svg",
+    "wg-reverse-hyperextension-2.svg",
+    "wg-reverse-hyperextension-3.svg"
+   ]
+  },
+  {
+   "id": "curtsy-lunge",
+   "zh": "屈膝礼弓步",
+   "en": "Curtsy Lunge",
+   "src": "wg",
+   "scenes": [
+    "力量",
+    "髋腿"
+   ],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "臀中肌 / 大腿",
+   "gear": "徒手，站着做",
+   "steps": [
+    "站直，两手叉腰或在胸前相握。",
+    "一条腿向斜后方交叉撤步，像行屈膝礼一样下蹲。",
+    "蹬地回到直立，换另一条腿。"
+   ],
+   "cue": "臀外侧的感觉比普通弓步明显；膝盖不要向内塌。",
+   "avoid": "膝有伤、平衡不好的扶着东西做。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-curtsy-lunge-1.svg",
+    "wg-curtsy-lunge-2.svg",
+    "wg-curtsy-lunge-3.svg"
+   ]
+  },
+  {
+   "id": "glute-bridge-march",
+   "zh": "臀桥行进",
+   "en": "Glute Bridge March",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "臀 / 核心",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧屈膝，先做一个臀桥把髋顶起来。",
+    "保持髋不掉，交替把一条腿的膝盖抬向胸口。",
+    "换腿，像原地踏步一样。"
+   ],
+   "cue": "难点是抬腿的时候骨盆不许左右掉。掉了就说明该退回静态臀桥。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-glute-bridge-march-1.svg",
+    "wg-glute-bridge-march-2.svg",
+    "wg-glute-bridge-march-3.svg"
+   ]
+  },
+  {
+   "id": "frog-pump",
+   "zh": "蛙式臀桥",
+   "en": "Frog Pump",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "臀大肌",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧，两脚掌相对贴在一起，膝盖向两侧打开。",
+    "收紧臀部把髋顶起来。",
+    "控制着放下来。"
+   ],
+   "cue": "外旋的腿位让臀大肌参与得更多，腰几乎不受力。",
+   "avoid": "髋前侧被拉着疼的减小打开幅度。",
+   "risk": [
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-frog-pump-1.svg",
+    "wg-frog-pump-2.svg",
+    "wg-frog-pump-3.svg"
+   ]
+  },
+  {
+   "id": "fire-hydrant",
+   "zh": "消防栓式",
+   "en": "Fire Hydrant",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "臀中肌 / 髋外侧",
+   "gear": "徒手，需要跪下",
+   "steps": [
+    "四点跪撑，背保持平的。",
+    "一条腿保持屈膝，向身体外侧抬起。",
+    "抬到臀外侧发力就够，身体不要跟着倒向另一侧，再放回来换腿。"
+   ],
+   "cue": "骨盆保持朝向地面是关键；抬多高不重要。",
+   "avoid": "髋关节置换过的先问医生；膝盖跪着疼的垫毛巾。",
+   "risk": [
+    "髋",
+    "膝",
+    "腕"
+   ],
+   "floor": true,
+   "files": [
+    "wg-fire-hydrant-1.svg",
+    "wg-fire-hydrant-2.svg",
+    "wg-fire-hydrant-3.svg"
+   ]
+  },
+  {
+   "id": "side-lying-hip-abduction",
+   "zh": "侧卧髋外展",
+   "en": "Side-Lying Hip Abduction",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "臀中肌 / 髋外侧",
+   "gear": "徒手，需要侧躺",
+   "steps": [
+    "侧躺，两腿伸直叠在一起，头枕在下面那条手臂上。",
+    "把上面那条腿伸直向上抬起。",
+    "慢慢放下来，做完换另一侧。"
+   ],
+   "cue": "脚尖略微朝下（而不是朝天花板）能更精确地打到臀中肌。身体不要向后倒。",
+   "avoid": "髋关节置换过的先问医生。",
+   "risk": [
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-side-lying-hip-abduction-1.svg",
+    "wg-side-lying-hip-abduction-2.svg",
+    "wg-side-lying-hip-abduction-3.svg"
+   ]
+  },
+  {
+   "id": "side-lying-leg-raise",
+   "zh": "侧卧抬腿",
+   "en": "Side-Lying Leg Raise",
+   "src": "wg",
+   "scenes": [],
+   "region": "臀",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "臀外侧 / 大腿",
+   "gear": "徒手，需要侧躺",
+   "steps": [
+    "侧躺，下面那条腿屈膝支撑，上面那条腿伸直。",
+    "把上面那条腿抬起到舒服的高度。",
+    "慢慢放下来，换另一侧。"
+   ],
+   "cue": "和髋外展是同一类，屈膝支撑让身体更稳，适合刚开始练的时候。",
+   "avoid": "髋部有伤的减小幅度。",
+   "risk": [
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-side-lying-leg-raise-1.svg",
+    "wg-side-lying-leg-raise-2.svg",
+    "wg-side-lying-leg-raise-3.svg"
+   ]
+  },
+  {
+   "id": "banded-glute-bridge",
+   "zh": "弹力带臀桥",
+   "en": "Banded Glute Bridge",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀 / 后链",
+   "gear": "一条环形弹力带，需要躺下",
+   "steps": [
+    "把弹力带套在膝盖上方，仰卧屈膝，两脚踩地。",
+    "收紧臀部把髋顶起来，同时两膝向外顶住带子。",
+    "控制着放下来。"
+   ],
+   "cue": "带子让膝盖有向内塌的趋势，顶住它就多练到了臀外侧。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-banded-glute-bridge-1.svg",
+    "wg-banded-glute-bridge-2.svg",
+    "wg-banded-glute-bridge-3.svg"
+   ]
+  },
+  {
+   "id": "banded-hip-thrust",
+   "zh": "弹力带臀推",
+   "en": "Banded Hip Thrust",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀 / 后链",
+   "gear": "一条环形弹力带和一个长凳",
+   "steps": [
+    "带子套在膝盖上方，上背靠住凳沿。",
+    "收紧臀部顶到一条线，同时两膝向外顶住带子。",
+    "控制着放回来。"
+   ],
+   "cue": "家里没有杠铃时的臀推版本；顶住带子那一下别忘了。",
+   "avoid": "腰椎有伤的减小幅度。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-hip-thrust-1.svg",
+    "wg-banded-hip-thrust-2.svg",
+    "wg-banded-hip-thrust-3.svg"
+   ]
+  },
+  {
+   "id": "banded-frog-pump",
+   "zh": "弹力带蛙式臀桥",
+   "en": "Banded Frog Pump",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀大肌",
+   "gear": "一条环形弹力带，需要躺下",
+   "steps": [
+    "带子套在膝盖上方，仰卧，两脚掌相对，膝盖向两侧打开。",
+    "收紧臀部把髋顶起来，同时顶住带子。",
+    "放下来。"
+   ],
+   "cue": "外旋加带子，臀大肌的感觉会很强烈。",
+   "avoid": "髋前侧被拉着疼的减小幅度。",
+   "risk": [
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-banded-frog-pump-1.svg",
+    "wg-banded-frog-pump-2.svg",
+    "wg-banded-frog-pump-3.svg"
+   ]
+  },
+  {
+   "id": "banded-clamshell",
+   "zh": "弹力带蚌式",
+   "en": "Banded Clamshell",
+   "src": "wg",
+   "scenes": [
+    "髋腿"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀中肌",
+   "gear": "一条环形弹力带，需要侧躺",
+   "steps": [
+    "带子套在膝盖上方，侧躺屈膝，两脚贴着。",
+    "把上面那个膝盖像开蚌壳一样打开，顶住带子。",
+    "慢慢合上，换另一侧。"
+   ],
+   "cue": "骨盆不要往后翻——一翻就是腰在使劲。",
+   "avoid": "髋关节置换过的先问医生。",
+   "risk": [
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-banded-clamshell-1.svg",
+    "wg-banded-clamshell-2.svg",
+    "wg-banded-clamshell-3.svg"
+   ]
+  },
+  {
+   "id": "banded-lateral-walk",
+   "zh": "弹力带横向走",
+   "en": "Banded Lateral Walk",
+   "src": "wg",
+   "scenes": [
+    "跑前",
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀中肌 / 髋外侧",
+   "gear": "一条环形弹力带",
+   "steps": [
+    "带子套在膝盖上方或脚踝处，两脚与肩同宽，微微屈膝下蹲。",
+    "保持这个半蹲姿势，向一侧横向迈步。",
+    "走几步再换方向走回来，带子始终有张力。"
+   ],
+   "cue": "上身不要左右晃；膝盖不许向内塌。跑步的人练这个能稳住膝盖。",
+   "avoid": "膝、髋有伤的减小带子阻力。",
+   "risk": [
+    "髋",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-lateral-walk-1.svg",
+    "wg-banded-lateral-walk-2.svg",
+    "wg-banded-lateral-walk-3.svg"
+   ]
+  },
+  {
+   "id": "banded-monster-walk",
+   "zh": "弹力带怪兽走",
+   "en": "Banded Monster Walk",
+   "src": "wg",
+   "scenes": [
+    "跑前",
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀中肌 / 臀大肌",
+   "gear": "一条环形弹力带",
+   "steps": [
+    "带子套在膝盖上方，两脚与肩同宽，微微屈膝。",
+    "保持半蹲，向斜前方交替迈步向前走。",
+    "再倒着走回来，膝盖始终顶住带子。"
+   ],
+   "cue": "和横向走一套，方向不同吃到的角度也不同。",
+   "avoid": "膝、髋有伤的减小阻力。",
+   "risk": [
+    "髋",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-monster-walk-1.svg",
+    "wg-banded-monster-walk-2.svg",
+    "wg-banded-monster-walk-3.svg"
+   ]
+  },
+  {
+   "id": "banded-donkey-kick",
+   "zh": "弹力带跪姿后踢",
+   "en": "Banded Donkey Kick",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀大肌",
+   "gear": "一条环形弹力带，需要跪下",
+   "steps": [
+    "带子套在两条大腿上，四点跪撑，背保持平的。",
+    "一条腿保持屈膝，脚跟朝天花板方向抬起，顶住带子。",
+    "慢慢放回来，换另一条腿。"
+   ],
+   "cue": "腰不要跟着往后仰；抬到臀部发力就够。",
+   "avoid": "腰痛发作期别做；膝盖跪着疼的垫毛巾。",
+   "risk": [
+    "腰",
+    "膝"
+   ],
+   "floor": true,
+   "files": [
+    "wg-banded-donkey-kick-1.svg",
+    "wg-banded-donkey-kick-2.svg",
+    "wg-banded-donkey-kick-3.svg"
+   ]
+  },
+  {
+   "id": "banded-fire-hydrant",
+   "zh": "弹力带消防栓式",
+   "en": "Banded Fire Hydrant",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀中肌 / 髋外侧",
+   "gear": "一条环形弹力带，需要跪下",
+   "steps": [
+    "带子套在膝盖上方，四点跪撑。",
+    "一条腿保持屈膝向身体外侧抬起，顶住带子。",
+    "放回来，换另一条腿。"
+   ],
+   "cue": "骨盆保持朝向地面，身体不要倒向另一侧。",
+   "avoid": "髋关节置换过的先问医生。",
+   "risk": [
+    "髋",
+    "膝",
+    "腕"
+   ],
+   "floor": true,
+   "files": [
+    "wg-banded-fire-hydrant-1.svg",
+    "wg-banded-fire-hydrant-2.svg",
+    "wg-banded-fire-hydrant-3.svg"
+   ]
+  },
+  {
+   "id": "banded-kickback",
+   "zh": "弹力带站姿后踢",
+   "en": "Banded Kickback",
+   "src": "wg",
+   "scenes": [
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀大肌",
+   "gear": "一条弹力带和一个固定点",
+   "steps": [
+    "带子一端固定在低处，另一端套在脚踝上，面对固定点站好，扶住东西。",
+    "支撑腿微弯，把套带那条腿向后蹬出去。",
+    "慢慢收回，换另一条腿。"
+   ],
+   "cue": "腰不要跟着往后仰。站着做比跪姿更方便，不用到地上。",
+   "avoid": "腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-kickback-1.svg",
+    "wg-banded-kickback-2.svg",
+    "wg-banded-kickback-3.svg"
+   ]
+  },
+  {
+   "id": "banded-standing-hip-abduction",
+   "zh": "弹力带站姿髋外展",
+   "en": "Banded Standing Hip Abduction",
+   "src": "wg",
+   "scenes": [
+    "平衡",
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀中肌 / 髋外侧",
+   "gear": "一条环形弹力带",
+   "steps": [
+    "带子套在脚踝处，站直，扶住墙或椅背。",
+    "支撑腿微弯，把另一条腿向身体外侧抬起，顶住带子。",
+    "慢慢放回，换另一侧。"
+   ],
+   "cue": "身体不要向另一侧倒过去借力。站着做，随时随地都行。",
+   "avoid": "髋关节置换过的先问医生。",
+   "risk": [
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-standing-hip-abduction-1.svg",
+    "wg-banded-standing-hip-abduction-2.svg",
+    "wg-banded-standing-hip-abduction-3.svg"
+   ]
+  },
+  {
+   "id": "banded-seated-hip-abduction",
+   "zh": "弹力带坐姿髋外展",
+   "en": "Banded Seated Hip Abduction",
+   "src": "wg",
+   "scenes": [
+    "办公室",
+    "力量"
+   ],
+   "region": "臀",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "臀中肌 / 髋外侧",
+   "gear": "一条环形弹力带和一把椅子",
+   "steps": [
+    "带子套在膝盖上方，坐在椅子前沿，两脚踩地与髋同宽。",
+    "把两个膝盖向外撑开顶住带子。",
+    "慢慢合回来。"
+   ],
+   "cue": "坐着就能做，工位上、看电视的时候都行。上身不要跟着晃。",
+   "avoid": "髋关节置换过的先问医生。",
+   "risk": [
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-seated-hip-abduction-1.svg",
+    "wg-banded-seated-hip-abduction-2.svg",
+    "wg-banded-seated-hip-abduction-3.svg"
+   ]
+  },
+  {
+   "id": "deadlift",
+   "zh": "硬拉",
+   "en": "Deadlift",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "后链 / 臀 / 大腿后侧 / 背",
+   "gear": "杠铃",
+   "steps": [
+    "杠铃贴近小腿，两脚与髋同宽站好。",
+    "屈髋屈膝握住杠铃，背挺直，胸口打开，肩在杠的正上方。",
+    "脚蹬地把杠铃沿着腿贴身拉起来，同时伸髋伸膝到站直。",
+    "再屈髋把杠铃沿原路放回地面。"
+   ],
+   "cue": "背从头到尾是直的——背一圆就该放下重量。杠始终贴着腿走，离开身体腰立刻吃力。",
+   "avoid": "腰椎有伤、腰痛发作期、椎间盘突出的别做，先问医生。",
+   "risk": [
+    "腰",
+    "髋",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-deadlift-1.svg",
+    "wg-deadlift-2.svg",
+    "wg-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "romanian-deadlift",
+   "zh": "罗马尼亚硬拉",
+   "en": "Romanian Deadlift",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "大腿后侧 / 臀",
+   "gear": "杠铃",
+   "steps": [
+    "站直握住杠铃，两脚与髋同宽，膝盖保持一个固定的微弯。",
+    "屈髋把臀部向后送，杠铃沿着大腿下滑。",
+    "下到大腿后侧被拉开、背还挺得住的位置就停。",
+    "收紧臀部把髋顶回直立。"
+   ],
+   "cue": "膝盖角度全程不变，动的是髋。下到哪儿由大腿后侧的拉伸感说了算，不是由杠碰不碰地。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-romanian-deadlift-1.svg",
+    "wg-romanian-deadlift-2.svg",
+    "wg-romanian-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "squat",
+   "zh": "杠铃深蹲",
+   "en": "Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "大腿 / 臀 / 核心",
+   "gear": "深蹲架和杠铃",
+   "steps": [
+    "杠放在上背（不是脖子上），两脚略宽于肩，脚尖略微向外。",
+    "收紧腹部，臀部向下向后坐，同时屈膝。",
+    "蹲到自己能保持背挺直的深度。",
+    "脚掌踩实地面把身体推起来。"
+   ],
+   "cue": "膝盖顺着脚尖的方向走，不要向内塌；脚跟不要离地。一个人练一定要用保护杆。",
+   "avoid": "膝、髋、腰有伤的先问医生，换靠墙静蹲或器械。",
+   "risk": [
+    "膝",
+    "髋",
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-squat-1.svg",
+    "wg-squat-2.svg",
+    "wg-squat-3.svg"
+   ]
+  },
+  {
+   "id": "front-squat",
+   "zh": "前蹲",
+   "en": "Front Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "大腿前侧 / 核心",
+   "gear": "深蹲架和杠铃",
+   "steps": [
+    "杠架在锁骨前的三角肌上，手肘高高抬起。",
+    "收紧腹部，垂直下蹲，上身尽量保持直立。",
+    "蹬地站起来，手肘始终保持抬着。"
+   ],
+   "cue": "手肘一掉杠就往前滚。它比后蹲更直立，对腰更友好，但对手腕和上背的柔韧要求高。",
+   "avoid": "手腕、肩柔韧不够的先做高脚杯深蹲。",
+   "risk": [
+    "膝",
+    "腕",
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-front-squat-1.svg",
+    "wg-front-squat-2.svg",
+    "wg-front-squat-3.svg"
+   ]
+  },
+  {
+   "id": "hack-squat",
+   "zh": "哈克深蹲机",
+   "en": "Hack Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿前侧 / 臀",
+   "gear": "哈克深蹲机",
+   "steps": [
+    "背贴住靠垫站进器械，肩膀顶住肩垫，两脚踩在踏板中部。",
+    "解锁，屈膝下蹲到大腿接近与踏板平行。",
+    "蹬踏板回到起点。"
+   ],
+   "cue": "轨迹固定，腰完全被靠垫兜住——想练腿又不想让腰参与时最合适。",
+   "avoid": "膝盖有伤、下蹲就疼的减小深度。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-hack-squat-1.svg",
+    "wg-hack-squat-2.svg",
+    "wg-hack-squat-3.svg"
+   ]
+  },
+  {
+   "id": "leg-press",
+   "zh": "蹬腿机",
+   "en": "Leg Press",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "蹬腿机",
+   "steps": [
+    "坐进器械，两脚与髋同宽踩在踏板中部，背和臀贴紧靠垫。",
+    "解锁安全扣，屈膝让踏板下降到膝盖大约成直角。",
+    "蹬直但不锁死膝盖。"
+   ],
+   "cue": "下降到腰要离开靠垫之前就停——腰一翘起来就是最伤的那一下。膝盖不要向内塌。",
+   "avoid": "膝、腰有伤的减小幅度，先问医生。",
+   "risk": [
+    "膝",
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-leg-press-1.svg",
+    "wg-leg-press-2.svg",
+    "wg-leg-press-3.svg"
+   ]
+  },
+  {
+   "id": "bulgarian-split-squat",
+   "zh": "保加利亚分腿蹲",
+   "en": "Bulgarian Split Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": true,
+   "part": "大腿 / 臀",
+   "gear": "一对哑铃和一个长凳",
+   "steps": [
+    "背对长凳站好，一只脚的脚背搭在凳上，另一条腿向前迈开一步。",
+    "两手各持一只哑铃，身体垂直下沉，前腿膝盖大约成直角。",
+    "前脚掌蹬地起来，做完换另一条腿。"
+   ],
+   "cue": "是往下沉不是往前扑。前脚放得越远越偏臀，越近越偏大腿前侧。",
+   "avoid": "膝有伤、平衡不好的先做普通分腿蹲。",
+   "risk": [
+    "膝",
+    "髋",
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-bulgarian-split-squat-1.svg",
+    "wg-bulgarian-split-squat-2.svg",
+    "wg-bulgarian-split-squat-3.svg"
+   ]
+  },
+  {
+   "id": "walking-lunge",
+   "zh": "行进弓步",
+   "en": "Walking Lunge",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "一对哑铃",
+   "steps": [
+    "两手各持一只哑铃站直。",
+    "向前迈一大步下沉，后腿膝盖接近地面。",
+    "用前腿把身体带起来，后腿直接向前迈成下一个弓步。",
+    "这样交替向前走。"
+   ],
+   "cue": "每一步都垂直下沉，身体不要前后晃。需要一段直路。",
+   "avoid": "膝有伤、平衡不好的改成原地弓步。",
+   "risk": [
+    "膝",
+    "髋",
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-walking-lunge-1.svg",
+    "wg-walking-lunge-2.svg",
+    "wg-walking-lunge-3.svg"
+   ]
+  },
+  {
+   "id": "step-up",
+   "zh": "登台阶",
+   "en": "Step-Up",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "一对哑铃和一个稳固的台阶或箱子",
+   "steps": [
+    "两手各持一只哑铃，面对台阶站好。",
+    "一只脚踩上台阶，用这条腿把身体带上去，另一条腿跟上。",
+    "控制着退下来，换另一条腿。"
+   ],
+   "cue": "用踩在台上那条腿发力，不要用下面那条腿蹬地借力。台子越高越难。",
+   "avoid": "膝有伤、平衡不好的降低台阶高度或扶着东西。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-step-up-1.svg",
+    "wg-step-up-2.svg",
+    "wg-step-up-3.svg"
+   ]
+  },
+  {
+   "id": "leg-extension",
+   "zh": "腿屈伸机",
+   "en": "Leg Extension",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿前侧",
+   "gear": "腿屈伸器械",
+   "steps": [
+    "坐好，调整靠垫让膝盖的转轴对准器械的转轴，脚踝勾住挡垫。",
+    "把小腿伸直抬起来，到顶停一下。",
+    "慢慢放下来。"
+   ],
+   "cue": "它是少数只练大腿前侧的动作。膝盖不舒服的人减小重量和幅度，别甩。",
+   "avoid": "髌骨疼痛、膝关节有伤的先问康复师。",
+   "risk": [
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-leg-extension-1.svg",
+    "wg-leg-extension-2.svg",
+    "wg-leg-extension-3.svg"
+   ]
+  },
+  {
+   "id": "leg-curl",
+   "zh": "腿弯举机",
+   "en": "Leg Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿后侧",
+   "gear": "腿弯举器械",
+   "steps": [
+    "按器械的姿势趴好或坐好，脚踝勾住挡垫。",
+    "把小腿弯向臀部，到顶停一下。",
+    "慢慢放回去。"
+   ],
+   "cue": "放回去那一段慢一点，大腿后侧最容易在离心里被练到，也最容易拉伤。",
+   "avoid": "腘绳肌拉伤没好的别做。",
+   "risk": [
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-leg-curl-1.svg",
+    "wg-leg-curl-2.svg",
+    "wg-leg-curl-3.svg"
+   ]
+  },
+  {
+   "id": "seated-leg-curl",
+   "zh": "坐姿腿弯举",
+   "en": "Seated Leg Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿后侧",
+   "gear": "坐姿腿弯举器械",
+   "steps": [
+    "坐好，大腿被压垫固定，脚踝勾住挡垫。",
+    "把小腿向下向后弯到底。",
+    "慢慢放回去。"
+   ],
+   "cue": "坐姿的髋是弯着的，大腿后侧被拉得更长，和俯卧版本不重复。",
+   "avoid": "腘绳肌拉伤没好的别做。",
+   "risk": [
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-seated-leg-curl-1.svg",
+    "wg-seated-leg-curl-2.svg",
+    "wg-seated-leg-curl-3.svg"
+   ]
+  },
+  {
+   "id": "good-morning",
+   "zh": "早安式屈体",
+   "en": "Good Morning",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "大腿后侧 / 下背",
+   "gear": "杠铃",
+   "steps": [
+    "杠放在上背，两脚与髋同宽，膝盖保持微弯。",
+    "屈髋把臀部向后送，上身向前折，背始终挺直。",
+    "折到大腿后侧被拉开就停。",
+    "收紧臀部把身体带回直立。"
+   ],
+   "cue": "这个动作对腰的要求很高，重量要非常保守——先用空杆或者一根棍子练姿势。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-good-morning-1.svg",
+    "wg-good-morning-2.svg",
+    "wg-good-morning-3.svg"
+   ]
+  },
+  {
+   "id": "goblet-squat",
+   "zh": "高脚杯深蹲",
+   "en": "Goblet Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "大腿 / 臀 / 核心",
+   "gear": "一只哑铃或壶铃",
+   "steps": [
+    "两手捧住一只哑铃立在胸前，两脚略宽于肩。",
+    "臀部向下向后坐，上身保持直立。",
+    "蹲到舒服的深度，再蹬地站起来。"
+   ],
+   "cue": "重量在胸前反而帮你保持直立，是学深蹲最好的入门动作。膝盖顺着脚尖走。",
+   "avoid": "膝、髋有伤的减小深度。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-goblet-squat-1.svg",
+    "wg-goblet-squat-2.svg",
+    "wg-goblet-squat-3.svg"
+   ]
+  },
+  {
+   "id": "smith-machine-squat",
+   "zh": "史密斯机深蹲",
+   "en": "Smith Machine Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "史密斯机",
+   "steps": [
+    "杠放在上背，两脚站在略靠前的位置。",
+    "解锁挂钩，屈膝下蹲到大腿接近与地面平行。",
+    "蹬地站起来，结束时挂回。"
+   ],
+   "cue": "轨迹固定，一个人练时比自由深蹲安全。脚的前后位置要先空杆试出来。",
+   "avoid": "膝有伤的减小深度。",
+   "risk": [
+    "膝",
+    "髋",
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-smith-machine-squat-1.svg",
+    "wg-smith-machine-squat-2.svg",
+    "wg-smith-machine-squat-3.svg"
+   ]
+  },
+  {
+   "id": "belt-squat",
+   "zh": "腰带深蹲",
+   "en": "Belt Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "腰带深蹲器械",
+   "steps": [
+    "系好腰带，站在踏板上，两手扶住把手。",
+    "屈膝下蹲到舒服的深度。",
+    "蹬地站起来。"
+   ],
+   "cue": "重量挂在髋上，上背和腰完全不承重——腰有旧伤但想练腿时最合适。",
+   "avoid": "髋部有伤的先问康复师。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-belt-squat-1.svg",
+    "wg-belt-squat-2.svg",
+    "wg-belt-squat-3.svg"
+   ]
+  },
+  {
+   "id": "sumo-deadlift",
+   "zh": "相扑硬拉",
+   "en": "Sumo Deadlift",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "杠铃",
+   "advanced": true,
+   "part": "后链 / 臀 / 大腿内侧",
+   "gear": "杠铃",
+   "steps": [
+    "两脚站得很宽，脚尖向外，杠铃贴近小腿。",
+    "两手在两腿之间握杠，背挺直，胸口打开。",
+    "脚蹬地把杠铃贴身拉起来，伸髋站直。",
+    "再沿原路放回地面。"
+   ],
+   "cue": "宽站距让上身更直立，腰的负担比常规硬拉小一些，大腿内侧参与更多。",
+   "avoid": "腰椎有伤、髋部有伤的别做。",
+   "risk": [
+    "腰",
+    "髋",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-sumo-deadlift-1.svg",
+    "wg-sumo-deadlift-2.svg",
+    "wg-sumo-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "trap-bar-deadlift",
+   "zh": "六角杠硬拉",
+   "en": "Trap Bar Deadlift",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "后链 / 大腿 / 臀",
+   "gear": "六角杠",
+   "steps": [
+    "站进六角杠中间，两脚与髋同宽。",
+    "屈髋屈膝握住两侧把手，背挺直。",
+    "脚蹬地站直，再沿原路放回地面。"
+   ],
+   "cue": "重量在身体两侧而不是身前，腰的负担比直杠硬拉小得多——想练硬拉又担心腰的人从它开始。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-trap-bar-deadlift-1.svg",
+    "wg-trap-bar-deadlift-2.svg",
+    "wg-trap-bar-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "lying-leg-curl",
+   "zh": "俯卧腿弯举",
+   "en": "Lying Leg Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿后侧",
+   "gear": "俯卧腿弯举机",
+   "steps": [
+    "趴在器械上，脚踝勾住挡垫，髋部贴紧垫子。",
+    "把小腿弯向臀部。",
+    "慢慢放回去。"
+   ],
+   "cue": "髋不要跟着抬起来，一抬就是腰在帮忙。",
+   "avoid": "腘绳肌拉伤没好的别做。",
+   "risk": [
+    "膝",
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-lying-leg-curl-1.svg",
+    "wg-lying-leg-curl-2.svg",
+    "wg-lying-leg-curl-3.svg"
+   ]
+  },
+  {
+   "id": "nordic-hamstring-curl",
+   "zh": "北欧腿弯举",
+   "en": "Nordic Hamstring Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "大腿后侧",
+   "gear": "徒手加一个帮忙压住脚踝的人（或者把脚勾在稳固的东西下面），需要跪下",
+   "steps": [
+    "跪在垫子上，让人压住或用器械固定脚踝。",
+    "身体保持从膝盖到头一条直线，慢慢向前倒下去。",
+    "尽量用大腿后侧撑住，撑不住时用手接住地面。",
+    "再推回起点。"
+   ],
+   "cue": "它是预防腘绳肌拉伤最有效的动作之一，但也是最容易练伤的一个——第一次一定要有人在旁边。",
+   "avoid": "腘绳肌拉伤没好、膝盖跪着疼的别做。",
+   "risk": [
+    "膝",
+    "腰"
+   ],
+   "floor": true,
+   "files": [
+    "wg-nordic-hamstring-curl-1.svg",
+    "wg-nordic-hamstring-curl-2.svg",
+    "wg-nordic-hamstring-curl-3.svg"
+   ]
+  },
+  {
+   "id": "single-leg-romanian-deadlift",
+   "zh": "单腿罗马尼亚硬拉",
+   "en": "Single-Leg Romanian Deadlift",
+   "src": "wg",
+   "scenes": [
+    "平衡"
+   ],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": true,
+   "part": "大腿后侧 / 臀 / 平衡",
+   "gear": "一只哑铃",
+   "steps": [
+    "单腿站立，同侧或对侧手持一只哑铃。",
+    "屈髋把上身向前折，同时另一条腿向后伸出保持平衡。",
+    "折到大腿后侧被拉开，背保持挺直。",
+    "再收紧臀部回到直立，换另一条腿。"
+   ],
+   "cue": "它同时练了后链和平衡。骨盆不要跟着转开，站不稳就先扶着东西。",
+   "avoid": "腰、髋有伤的先做双腿版本。",
+   "risk": [
+    "腰",
+    "髋",
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-single-leg-romanian-deadlift-1.svg",
+    "wg-single-leg-romanian-deadlift-2.svg",
+    "wg-single-leg-romanian-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "reverse-lunge",
+   "zh": "后撤弓步",
+   "en": "Reverse Lunge",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "一对哑铃",
+   "steps": [
+    "站直，两手各持一只哑铃。",
+    "一条腿向后撤一大步，垂直下沉到后膝接近地面。",
+    "前脚掌蹬地回到直立，换另一条腿。"
+   ],
+   "cue": "向后撤比向前迈对膝盖更友好，膝有旧伤的人优先选它。",
+   "avoid": "平衡不好的扶着东西做。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-reverse-lunge-1.svg",
+    "wg-reverse-lunge-2.svg",
+    "wg-reverse-lunge-3.svg"
+   ]
+  },
+  {
+   "id": "split-squat",
+   "zh": "原地分腿蹲",
+   "en": "Split Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "一对哑铃",
+   "steps": [
+    "两脚一前一后站成弓步的位置，两手各持哑铃。",
+    "身体垂直下沉，后膝接近地面。",
+    "前脚掌蹬地起来，做完这一侧再换腿。"
+   ],
+   "cue": "不用每次重新迈步，所以更容易专心在下沉的轨迹上。",
+   "avoid": "膝有伤的减小深度。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-split-squat-1.svg",
+    "wg-split-squat-2.svg",
+    "wg-split-squat-3.svg"
+   ]
+  },
+  {
+   "id": "smith-machine-romanian-deadlift",
+   "zh": "史密斯机罗马尼亚硬拉",
+   "en": "Smith Machine Romanian Deadlift",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿后侧 / 臀",
+   "gear": "史密斯机",
+   "steps": [
+    "站在杠前握住杠，解锁挂钩，膝盖保持微弯。",
+    "屈髋把臀部向后送，杠沿着大腿下滑。",
+    "下到大腿后侧被拉开就停，再收紧臀部回到直立。"
+   ],
+   "cue": "轨迹固定，注意力可以全放在屈髋上。脚的位置要先试。",
+   "avoid": "腰椎有伤的减小幅度。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-smith-machine-romanian-deadlift-1.svg",
+    "wg-smith-machine-romanian-deadlift-2.svg",
+    "wg-smith-machine-romanian-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-romanian-deadlift",
+   "zh": "哑铃罗马尼亚硬拉",
+   "en": "Dumbbell Romanian Deadlift",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "大腿后侧 / 臀",
+   "gear": "一对哑铃",
+   "steps": [
+    "两手各持一只哑铃垂在身前，膝盖保持微弯。",
+    "屈髋把臀部向后送，哑铃沿着大腿下滑。",
+    "下到大腿后侧被拉开就停，再收紧臀部回到直立。"
+   ],
+   "cue": "哑铃比杠铃好上手，家里也做得了。背一圆就该停。",
+   "avoid": "腰椎有伤、腰痛发作期别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-romanian-deadlift-1.svg",
+    "wg-dumbbell-romanian-deadlift-2.svg",
+    "wg-dumbbell-romanian-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "kettlebell-romanian-deadlift",
+   "zh": "壶铃罗马尼亚硬拉",
+   "en": "Kettlebell Romanian Deadlift",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "壶铃",
+   "advanced": false,
+   "part": "大腿后侧 / 臀",
+   "gear": "一只或一对壶铃",
+   "steps": [
+    "两手持壶铃垂在身前，膝盖保持微弯。",
+    "屈髋把臀部向后送，壶铃贴着腿下滑。",
+    "再收紧臀部回到直立。"
+   ],
+   "cue": "和哑铃版本是一回事，壶铃的重心更低一点。",
+   "avoid": "腰椎有伤的别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-kettlebell-romanian-deadlift-1.svg",
+    "wg-kettlebell-romanian-deadlift-2.svg",
+    "wg-kettlebell-romanian-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "cable-standing-hip-adduction",
+   "zh": "绳索站姿髋内收",
+   "en": "Cable Standing Hip Adduction",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "绳索",
+   "advanced": false,
+   "part": "大腿内侧",
+   "gear": "龙门架和脚踝绑带",
+   "steps": [
+    "绑带系在内侧那条脚踝上，侧身站好，扶住机器。",
+    "把绑带那条腿向身体中线方向拉过来。",
+    "慢慢放回去，换另一侧。"
+   ],
+   "cue": "大腿内侧平时很少被单独练到，跑步和变向多的人值得加一个。",
+   "avoid": "腹股沟拉伤没好的别做。",
+   "risk": [
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cable-standing-hip-adduction-1.svg",
+    "wg-cable-standing-hip-adduction-2.svg",
+    "wg-cable-standing-hip-adduction-3.svg"
+   ]
+  },
+  {
+   "id": "hip-adduction-machine",
+   "zh": "髋内收机",
+   "en": "Hip Adduction Machine",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿内侧",
+   "gear": "髋内收器械",
+   "steps": [
+    "坐进器械，两条大腿内侧贴住挡垫，腿分开。",
+    "把两腿向中间夹拢。",
+    "慢慢打开回到起点。"
+   ],
+   "cue": "打开那一段别让配重把腿甩开，控制着回。",
+   "avoid": "腹股沟拉伤没好的别做。",
+   "risk": [
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-hip-adduction-machine-1.svg",
+    "wg-hip-adduction-machine-2.svg",
+    "wg-hip-adduction-machine-3.svg"
+   ]
+  },
+  {
+   "id": "smith-machine-bulgarian-split-squat",
+   "zh": "史密斯机保加利亚分腿蹲",
+   "en": "Smith Machine Bulgarian Split Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "史密斯机和一个长凳",
+   "steps": [
+    "把凳子放在杠下，后脚脚背搭在凳上，杠放在上背。",
+    "解锁，身体垂直下沉到前膝大约成直角。",
+    "蹬地起来，做完换腿。"
+   ],
+   "cue": "轨迹固定，平衡的负担被去掉了，可以专心在腿上加重量。",
+   "avoid": "膝有伤的减小深度。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-smith-machine-bulgarian-split-squat-1.svg",
+    "wg-smith-machine-bulgarian-split-squat-2.svg",
+    "wg-smith-machine-bulgarian-split-squat-3.svg"
+   ]
+  },
+  {
+   "id": "smith-machine-reverse-lunge",
+   "zh": "史密斯机后撤弓步",
+   "en": "Smith Machine Reverse Lunge",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "史密斯机",
+   "steps": [
+    "杠放在上背，解锁。",
+    "一条腿向后撤一步，垂直下沉。",
+    "蹬地回到起点，换另一条腿。"
+   ],
+   "cue": "不用管平衡，膝有旧伤的人做弓步时这是个稳当的选择。",
+   "avoid": "膝有伤的减小深度。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-smith-machine-reverse-lunge-1.svg",
+    "wg-smith-machine-reverse-lunge-2.svg",
+    "wg-smith-machine-reverse-lunge-3.svg"
+   ]
+  },
+  {
+   "id": "smith-machine-split-squat",
+   "zh": "史密斯机分腿蹲",
+   "en": "Smith Machine Split Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "器械",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "史密斯机",
+   "steps": [
+    "两脚一前一后站成弓步位，杠放在上背，解锁。",
+    "垂直下沉到后膝接近地面。",
+    "蹬地起来。"
+   ],
+   "cue": "脚的前后位置决定了下沉的轨迹顺不顺，先空杆试一次。",
+   "avoid": "膝有伤的减小深度。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-smith-machine-split-squat-1.svg",
+    "wg-smith-machine-split-squat-2.svg",
+    "wg-smith-machine-split-squat-3.svg"
+   ]
+  },
+  {
+   "id": "heel-elevated-goblet-squat",
+   "zh": "脚跟垫高高脚杯深蹲",
+   "en": "Heel-Elevated Goblet Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "大腿前侧 / 臀",
+   "gear": "一只哑铃和两片垫高的东西",
+   "steps": [
+    "脚跟踩在垫高物上，两手捧住哑铃立在胸前。",
+    "臀部向下坐，上身保持直立。",
+    "蹲到舒服的深度，再蹬地起来。"
+   ],
+   "cue": "垫高脚跟让踝关节不够灵活的人也能蹲深，同时更偏大腿前侧。",
+   "avoid": "膝有伤的减小深度。",
+   "risk": [
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-heel-elevated-goblet-squat-1.svg",
+    "wg-heel-elevated-goblet-squat-2.svg",
+    "wg-heel-elevated-goblet-squat-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-sumo-deadlift",
+   "zh": "哑铃相扑硬拉",
+   "en": "Dumbbell Sumo Deadlift",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "后链 / 臀 / 大腿内侧",
+   "gear": "一只哑铃",
+   "steps": [
+    "两脚站得很宽，脚尖向外，哑铃竖着放在两腿之间。",
+    "屈髋屈膝两手握住哑铃上端，背挺直。",
+    "蹬地伸髋站直，再沿原路放回。"
+   ],
+   "cue": "家里练后链最容易上手的一个；背一圆就该减重量。",
+   "avoid": "腰椎有伤的别做。",
+   "risk": [
+    "腰",
+    "髋",
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-sumo-deadlift-1.svg",
+    "wg-dumbbell-sumo-deadlift-2.svg",
+    "wg-dumbbell-sumo-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "front-foot-elevated-split-squat",
+   "zh": "前脚垫高分腿蹲",
+   "en": "Front-Foot Elevated Split Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "一对哑铃和一个矮台",
+   "steps": [
+    "前脚踩在矮台上，后腿在地面上站成弓步位。",
+    "垂直下沉，后膝接近地面。",
+    "前脚掌蹬地起来，换腿。"
+   ],
+   "cue": "前脚垫高让臀被拉得更开，行程也更长。",
+   "avoid": "膝有伤、平衡不好的先在平地做。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-front-foot-elevated-split-squat-1.svg",
+    "wg-front-foot-elevated-split-squat-2.svg",
+    "wg-front-foot-elevated-split-squat-3.svg"
+   ]
+  },
+  {
+   "id": "dumbbell-lateral-lunge",
+   "zh": "哑铃侧弓步",
+   "en": "Dumbbell Lateral Lunge",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "哑铃",
+   "advanced": false,
+   "part": "大腿内侧 / 臀 / 大腿",
+   "gear": "一对哑铃",
+   "steps": [
+    "站直，两手各持一只哑铃。",
+    "向侧面迈一大步，把重心坐到那条腿上，另一条腿保持伸直。",
+    "蹬地回到起点，换另一侧。"
+   ],
+   "cue": "侧向的动作平时练得少，膝盖要顺着脚尖方向，别向内塌。",
+   "avoid": "髋、膝有伤、腹股沟拉伤没好的别做。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-dumbbell-lateral-lunge-1.svg",
+    "wg-dumbbell-lateral-lunge-2.svg",
+    "wg-dumbbell-lateral-lunge-3.svg"
+   ]
+  },
+  {
+   "id": "landmine-squat",
+   "zh": "杠铃单端深蹲",
+   "en": "Landmine Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "杠铃一端固定在角落或支架上",
+   "steps": [
+    "两手在胸前捧住杠铃末端，站好。",
+    "臀部向下坐，上身保持直立。",
+    "蹬地起来。"
+   ],
+   "cue": "杠的弧线帮你保持直立，是高脚杯深蹲的加重版本。",
+   "avoid": "膝、髋有伤的减小深度。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-landmine-squat-1.svg",
+    "wg-landmine-squat-2.svg",
+    "wg-landmine-squat-3.svg"
+   ]
+  },
+  {
+   "id": "landmine-romanian-deadlift",
+   "zh": "杠铃单端罗马尼亚硬拉",
+   "en": "Landmine Romanian Deadlift",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "杠铃",
+   "advanced": false,
+   "part": "大腿后侧 / 臀",
+   "gear": "杠铃一端固定在角落或支架上",
+   "steps": [
+    "单手或双手握住杠铃末端，膝盖保持微弯。",
+    "屈髋把臀部向后送，杠沿腿下滑。",
+    "再收紧臀部回到直立。"
+   ],
+   "cue": "固定端限制了轨迹，比自由杠铃更容易保持背挺直。",
+   "avoid": "腰椎有伤的别做。",
+   "risk": [
+    "腰",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-landmine-romanian-deadlift-1.svg",
+    "wg-landmine-romanian-deadlift-2.svg",
+    "wg-landmine-romanian-deadlift-3.svg"
+   ]
+  },
+  {
+   "id": "jump-squat",
+   "zh": "深蹲跳",
+   "en": "Jump Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "大腿 / 臀 / 爆发力",
+   "gear": "徒手，站着做",
+   "steps": [
+    "两脚与肩同宽站好，下蹲到一半。",
+    "用力向上跳起。",
+    "落地时屈膝缓冲，直接接下一次。"
+   ],
+   "cue": "落地要轻，膝盖顺着脚尖走。落地的冲击比跳起来大得多，累了就停。",
+   "avoid": "膝、踝、腰有伤的别做，换徒手深蹲。",
+   "risk": [
+    "膝",
+    "踝",
+    "腰"
+   ],
+   "floor": false,
+   "files": [
+    "wg-jump-squat-1.svg",
+    "wg-jump-squat-2.svg",
+    "wg-jump-squat-3.svg"
+   ]
+  },
+  {
+   "id": "pistol-squat",
+   "zh": "单腿深蹲",
+   "en": "Pistol Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "大腿 / 臀 / 平衡",
+   "gear": "徒手，站着做",
+   "steps": [
+    "单腿站立，另一条腿向前伸直抬起。",
+    "慢慢屈膝下蹲，把重心稳在支撑腿上。",
+    "蹲到底再蹬地站起来，换另一条腿。"
+   ],
+   "cue": "需要相当的力量、平衡和踝关节灵活性。先从扶着东西或坐到箱子上的版本开始。",
+   "avoid": "膝有伤、平衡不好的别做。",
+   "risk": [
+    "膝",
+    "踝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-pistol-squat-1.svg",
+    "wg-pistol-squat-2.svg",
+    "wg-pistol-squat-3.svg"
+   ]
+  },
+  {
+   "id": "assisted-pistol-squat",
+   "zh": "辅助单腿深蹲",
+   "en": "Assisted Pistol Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "大腿 / 臀 / 平衡",
+   "gear": "徒手，扶着门框或柱子",
+   "steps": [
+    "单腿站立，一只手扶住门框或柱子。",
+    "另一条腿向前伸直，慢慢屈膝下蹲。",
+    "借着扶的那只手蹬地站起来，换腿。"
+   ],
+   "cue": "扶的手只用来平衡，不要用力往上拉。这是通往单腿深蹲的路。",
+   "avoid": "膝有伤的别做。",
+   "risk": [
+    "膝",
+    "踝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-assisted-pistol-squat-1.svg",
+    "wg-assisted-pistol-squat-2.svg",
+    "wg-assisted-pistol-squat-3.svg"
+   ]
+  },
+  {
+   "id": "shrimp-squat",
+   "zh": "虾式深蹲",
+   "en": "Shrimp Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "大腿 / 臀 / 平衡",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "单腿站立，另一条腿向后屈膝，用同侧手抓住脚背。",
+    "慢慢下蹲，让后膝轻触地面。",
+    "再蹬地站起来，换腿。"
+   ],
+   "cue": "比单腿深蹲对踝的要求低，但对平衡和大腿前侧的要求更高。膝盖着地那一下要轻，垫个东西。",
+   "avoid": "膝有伤的别做。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-shrimp-squat-1.svg",
+    "wg-shrimp-squat-2.svg",
+    "wg-shrimp-squat-3.svg"
+   ]
+  },
+  {
+   "id": "cossack-squat",
+   "zh": "哥萨克深蹲",
+   "en": "Cossack Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "大腿内侧 / 髋 / 大腿",
+   "gear": "徒手，站着做",
+   "steps": [
+    "两脚站得很宽，脚尖略微向外。",
+    "把重心坐到一侧腿上蹲下去，另一条腿保持伸直、脚尖朝上。",
+    "再横移到另一侧，来回做。"
+   ],
+   "cue": "它同时是力量和柔韧的动作，蹲不深很正常，扶着东西做也一样有效。",
+   "avoid": "髋、膝有伤、腹股沟拉伤没好的别做。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-cossack-squat-1.svg",
+    "wg-cossack-squat-2.svg",
+    "wg-cossack-squat-3.svg"
+   ]
+  },
+  {
+   "id": "sissy-squat",
+   "zh": "西西里深蹲",
+   "en": "Sissy Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "大腿前侧",
+   "gear": "徒手，扶着东西",
+   "steps": [
+    "站直，一只手扶住稳固的东西。",
+    "膝盖向前推、身体向后仰，脚跟离地，膝盖弯曲下沉。",
+    "全身从膝到头保持一条线，再回到直立。"
+   ],
+   "cue": "大腿前侧的拉伸和收缩都很强，但膝盖承受的剪切力也大——幅度从很小开始。",
+   "avoid": "膝盖有伤、髌骨疼痛的别做。",
+   "risk": [
+    "膝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-sissy-squat-1.svg",
+    "wg-sissy-squat-2.svg",
+    "wg-sissy-squat-3.svg"
+   ]
+  },
+  {
+   "id": "lateral-lunge",
+   "zh": "侧弓步",
+   "en": "Lateral Lunge",
+   "src": "wg",
+   "scenes": [
+    "髋腿",
+    "力量"
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "大腿内侧 / 臀",
+   "gear": "徒手，站着做",
+   "steps": [
+    "站直，向侧面迈一大步。",
+    "把重心坐到那条腿上，另一条腿保持伸直。",
+    "蹬地回到起点，换另一侧。"
+   ],
+   "cue": "侧向的动作平时练得少；膝盖顺着脚尖方向，别向内塌。",
+   "avoid": "髋、膝有伤的减小步幅。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-lateral-lunge-1.svg",
+    "wg-lateral-lunge-2.svg",
+    "wg-lateral-lunge-3.svg"
+   ]
+  },
+  {
+   "id": "skater-squat",
+   "zh": "滑冰者深蹲",
+   "en": "Skater Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "大腿 / 臀 / 平衡",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "单腿站立，另一条腿向后屈膝抬起。",
+    "屈髋屈膝下蹲，让后膝轻触地面（可以垫个东西）。",
+    "再蹬地站起来，换另一条腿。"
+   ],
+   "cue": "上身可以前倾，这一点比单腿深蹲宽松。后膝落地要轻。",
+   "avoid": "膝有伤的别做。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": true,
+   "files": [
+    "wg-skater-squat-1.svg",
+    "wg-skater-squat-2.svg",
+    "wg-skater-squat-3.svg"
+   ]
+  },
+  {
+   "id": "single-leg-box-squat",
+   "zh": "单腿箱式深蹲",
+   "en": "Single-Leg Box Squat",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "箱子",
+   "advanced": false,
+   "part": "大腿 / 臀 / 平衡",
+   "gear": "一个稳固的箱子或长凳",
+   "steps": [
+    "背对箱子单腿站立，另一条腿向前伸出。",
+    "慢慢屈膝坐到箱子上，轻轻触到就好。",
+    "再用同一条腿蹬地站起来，换腿。"
+   ],
+   "cue": "箱子的高度就是难度旋钮，高的容易低的难。通往单腿深蹲最稳的路。",
+   "avoid": "膝有伤的把箱子调高。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-single-leg-box-squat-1.svg",
+    "wg-single-leg-box-squat-2.svg",
+    "wg-single-leg-box-squat-3.svg"
+   ]
+  },
+  {
+   "id": "step-down",
+   "zh": "台阶下踩",
+   "en": "Step-Down",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "箱子",
+   "advanced": false,
+   "part": "大腿 / 臀 / 膝稳定",
+   "gear": "一个稳固的台阶或箱子",
+   "steps": [
+    "单腿站在台阶上，另一条腿悬在台阶外侧。",
+    "慢慢屈膝下沉，让悬着那条腿的脚跟轻触地面。",
+    "再用台上那条腿把身体推起来，换腿。"
+   ],
+   "cue": "下沉那一段慢，膝盖不要向内塌——跑步和爬楼膝盖不舒服的人常练这个。",
+   "avoid": "膝有伤的降低台阶高度，先问康复师。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-step-down-1.svg",
+    "wg-step-down-2.svg",
+    "wg-step-down-3.svg"
+   ]
+  },
+  {
+   "id": "lying-hamstring-walkout",
+   "zh": "仰卧腘绳肌行走",
+   "en": "Lying Hamstring Walkout",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "大腿后侧 / 臀",
+   "gear": "徒手，需要躺下",
+   "steps": [
+    "仰卧屈膝，先做一个臀桥把髋顶起来。",
+    "保持髋不掉，两只脚交替向前一小步一小步走出去。",
+    "走到腿接近伸直，再一步步走回来。"
+   ],
+   "cue": "髋一掉就白做了。大腿后侧会很快抗议，那正是它练的地方。",
+   "avoid": "腘绳肌容易抽筋的人幅度小一点。",
+   "risk": [
+    "腰",
+    "膝"
+   ],
+   "floor": true,
+   "files": [
+    "wg-lying-hamstring-walkout-1.svg",
+    "wg-lying-hamstring-walkout-2.svg",
+    "wg-lying-hamstring-walkout-3.svg"
+   ]
+  },
+  {
+   "id": "towel-hamstring-curl",
+   "zh": "毛巾腿弯举",
+   "en": "Towel Hamstring Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "毛巾",
+   "advanced": true,
+   "part": "大腿后侧 / 臀",
+   "gear": "两条毛巾和光滑地面，需要躺下",
+   "steps": [
+    "仰卧屈膝，两只脚踩在毛巾上（地面要滑）。",
+    "做一个臀桥把髋顶起来。",
+    "保持髋不掉，两脚沿地面滑出去到腿接近伸直。",
+    "再用大腿后侧把脚滑回来。"
+   ],
+   "cue": "家里版的腿弯举。滑出去容易滑回来难，回来那一段才是重点。",
+   "avoid": "腘绳肌拉伤没好的别做；地面不滑就换别的。",
+   "risk": [
+    "腰",
+    "膝"
+   ],
+   "floor": true,
+   "files": [
+    "wg-towel-hamstring-curl-1.svg",
+    "wg-towel-hamstring-curl-2.svg",
+    "wg-towel-hamstring-curl-3.svg"
+   ]
+  },
+  {
+   "id": "stability-ball-hamstring-curl",
+   "zh": "瑜伽球腿弯举",
+   "en": "Stability Ball Hamstring Curl",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "瑜伽球",
+   "advanced": false,
+   "part": "大腿后侧 / 臀",
+   "gear": "一个瑜伽球，需要躺下",
+   "steps": [
+    "仰卧，两只脚跟搭在球上，做一个臀桥把髋顶起来。",
+    "保持髋不掉，用脚跟把球拉向臀部。",
+    "再慢慢把球推回去。"
+   ],
+   "cue": "球会左右晃，稳住它本身就是一部分训练。髋始终不落。",
+   "avoid": "腘绳肌拉伤没好的别做。",
+   "risk": [
+    "腰",
+    "膝"
+   ],
+   "floor": true,
+   "files": [
+    "wg-stability-ball-hamstring-curl-1.svg",
+    "wg-stability-ball-hamstring-curl-2.svg",
+    "wg-stability-ball-hamstring-curl-3.svg"
+   ]
+  },
+  {
+   "id": "banded-squat",
+   "zh": "弹力带深蹲",
+   "en": "Banded Squat",
+   "src": "wg",
+   "scenes": [
+    "力量",
+    "髋腿"
+   ],
+   "region": "腿",
+   "equipment": "弹力带",
+   "advanced": false,
+   "part": "大腿 / 臀",
+   "gear": "一条环形弹力带",
+   "steps": [
+    "把带子套在膝盖上方，两脚与肩同宽站好。",
+    "臀部向下向后坐，同时两膝向外顶住带子。",
+    "蹬地站起来。"
+   ],
+   "cue": "带子在提醒膝盖别向内塌，深蹲时膝盖爱内扣的人练这个最有用。",
+   "avoid": "膝有伤的减小深度。",
+   "risk": [
+    "膝",
+    "髋"
+   ],
+   "floor": false,
+   "files": [
+    "wg-banded-squat-1.svg",
+    "wg-banded-squat-2.svg",
+    "wg-banded-squat-3.svg"
+   ]
+  },
+  {
+   "id": "burpee",
+   "zh": "波比跳",
+   "en": "Burpee",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "全身 / 心肺",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "站好，蹲下两手撑地。",
+    "两脚向后跳成平板支撑，做一个俯卧撑。",
+    "再跳回蹲姿，向上跳起，双手过头。",
+    "落地缓冲，接下一个。"
+   ],
+   "cue": "强度很高，姿势最容易在累的时候垮掉——腰一塌就该停或者换半程波比。",
+   "avoid": "膝、腰、手腕有伤、心肺问题的别做。",
+   "risk": [
+    "膝",
+    "腰",
+    "腕",
+    "踝"
+   ],
+   "floor": true,
+   "files": [
+    "wg-burpee-1.svg",
+    "wg-burpee-2.svg",
+    "wg-burpee-3.svg"
+   ]
+  },
+  {
+   "id": "jumping-jack",
+   "zh": "开合跳",
+   "en": "Jumping Jack",
+   "src": "wg",
+   "scenes": [
+    "跑前"
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "全身 / 心肺",
+   "gear": "徒手，站着做",
+   "steps": [
+    "站直，两臂垂在身侧。",
+    "跳起时两脚分开，同时两臂经身侧举过头顶。",
+    "再跳回并拢，手臂放回身侧。"
+   ],
+   "cue": "最省事的全身热身。落地用前脚掌，轻一点。",
+   "avoid": "膝、踝有伤的改成不跳的版本：一条腿一条腿地向外迈。",
+   "risk": [
+    "膝",
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-jumping-jack-1.svg",
+    "wg-jumping-jack-2.svg",
+    "wg-jumping-jack-3.svg"
+   ]
+  },
+  {
+   "id": "skater-hop",
+   "zh": "滑冰者跳",
+   "en": "Skater Hop",
+   "src": "wg",
+   "scenes": [
+    "跑前"
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "臀中肌 / 腿 / 平衡",
+   "gear": "徒手，站着做",
+   "steps": [
+    "单腿站立，微微屈膝。",
+    "向侧面跳到另一条腿上，落地后稳住。",
+    "再跳回来，来回做，像滑冰一样。"
+   ],
+   "cue": "落地稳住那一下比跳得远重要。它练的正是变向时膝盖的稳定性。",
+   "avoid": "膝、踝有伤、平衡不好的别做。",
+   "risk": [
+    "膝",
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-skater-hop-1.svg",
+    "wg-skater-hop-2.svg",
+    "wg-skater-hop-3.svg"
+   ]
+  },
+  {
+   "id": "lateral-shuffle",
+   "zh": "横向滑步",
+   "en": "Lateral Shuffle",
+   "src": "wg",
+   "scenes": [
+    "跑前"
+   ],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": false,
+   "part": "臀中肌 / 腿 / 心肺",
+   "gear": "徒手，需要一小段空地",
+   "steps": [
+    "两脚与肩同宽，微微屈膝下蹲成运动姿势。",
+    "保持这个高度向一侧快速滑步。",
+    "滑几步再换方向滑回来，两脚不要交叉。"
+   ],
+   "cue": "身体保持低位不要起伏；这是球类和跑步之前很好的动态热身。",
+   "avoid": "膝、踝有伤的放慢速度。",
+   "risk": [
+    "膝",
+    "踝"
+   ],
+   "floor": false,
+   "files": [
+    "wg-lateral-shuffle-1.svg",
+    "wg-lateral-shuffle-2.svg",
+    "wg-lateral-shuffle-3.svg"
+   ]
+  },
+  {
+   "id": "sprawl",
+   "zh": "扑地",
+   "en": "Sprawl",
+   "src": "wg",
+   "scenes": [],
+   "region": "腿",
+   "equipment": "徒手",
+   "advanced": true,
+   "part": "全身 / 核心 / 心肺",
+   "gear": "徒手，需要到地上",
+   "steps": [
+    "站好，快速蹲下两手撑地。",
+    "两腿向后蹬开，髋部下沉贴近地面。",
+    "再收腿蹲起来，回到站立。"
+   ],
+   "cue": "和波比的区别是髋要沉下去。落地那一下手腕承受不少，累了就停。",
+   "avoid": "手腕、腰、膝有伤的别做。",
+   "risk": [
+    "腕",
+    "腰",
+    "膝"
+   ],
+   "floor": true,
+   "files": [
+    "wg-sprawl-1.svg",
+    "wg-sprawl-2.svg",
+    "wg-sprawl-3.svg"
    ]
   }
  ]
