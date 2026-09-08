@@ -51,6 +51,23 @@ struct FollowUpChipTests {
         }
     }
 
+    /// 只记这一轮是怎么收尾的,别的什么都不做。
+    ///
+    /// 「不生成」那几条用例断言的是**什么都没发生**,而那种断言天然会在「通知压根没到」的
+    /// 时候一起过——那时候它测的其实是自己的测试架子有没有跑起来。挂一个旁观的 hook 把
+    /// `state` 记下来,断言就从「没生成」变成「收尾是 .stopped,而且没生成」。
+    private final class StateRecorder: AgentHook, @unchecked Sendable {
+        private let lock = NSLock()
+        private var _states: [AgentHookTurnOutcome.State] = []
+
+        var states: [AgentHookTurnOutcome.State] { lock.withLock { _states } }
+
+        func observe(_ notice: AgentHookNotice) async {
+            guard case .turnFinished(let outcome) = notice.kind else { return }
+            lock.withLock { _states.append(outcome.state) }
+        }
+    }
+
     private actor Gate {
         private var isOpen = false
         private var waiting: [CheckedContinuation<Void, Never>] = []
@@ -167,15 +184,25 @@ struct FollowUpChipTests {
     // MARK: - 不生成
 
     @Test("按了停止的那一轮不生成：他要按的是重试，不是追问")
-    func stoppedTurnGeneratesNothing() async {
+    func stoppedTurnGeneratesNothing() async throws {
         let spy = Spy()
-        let dispatcher = AgentHookDispatcher([spy.hook()])
+        let recorder = StateRecorder()
+        let dispatcher = AgentHookDispatcher([spy.hook(), recorder])
         let engine = Self.engine(dispatcher, turns: [
             .init(
                 toolCalls: [.init(toolCallId: "c1", name: "sleep_summary", input: "{}")],
                 finishReason: .init(unified: .toolCalls)
             ),
-            .init(text: "看完了", finishReason: .init(unified: .stop))
+            // **这一轮必须挂住,不能让它抢在停止送达之前答完。** 脚本化的模型是瞬时返回的,
+            // 而按停止走的是协作式取消:取消标记还在往下传的时候,这一轮已经吐完
+            // "看完了" 正常收尾了,于是 hook 拿到的是 `.completed`,照常生成——测试挂在
+            // 一件线上不会发生的事情上(真模型那儿隔着一整个网络往返)。
+            // 挂住之后,取消一定发生在它开口之前,`.stopped` 是确定的。
+            .init(
+                text: "看完了",
+                finishReason: .init(unified: .stop),
+                beforeResponding: { try await Task.sleep(for: .seconds(30)) }
+            )
         ])
 
         await Self.run(
@@ -183,37 +210,54 @@ struct FollowUpChipTests {
             history: [ChatMessage(role: .user, text: "最近睡得怎么样")],
             stoppingAfterTool: true
         )
-        // 停止那条收尾通知在流结束之后才到,所以这里等一等再看——不等的话这个测试会因为
-        // "还没来得及生成"而假过。
-        try? await Task.sleep(for: .milliseconds(200))
+        // **等的是那条收尾通知本身,不是一个拍脑袋的毫秒数。**
+        // 按停止之后,`run` 一等到消费端那个 task 就返回了,而 loop 还在另一条 task 上往
+        // 回退——`turnFinished` 那时候还没发出去,`settle()` 排的是一条空队,断言「什么都
+        // 没生成」于是恒真。原来那个 200 毫秒只是把这个窗口盖住了,盖不住的那次才是它挂的
+        // 时候(而挂的方向恰好相反,所以一直没人发现它平时是假过的)。
+        try await waitFor("这一轮收尾") { recorder.states.count == 1 }
+        // 收尾通知到了之后再排一次:每个 hook 各有一条尾巴,recorder 收到不等于被测的那个
+        // 也收到了(「不同 hook 之间不保证顺序」)。
         await dispatcher.settle()
 
+        // 先确认这一轮真的是「被停掉」收的尾。少了这一句,下面两条在通知根本没送到的时候
+        // 也一样过——而那正是这个用例挂过一次的那种情况的反面。
+        #expect(recorder.states == [.stopped])
         #expect(spy.contexts.isEmpty)
         #expect(spy.delivered.isEmpty)
     }
 
     @Test("报错的那一轮不生成")
-    func failedTurnGeneratesNothing() async {
+    func failedTurnGeneratesNothing() async throws {
         let spy = Spy()
-        let dispatcher = AgentHookDispatcher([spy.hook()])
+        let recorder = StateRecorder()
+        let dispatcher = AgentHookDispatcher([spy.hook(), recorder])
         let engine = Self.engine(dispatcher, turns: [.init(failureMessage: "invalid api key")])
 
         await Self.run(engine, history: [ChatMessage(role: .user, text: "最近睡得怎么样")])
-        try? await Task.sleep(for: .milliseconds(200))
+        // 报错和按停止走的是同一个出口(`AgentLoop` 里那个 catch),所以窗口也是同一个:
+        // 等收尾通知真的到了再断言,别用毫秒数去盖。
+        try await waitFor("这一轮收尾") { recorder.states.count == 1 }
         await dispatcher.settle()
 
+        #expect(recorder.states == [.failed("invalid api key")])
         #expect(spy.contexts.isEmpty)
     }
 
     @Test("助手一个字没说就不生成")
-    func silentTurnGeneratesNothing() async {
+    func silentTurnGeneratesNothing() async throws {
         let spy = Spy()
-        let dispatcher = AgentHookDispatcher([spy.hook()])
+        let recorder = StateRecorder()
+        let dispatcher = AgentHookDispatcher([spy.hook(), recorder])
         let engine = Self.engine(dispatcher, turns: [.init(finishReason: .init(unified: .stop))])
 
         await Self.run(engine, history: [ChatMessage(role: .user, text: "最近睡得怎么样")])
+        try await waitFor("这一轮收尾") { recorder.states.count == 1 }
         await dispatcher.settle()
 
+        // 这一轮是正常收尾的,不生成的理由是「助手一个字都没说」——和上面两条不是一回事,
+        // 断言要能把这三种分开,否则哪天 `.completed` 那条路整个断了它也照样绿。
+        #expect(recorder.states == [.completed])
         #expect(spy.contexts.isEmpty)
     }
 
