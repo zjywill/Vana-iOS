@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02BA18B3C62078B76DE628C3 /* ComposerLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67641B5198FD8E76D61B351 /* ComposerLayoutTests.swift */; };
 		04A27931DA41BD3D9AE01719 /* LocationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17B8127CD6759E1862FDE93 /* LocationProvider.swift */; };
 		0614679A044F8FD1435F1CE0 /* ChatLoopHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87875CAFD39B15E599BF9503 /* ChatLoopHarness.swift */; };
 		072545B0C7119799FC705C79 /* MedicationBriefer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E9DCA1EBAF50C23BA2823B8 /* MedicationBriefer.swift */; };
@@ -278,6 +279,7 @@
 		B3D866D076AD5A9DDB94F5F0 /* LocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTests.swift; sourceTree = "<group>"; };
 		B5123497064729F37C343DCE /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
 		B5652F6BF2520AAC033C8EC7 /* ChatMessagePersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessagePersistenceTests.swift; sourceTree = "<group>"; };
+		B67641B5198FD8E76D61B351 /* ComposerLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerLayoutTests.swift; sourceTree = "<group>"; };
 		B71162584BAB8B0A6B744CC8 /* AgentEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentEngine.swift; sourceTree = "<group>"; };
 		B76965643BAC2B72C38029A5 /* AttachmentImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentImporter.swift; sourceTree = "<group>"; };
 		B99812DEF2C1F215D896C7D9 /* SpokenBriefTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpokenBriefTests.swift; sourceTree = "<group>"; };
@@ -539,6 +541,7 @@
 				B5652F6BF2520AAC033C8EC7 /* ChatMessagePersistenceTests.swift */,
 				2B253EFDF01109BB8B27E69D /* CloudSetupTests.swift */,
 				405CE0F84C135DF2B98CD651 /* ComplianceTests.swift */,
+				B67641B5198FD8E76D61B351 /* ComposerLayoutTests.swift */,
 				A870C828465B6A656BA05D3D /* ContextBudgetPerformanceTests.swift */,
 				E5D65068691DF366D2832FAC /* DocumentImportTests.swift */,
 				073D0EA23D9F7CC93D51CEE5 /* ExerciseTests.swift */,
@@ -779,6 +782,7 @@
 				90B8967B20D5973BCED8DA65 /* ChatMessagePersistenceTests.swift in Sources */,
 				E4B23A2E6EA324BBE9790C38 /* CloudSetupTests.swift in Sources */,
 				B8315A82F5568767A7BB1747 /* ComplianceTests.swift in Sources */,
+				02BA18B3C62078B76DE628C3 /* ComposerLayoutTests.swift in Sources */,
 				8A60CD200BF4DB6E5DC7DBAC /* ContextBudgetPerformanceTests.swift in Sources */,
 				12EB85C4A62C21D593825F9B /* DocumentImportTests.swift in Sources */,
 				3F5335C9D5FD24761A178842 /* ExerciseTests.swift in Sources */,
@@ -949,7 +953,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Vana/Vana.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vana/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vana;
@@ -1144,7 +1148,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Vana/Vana.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vana/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vana;

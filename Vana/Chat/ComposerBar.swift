@@ -31,6 +31,10 @@ struct ComposerBar: View {
     /// 按下去那一刻输入框里已经有的字。说出来的接在它后面,不覆盖。
     @State private var dictationBase = ""
 
+    /// 铺开排还是一行排。**必须是存下来的状态,不能是算出来的属性**:进和出的门槛不一样,
+    /// 而"不一样"这件事只有记着上一次的答案才成立。
+    @State private var isStacked = false
+
     /// 单行时正好是半高(`ComposerLayout.rowMinHeight` 的一半),画出来就是一颗胶囊;
     /// 长成多行之后才真的当成 27 的圆角用。
     private static let cardRadius: CGFloat = 27
@@ -460,6 +464,9 @@ struct ComposerBar: View {
             }
             sendButton
         }
+        .onChange(of: model.input, initial: true) {
+            isStacked = Self.stacks(model.input, wasStacked: isStacked)
+        }
         .animation(.smooth(duration: 0.2), value: isStacked)
         .padding(.horizontal, 4)
         .padding(.bottom, isStacked ? 4 : 0)
@@ -497,18 +504,32 @@ struct ComposerBar: View {
     /// 量高度那版会绕回来:高度决定排版,排版决定输入框有多宽,宽度又决定高度。SwiftUI
     /// 在这个环里会拿着一份过期的行数排版,粘进来的长文有一半根本不显示。
     ///
-    /// 汉字按两格宽估:窄排下一行大约 34 格,超过两行就铺开。估得不精准没关系——排版选错
-    /// 的代价是这一段窄了点,而 `lineLimit` 那道上限一直都在。
-    private var isStacked: Bool {
-        if model.input.contains("\n") { return true }
+    /// **门槛必须是两个,不是一个。** 只有一个门槛时,光标停在门槛上的那一刻,每敲一下
+    /// 键盘整块输入区就翻一次面——而中文输入法让这件事必然发生:拼音串「kankan」按一格
+    /// 宽算是 6,上屏成「看看」之后是 4,**同一句话在敲的过程中宽度是来回跳的**,于是它
+    /// 在两种排法之间来回抖(那 0.2 秒的动画把每一次都放大成一次可见的跳动)。所以进和
+    /// 出用不同的数:铺开之后要短回 `unstackWidth` 才收回去,中间那 6 格正好盖住一个
+    /// 拼音音节的长度。
+    ///
+    /// 汉字按两格宽估。**这两个数要对着真实的宽度给**:窄排下那一栏被两侧三颗按钮夹着,
+    /// 一行只有 22 格上下(十一个汉字),不是原来写的 34——按 34 估的那版要到第四行才
+    /// 铺开,而注释里说的一直是第三行。
+    nonisolated static func stacks(_ text: String, wasStacked: Bool) -> Bool {
+        if text.contains("\n") { return true }
 
+        let limit = wasStacked ? unstackWidth : stackWidth
         var width = 0
-        for scalar in model.input.unicodeScalars {
+        for scalar in text.unicodeScalars {
             width += scalar.value > 0x2E80 ? 2 : 1
-            if width > 68 { return true }
+            if width > limit { return true }
         }
         return false
     }
+
+    /// 窄排一行约 22 格,满两行就该铺开。
+    nonisolated static let stackWidth = 44
+    /// 铺开之后一行约 38 格:短到这个数以内,收回窄排也还是两行以内,不会立刻又被推出去。
+    nonisolated static let unstackWidth = 38
 
     /// 加号是**给这句话添东西**,不是「开一条新对话」。
     ///
