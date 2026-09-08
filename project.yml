@@ -93,8 +93,9 @@ targets:
         # `Vana/Info.plist` 里的那两行会被生成器直接盖掉(试过:产物里这两个键
         # 一个都不剩)。而没有 CFBundleShortVersionString 的 build 是传不上 App Store
         # Connect 的,界面上「关于」那行版本也只显示一个破折号。
-        MARKETING_VERSION: "1.0"
-        # 每传一次加一位,版本号还是 1.0(仍然是首发),动的只有它。
+        MARKETING_VERSION: "1.1"
+        # 每传一次加一位。1.0 到 11 为止仍是首发;12 起带上 workout-guide 动作库,
+        # 对外版本挪到 1.1。
         #
         # 1 = 被审核拒掉的那个;2 = 传的时候撞上 error 90474(iPad 方向没声明)。
         # 3 = 2026-08-19 被拒的那个(2.1(a) 默认模型没落盘、2.5.1 界面上认不出 HealthKit)。
@@ -102,7 +103,7 @@ targets:
         # 2 那次没被 ASC 收下,理论上还能重用,但**不值得赌**:Organizer 里已经有一条
         # 叫 1.0 (2) 的记录,再传一个同号的容易撞上 "redundant binary",而那时候
         # 归档和上传的十几分钟已经花掉了。加一位是免费的。
-        CURRENT_PROJECT_VERSION: "11"
+        CURRENT_PROJECT_VERSION: "12"
         # Icon Composer 的 Vana/AppIcon.icon,名字要和这里对上。
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
