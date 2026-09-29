@@ -492,14 +492,6 @@ struct ChatView: View {
             // 了,也就没有左上角那颗抽屉按钮;用药表这类领域入口收进插件页,核心界面不认识它们。
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    if EngineSettings.isPluginEnabled(PluginIds.health),
-                       EngineSettings.isPluginEnabled(PluginIds.healthMedications) {
-                        Button {
-                            isShowingMedications = true
-                        } label: {
-                            Label("用药与补剂", systemImage: "pills")
-                        }
-                    }
                     Button {
                         menuRoute = .memory
                     } label: {
