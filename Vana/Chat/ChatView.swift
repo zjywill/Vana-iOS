@@ -84,7 +84,9 @@ struct ChatView: View {
 
                                 // 排在欢迎卡**前面**:欢迎卡的开头是这个 app 是什么,
                                 // 而回头客要的是"我怎么样"。
-                                if let summary = model.quickSummary {
+                                // 「今天」里已经有那张状况卡时让位:同一句话摆两遍,像是出了两件事。
+                                if let summary = model.quickSummary,
+                                   !model.todayCards.contains(where: { $0.id == TodayCard.healthStatusId }) {
                                     QuickSummaryCard(
                                         text: summary,
                                         // 家人那边没有处境可展开:那份数据属于机主。
@@ -257,7 +259,7 @@ struct ChatView: View {
                 // 也不做成输入区的 `overlay` 往上偏移:画得出来,但**点不着**——画到父视图
                 // 框外的那部分收不到触摸,表现是按钮好端端地摆在那儿,按下去什么都不发生
                 // (在 iPad 上试过一次)。挂在这一层,它整个落在自己的框里。
-                // 「今天」:本机数据拼的那几张卡,聊天顶上可折叠的一条。不留痕那一层里不出。
+                // 「今天」:本机数据拼的那几张卡,聊天顶上横着一排,可以收起。不留痕那一层里不出。
                 .safeAreaInset(edge: .top, spacing: 0) {
                     if !model.isEphemeral {
                         TodayStrip(cards: model.todayCards, onAction: perform)

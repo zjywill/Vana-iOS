@@ -451,6 +451,21 @@ struct TodayTests {
         #expect(cards.contains { $0.title == "目标" })
         #expect(TodaySummary.attention(cards) == 3)
         #expect(TodaySummary.line([]) == nil)
+        // 卡上那颗角标按类别上色:过点的和到点的不能是同一种颜色。
+        let kinds = Dictionary(uniqueKeysWithValues: cards.map { ($0.title, $0.kind) })
+        #expect(kinds["已过点"] == .overdue)
+        #expect(kinds["今天晚点"] == .reminder)
+        #expect(kinds["等你确认的"] == .needsYou)
+        #expect(kinds["目标"] == .goal)
+        #expect(cards.contains { $0.kind == .followUp })
+    }
+
+    /// 欢迎卡上方那张同内容的卡靠这个 id 让位。
+    @Test func theHealthStatusCardIsFindable() {
+        let cards = PluginRegistry.todayCards(TodayContext(
+            now: Date(), tasks: [], dueFollowUps: [], healthSummary: "昨晚睡了 7 小时", isEnabled: { _ in true }
+        ))
+        #expect(cards.first { $0.id == TodayCard.healthStatusId }?.kind == .health)
     }
 
     @Test func aSwitchedOffPluginContributesNoCards() {

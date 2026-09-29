@@ -3023,6 +3023,16 @@
         }
       }
     },
+    "后台在做" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background task"
+          }
+        }
+      }
+    },
     "周一早上，适合回顾上一周" : {
       "localizations" : {
         "en" : {
@@ -3130,6 +3140,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Back to the latest message"
+          }
+        }
+      }
+    },
+    "回头看" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follow-up"
           }
         }
       }
@@ -3250,6 +3270,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Before you start"
+          }
+        }
+      }
+    },
+    "在推进的目标" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goal"
           }
         }
       }
@@ -3609,6 +3639,16 @@
         }
       }
     },
+    "展开卡片" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show cards"
+          }
+        }
+      }
+    },
     "展开步骤" : {
       "localizations" : {
         "en" : {
@@ -3824,16 +3864,16 @@
     },
     "已记 %lld/%lld 条。这里只记查不到的事——作息、限制、你的偏好、最近的事；具体的数字每次都会重新查，不会记进来。\n对话时这些内容会随问题一起发给你选的模型 provider。" : {
       "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "已记 %1$lld/%2$lld 条。这里只记查不到的事——作息、限制、你的偏好、最近的事；具体的数字每次都会重新查，不会记进来。\n对话时这些内容会随问题一起发给你选的模型 provider。"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld/%lld saved. Only things that can't be looked up go here—your routine, limitations, preferences, recent events; specific numbers are looked up fresh each time and aren't saved.\nDuring conversations, these are sent along with your questions to the model provider you chose."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "已记 %1$lld/%2$lld 条。这里只记查不到的事——作息、限制、你的偏好、最近的事；具体的数字每次都会重新查，不会记进来。\n对话时这些内容会随问题一起发给你选的模型 provider。"
           }
         }
       }
@@ -3882,6 +3922,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Skipped"
+          }
+        }
+      }
+    },
+    "已过点" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overdue"
           }
         }
       }
@@ -4472,6 +4522,16 @@
         }
       }
     },
+    "提醒事项" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminder"
+          }
+        }
+      }
+    },
     "提醒到点只发一条通知，不调用模型，也不花钱。" : {
       "localizations" : {
         "en" : {
@@ -4568,6 +4628,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Take back"
+          }
+        }
+      }
+    },
+    "收起卡片" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide cards"
           }
         }
       }
@@ -4861,16 +4931,16 @@
     },
     "日常的事都可以交给我：%@。也能%@。" : {
       "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "日常的事都可以交给我：%1$@。也能%2$@。"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Leave everyday things to me. I can %@. I can also %@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "日常的事都可以交给我：%1$@。也能%2$@。"
           }
         }
       }
@@ -5775,16 +5845,16 @@
     },
     "步骤 %lld/%lld" : {
       "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "步骤 %1$lld/%2$lld"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Step %lld/%lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "步骤 %1$lld/%2$lld"
           }
         }
       }
@@ -6583,6 +6653,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Medications & supplements"
+          }
+        }
+      }
+    },
+    "用药回访" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medication check-in"
           }
         }
       }

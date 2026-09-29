@@ -562,52 +562,151 @@ struct TodayStrip: View {
     let cards: [TodayCard]
     var onAction: (TodayAction) -> Void
 
-    @AppStorage("todayStripExpanded") private var isExpanded = false
+    /// 收起来只剩标题那一行。默认摊开:卡片本身就是这一条存在的理由。
+    @AppStorage("todayCardsCollapsed") private var isCollapsed = false
+
+    /// 一次最多摆几张。再多就是把首屏写成一份日报,剩下的在任务页里。
+    private static let maxCards = 6
 
     var body: some View {
         if let summary = TodaySummary.line(cards) {
             VStack(alignment: .leading, spacing: 8) {
-                Button {
-                    withAnimation(.smooth(duration: 0.2)) { isExpanded.toggle() }
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "sun.max").foregroundStyle(.orange)
-                        Text("今天").font(.subheadline.weight(.semibold))
-                        Text(summary).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-                        Spacer()
-                        Image(systemName: isExpanded ? "chevron.up" : "chevron.down").font(.caption2).foregroundStyle(.secondary)
-                    }
-                    .contentShape(.rect)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("今天：\(summary)")
-
-                if isExpanded {
-                    ForEach(cards.prefix(3)) { card in
-                        Button {
-                            onAction(card.action)
-                        } label: {
-                            HStack(alignment: .top, spacing: 10) {
-                                Image(systemName: card.icon).frame(width: 20).foregroundStyle(Color.accentColor)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(card.title).font(.footnote).foregroundStyle(.primary).lineLimit(2)
-                                    if let body = card.body {
-                                        Text(body).font(.caption).foregroundStyle(.secondary)
-                                    }
-                                }
-                                Spacer(minLength: 0)
-                            }
-                            .contentShape(.rect)
-                        }
-                        .buttonStyle(.plain)
-                    }
+                header(summary)
+                if !isCollapsed {
+                    row
+                        .transition(.opacity.combined(with: .move(edge: .top)))
                 }
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .padding(.horizontal, 16)
             .padding(.top, 4)
+            .padding(.bottom, 6)
+            .animation(.smooth(duration: 0.2), value: isCollapsed)
+        }
+    }
+
+    private func header(_ summary: String) -> some View {
+        Button {
+            isCollapsed.toggle()
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "sun.max.fill").foregroundStyle(.orange)
+                Text("今天").font(.subheadline.weight(.semibold))
+                // 摊开时卡片自己就说清了,这行汇总只在收起来时顶上。
+                if isCollapsed {
+                    Text(summary).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.down")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .rotationEffect(.degrees(isCollapsed ? -90 : 0))
+            }
+            .padding(.horizontal, 20)
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("今天：\(summary)")
+        .accessibilityHint(isCollapsed ? "展开卡片" : "收起卡片")
+    }
+
+    /// 横着一排,下一张露出一截:「还能往右滑」要让人一眼看出来,而不是先去发现。
+    /// 只有一张时占满整行,露一截空白反而像少了什么。
+    private var row: some View {
+        let shown = Array(cards.prefix(Self.maxCards))
+        return ScrollView(.horizontal) {
+            LazyHStack(alignment: .top, spacing: 10) {
+                ForEach(shown) { card in
+                    TodayCardView(card: card) { onAction(card.action) }
+                        .containerRelativeFrame(.horizontal) { width, _ in
+                            shown.count == 1 ? width : min(width * 0.78, 300)
+                        }
+                }
+            }
+            .scrollTargetLayout()
+        }
+        .contentMargins(.horizontal, 16, for: .scrollContent)
+        .scrollTargetBehavior(.viewAligned)
+        .scrollIndicators(.hidden)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+/// 「今天」里的一张卡:角标说是哪一类,标题说是什么事,底下一行说到了哪一步。
+private struct TodayCardView: View {
+    let card: TodayCard
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: card.icon)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 22, height: 22)
+                        .background(tint, in: Circle())
+                    Text(kindLabel)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(tint)
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                Text(card.title)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.primary)
+                    .lineLimit(card.kind == .health ? 3 : 2)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.opacity)
+                if let body = card.body {
+                    Text(body)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, minHeight: 104, alignment: .topLeading)
+            .background(
+                Color(.secondarySystemGroupedBackground),
+                in: RoundedRectangle(cornerRadius: 18, style: .continuous)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .strokeBorder(tint.opacity(card.kind == .overdue || card.kind == .needsYou ? 0.45 : 0), lineWidth: 1)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .animation(.smooth(duration: 0.2), value: card.title)
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+    }
+
+    private var tint: Color {
+        switch card.kind {
+        case .overdue: .red
+        case .reminder: .orange
+        case .needsYou: .blue
+        case .running: .indigo
+        case .goal: .green
+        case .followUp: .teal
+        case .health: .pink
+        case .medication: .purple
+        }
+    }
+
+    private var kindLabel: String {
+        switch card.kind {
+        case .overdue: String(localized: "已过点")
+        case .reminder: String(localized: "提醒事项")
+        case .needsYou: String(localized: "等你确认")
+        case .running: String(localized: "后台在做")
+        case .goal: String(localized: "在推进的目标")
+        case .followUp: String(localized: "回头看")
+        case .health: String(localized: "现在的状况")
+        case .medication: String(localized: "用药回访")
         }
     }
 }

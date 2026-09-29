@@ -16,6 +16,11 @@ enum TodayAction: Equatable, Sendable {
 /// 「今天」头上的一张卡。**由本机数据拼出来,一次模型调用都不发**——这是它和「让模型写一段早间
 /// 简报」的根本区别:天天打开天天付钱是不该的。谁贡献的、多重要(大的在前)、点了去哪。
 struct TodayCard: Identifiable, Equatable, Sendable {
+    /// 卡片是哪一类。决定卡上那颗角标的颜色和那两个字,不影响排序(排序看 `priority`)。
+    enum Kind: Sendable {
+        case reminder, overdue, needsYou, running, goal, followUp, health, medication
+    }
+
     let id: String
     let pluginId: String
     let priority: Int
@@ -23,6 +28,7 @@ struct TodayCard: Identifiable, Equatable, Sendable {
     var body: String?
     var icon: String
     var action: TodayAction = .openTasks
+    var kind: Kind = .reminder
 }
 
 /// 各插件拼卡片要看的那点本机数据。
@@ -66,19 +72,20 @@ enum CoreToday {
                 body: (overdue ? String(localized: "已过点 · ") : "")
                     + ReminderRules.localizedDescription(due, now: context.now, calendar: context.calendar),
                 icon: "bell",
-                action: .openTask(task.id)
+                action: .openTask(task.id),
+                kind: overdue ? .overdue : .reminder
             ))
         }
 
         for task in context.tasks where task.kind == .job && task.isActive {
-            let (priority, body): (Int, String) = switch task.status {
-            case .needsYou, .proposed: (TodayPriority.needsYou, String(localized: "等你确认"))
-            case .running: (TodayPriority.running, String(localized: "进行中"))
-            default: (TodayPriority.running, String(localized: "排队中"))
+            let (priority, body, kind): (Int, String, TodayCard.Kind) = switch task.status {
+            case .needsYou, .proposed: (TodayPriority.needsYou, String(localized: "等你确认"), .needsYou)
+            case .running: (TodayPriority.running, String(localized: "进行中"), .running)
+            default: (TodayPriority.running, String(localized: "排队中"), .running)
             }
             cards.append(TodayCard(
                 id: "job-\(task.id)", pluginId: PluginIds.core, priority: priority,
-                title: task.title, body: body, icon: "checklist", action: .openTask(task.id)
+                title: task.title, body: body, icon: "checklist", action: .openTask(task.id), kind: kind
             ))
         }
 
@@ -89,7 +96,7 @@ enum CoreToday {
                 body: task.plan.isEmpty
                     ? String(localized: "还没有步骤")
                     : String(localized: "步骤 \(task.plan.count(where: \.done))/\(task.plan.count)"),
-                icon: "target", action: .openTask(task.id)
+                icon: "target", action: .openTask(task.id), kind: .goal
             ))
         }
 
@@ -98,7 +105,8 @@ enum CoreToday {
                 id: "followup-\(item.id)", pluginId: PluginIds.core, priority: TodayPriority.followUpDue,
                 title: String(localized: "说好回头看：\(item.text)"),
                 icon: "clock.arrow.circlepath",
-                action: .ask(String(localized: "上次说的「\(BackgroundTurn.naturalize(item.text))」，现在怎么样了？"))
+                action: .ask(String(localized: "上次说的「\(BackgroundTurn.naturalize(item.text))」，现在怎么样了？")),
+                kind: .followUp
             ))
         }
         return cards
@@ -111,8 +119,8 @@ enum HealthToday {
         var cards: [TodayCard] = []
         if let summary = context.healthSummary, !summary.isEmpty {
             cards.append(TodayCard(
-                id: "health-status", pluginId: PluginIds.health, priority: TodayPriority.healthStatus,
-                title: summary, icon: "waveform.path.ecg", action: .openHealthStatus
+                id: TodayCard.healthStatusId, pluginId: PluginIds.health, priority: TodayPriority.healthStatus,
+                title: summary, icon: "waveform.path.ecg", action: .openHealthStatus, kind: .health
             ))
         }
         if context.isEnabled(PluginIds.healthMedications) {
@@ -121,12 +129,17 @@ enum HealthToday {
                     id: "medication-\(item.id)", pluginId: PluginIds.health, priority: TodayPriority.followUpDue,
                     title: String(localized: "回头看看：\(item.name)"),
                     body: String(localized: "说好这几天回头评价一下效果"),
-                    icon: "pills", action: .openSurface(PluginSurface.medications)
+                    icon: "pills", action: .openSurface(PluginSurface.medications), kind: .medication
                 ))
             }
         }
         return cards
     }
+}
+
+extension TodayCard {
+    /// 健康插件那张「现在的状况」。欢迎卡上方原来那张同内容的卡在它出现时让位。
+    static let healthStatusId = "health-status"
 }
 
 enum TodaySummary {
