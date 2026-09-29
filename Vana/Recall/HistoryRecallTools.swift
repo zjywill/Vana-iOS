@@ -231,13 +231,3 @@ enum HistoryRecallTools {
         ])
     )
 }
-
-private extension CapabilityExecutionResult {
-    static func success(_ text: String) -> CapabilityExecutionResult {
-        CapabilityExecutionResult(output: .init(kind: .text, text: text))
-    }
-
-    static func failure(_ text: String) -> CapabilityExecutionResult {
-        CapabilityExecutionResult(output: .init(kind: .text, text: text), isError: true)
-    }
-}

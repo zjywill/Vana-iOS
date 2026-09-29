@@ -63,7 +63,7 @@ enum AssemblyFixtures {
         var medications: MedicationSnapshot = .empty
         var focusMedication: MedicationItem?
         var location: LocationSnapshot = .unknown
-        var goals: [String] = []
+        var goals: [TaskItem] = []
         var acceptsInterjections = true
         var persona: AssistantPersona?
     }
@@ -106,7 +106,14 @@ enum AssemblyFixtures {
             location: scenario.location,
             webSearch: flags.webSearch ? searchStub : nil,
             recall: flags.recall,
-            goals: scenario.goals,
+            // 前台才有提醒和目标(不留痕那一层不带);后台那几轮本来就不挂。
+            tasks: flags.isPrivate ? nil : TasksEnvironment(
+                store: stores.bundle.tasks,
+                scheduling: NoReminderScheduling(),
+                tenantId: tenant.id,
+                activeGoals: scenario.goals,
+                jobs: Jobs()
+            ),
             isEnabled: flags.isEnabled
         )
         return TestAssembly.engine(
@@ -181,6 +188,15 @@ enum AssemblyFixtures {
         MedicationItem(name: "褪黑素", status: .tried, reason: "入睡困难", outcome: "试了两周没感觉")
     }
 
+    /// id 固定:短编号要进黄金文本。
+    static var sampleGoal: TaskItem {
+        var goal = TaskItem(kind: .goal, title: "减脂", status: .running, createdAt: Date(timeIntervalSince1970: 0))
+        goal.id = UUID(uuidString: "0A1B2C3D-0000-0000-0000-000000000001")!
+        goal.why = "想跑得更轻松"
+        goal.plan = [.init(text: "每周跑三次", done: true), .init(text: "晚饭少吃主食")]
+        return goal
+    }
+
     static var sampleLocation: LocationSnapshot {
         LocationSnapshot(place: "杭州")
     }
@@ -196,7 +212,7 @@ enum AssemblyFixtures {
             medications: sampleMedications,
             focusMedication: sampleFocusMedication,
             location: sampleLocation,
-            goals: ["减脂"],
+            goals: [sampleGoal],
             acceptsInterjections: true,
             persona: .coach
         )
@@ -231,7 +247,7 @@ enum AssemblyFixtures {
                 acceptsInterjections: false
             ),
             managedSenior,
-            Scenario(name: "owner-goal-recall", flags: Flags(recall: true), goals: ["减脂"]),
+            Scenario(name: "owner-goal-recall", flags: Flags(recall: true), goals: [sampleGoal]),
             Scenario(name: "owner-settings-off", flags: Flags(memoryOn: false, medicationsOn: false)),
             Scenario(name: "owner-web-location", flags: Flags(webSearch: true), location: sampleLocation),
             Scenario(
@@ -243,6 +259,12 @@ enum AssemblyFixtures {
             )
         ]
     }
+}
+
+/// 派后台任务那一头的替身:只要 `start_task` 挂得出去。
+private struct Jobs: JobControls {
+    var autoStart: Bool { false }
+    func start(_ taskId: UUID) async {}
 }
 
 private extension Bool {

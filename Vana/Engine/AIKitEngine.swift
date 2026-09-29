@@ -113,7 +113,8 @@ struct AIKitEngine: AgentEngine {
         ProviderCatalog.model(model, provider: providerId)?.1.supportsVision ?? false
     }
 
-    private static let maxToolRounds = 6
+    static let defaultToolRounds = 6
+    private let maxToolRounds: Int
 
     private let providerId: String
     private let model: String
@@ -133,6 +134,7 @@ struct AIKitEngine: AgentEngine {
         plugins: [any AgentPlugin] = [],
         pluginContext: PluginContext = PluginContext(),
         thinking: Bool? = nil,
+        maxToolRounds: Int = AIKitEngine.defaultToolRounds,
         hooks: AgentHookDispatcher? = nil
     ) {
         self.providerId = providerId
@@ -140,6 +142,7 @@ struct AIKitEngine: AgentEngine {
         self.plugins = plugins
         self.pluginContext = pluginContext
         self.thinking = thinking
+        self.maxToolRounds = maxToolRounds
         self.hooks = hooks
     }
 
@@ -220,7 +223,7 @@ struct AIKitEngine: AgentEngine {
                         // 要用就检索。撞上上限时由 `ChatViewModel` 强制淘汰到最近两轮再跑。
                         summarizer: nil,
                         policy: .vana,
-                        maxToolRounds: Self.maxToolRounds,
+                        maxToolRounds: maxToolRounds,
                         pendingInput: pendingInput,
                         truncatedToolCallNotice: truncatedToolCallNotice,
                         hooks: hooks

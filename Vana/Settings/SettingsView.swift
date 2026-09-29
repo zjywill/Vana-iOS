@@ -12,6 +12,7 @@ struct SettingsView: View {
     @AppStorage(EngineSettings.thinkingEnabledKey) private var thinkingEnabled = true
     @AppStorage(EngineSettings.photoImagePolicyKey) private var photoImagePolicy = PhotoImagePolicy.askWhenNoText.rawValue
     @AppStorage(EngineSettings.checkInsEnabledKey) private var checkInsEnabled = false
+    @AppStorage(EngineSettings.autoStartTasksKey) private var autoStartTasks = false
     @AppStorage(EngineSettings.morningCheckInHourKey) private var morningHour = EngineSettings.defaultMorningHour
     @AppStorage(EngineSettings.eveningCheckInHourKey) private var eveningHour = EngineSettings.defaultEveningHour
     @State private var checkInStatus: HealthAuthStatus?
@@ -451,6 +452,18 @@ struct SettingsView: View {
                     // 唯一能验证的东西(说一次「甘氨酸镁」)。
                     Text(Self.voiceFooter)
                 }
+            }
+
+            Section {
+                Toggle("只读任务自动开始", isOn: $autoStartTasks)
+            } header: {
+                Text("后台任务")
+            } footer: {
+                Text("""
+                    Vana 可以把一件要花几分钟的事（查资料、比较方案）交给后台助手去做。默认每一件都先给你一张确认卡，你点了「开始」才跑。\
+                    打开这一项之后，它派出去的任务直接开始。后台助手只读——想设提醒、记目标都只能先提议，你点了才执行；\
+                    任务的说明和它查到的资料会发给你配置的模型服务。一次只跑一件，每天最多 \(SubagentLimits.maxRunsPerDay) 件，每件最多 5 分钟。
+                    """)
             }
 
             if let chat {

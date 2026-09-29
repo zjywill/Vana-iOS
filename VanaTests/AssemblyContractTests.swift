@@ -64,6 +64,14 @@ struct AssemblyContractTests {
         if flags.memoryOn && writes {
             names += [MemoryTools.rememberToolName, MemoryTools.forgetToolName, MemoryTools.reviseToolName]
         }
+        // 提醒、目标、派后台任务:前台才有,不留痕那一层整组不带。
+        if writes {
+            names += [
+                TasksTools.getTimeToolName, TasksTools.createReminderToolName, TasksTools.listToolName,
+                TasksTools.updateTaskToolName, TasksTools.createGoalToolName, TasksTools.updateGoalToolName,
+                SubagentTools.startToolName
+            ]
+        }
         // 健康
         guard flags.health else { return names }
         // Apple 健康归机主,家人身上一个都不挂。
@@ -107,6 +115,8 @@ struct AssemblyContractTests {
         ("记忆的指令", "用户明确要求记住某件事"),
         ("上网搜", "遇到你的知识里没有"),
         ("反问", "他的描述里缺一个"),
+        ("提醒与目标", "用户要你在某个时间提醒他做某件事时"),
+        ("后台任务", "遇到**独立的、要花几分钟**的事"),
         ("健康规则", "处理健康相关的话题"),
         ("急症规则", "急症优先于一切"),
         ("Apple 健康", "他的 Apple 健康数据"),
@@ -118,7 +128,7 @@ struct AssemblyContractTests {
         ("记忆", "关于这位用户（来自过往对话）："),
         ("用药名单", "关于他和药/补剂"),
         ("用药焦点", "这条对话围绕他记下的「"),
-        ("目标", "他眼下在做的几件长期的事")
+        ("目标", "他正在推进的目标")
     ]
 
     @Test("the system prompt blocks come static first, volatile last")

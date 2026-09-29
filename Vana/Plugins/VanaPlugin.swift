@@ -79,8 +79,8 @@ struct PluginEnvironment: @unchecked Sendable {
     var medicationStore: MedicationStore?
     var medications: MedicationSnapshot = .empty
     var focusMedication: MedicationItem?
-    /// 用户正在做的那几件长期的事,常驻 system 段易变区。
-    var goals: [String] = []
+    /// 提醒、目标、现在几点、派后台任务。nil 就不挂(不留痕浮层里不写,后台那几轮只带只读的)。
+    var tasks: TasksEnvironment?
 }
 
 /// app 层的插件:名片加它在某条路上贡献的那几个 `AgentPlugin`。
@@ -104,6 +104,9 @@ protocol VanaPlugin: Sendable {
     var welcomeBlurb: String? { get }
 
     func suggestions(_ context: SuggestionContext) -> SuggestionSet
+
+    /// 这个插件想放进「今天」的卡片。只读本机数据,不发模型请求;关掉的插件不会被问到。
+    func todayCards(_ context: TodayContext) -> [TodayCard]
 }
 
 extension VanaPlugin {
@@ -112,4 +115,5 @@ extension VanaPlugin {
     var disclaimer: String? { nil }
     var welcomeBlurb: String? { nil }
     func suggestions(_ context: SuggestionContext) -> SuggestionSet { SuggestionSet(items: []) }
+    func todayCards(_ context: TodayContext) -> [TodayCard] { [] }
 }

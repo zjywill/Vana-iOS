@@ -14,6 +14,11 @@ struct ChatView: View {
     @State private var menuRoute: MenuRoute?
     /// 不留痕的那一层:内存里聊,关掉就没。盖在整个主对话上面,不进线程。
     @State private var isShowingEphemeral = false
+    /// 「任务」页。
+    @State private var isShowingTasks = false
+    /// 从「今天」、确认卡、结果消息点进来的那一条任务。
+    @State private var openedTask: UUID?
+    @State private var jobs = AppJobControls.shared
     /// 首屏那张卡点开之后的那一页。和用药表一样走 sheet:它是一次离开对话的 detour,
     /// 看完就该回到刚才那一屏。
     @State private var isShowingStatus = false
@@ -122,6 +127,7 @@ struct ChatView: View {
                                     // 正在写的那条不一定是最后一条了:用户能在回复期间接着
                                     // 发消息,那几条排在它后面。
                                     message: message,
+                                    taskBoard: model.taskBoard,
                                     isStreaming: message.id == model.replyingMessageID,
                                     canRetry: model.canRetry(message.id),
                                     canDelete: !model.isReplying && !model.isEphemeral,
@@ -141,6 +147,7 @@ struct ChatView: View {
                                             : model.deleteMessage(message.id)
                                     },
                                     onWithdraw: { model.withdrawQueued(message.id) },
+                                    onOpenTask: { openedTask = $0 },
                                     onAnswerAsk: { callID, answer in
                                         model.answerAsk(
                                             messageID: message.id,
@@ -250,6 +257,12 @@ struct ChatView: View {
                 // 也不做成输入区的 `overlay` 往上偏移:画得出来,但**点不着**——画到父视图
                 // 框外的那部分收不到触摸,表现是按钮好端端地摆在那儿,按下去什么都不发生
                 // (在 iPad 上试过一次)。挂在这一层,它整个落在自己的框里。
+                // 「今天」:本机数据拼的那几张卡,聊天顶上可折叠的一条。不留痕那一层里不出。
+                .safeAreaInset(edge: .top, spacing: 0) {
+                    if !model.isEphemeral {
+                        TodayStrip(cards: model.todayCards, onAction: perform)
+                    }
+                }
                 .overlay(alignment: .bottom) {
                     // 空会话时不出:那一屏本来就没有「底部」可回。
                     if isScrolledUp, !model.messages.isEmpty {
@@ -269,6 +282,32 @@ struct ChatView: View {
             .toolbar { toolbarItems }
             .sheet(isPresented: $isShowingMedications) {
                 MedicationListView(model: model)
+            }
+            .sheet(isPresented: $isShowingTasks) {
+                TasksView(board: model.taskBoard)
+            }
+            .sheet(item: $openedTask) { id in
+                NavigationStack {
+                    TaskDetailView(board: model.taskBoard, taskId: id)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("完成") { openedTask = nil }
+                            }
+                        }
+                }
+            }
+            // 后台任务点了「开始」,但还没同意把数据发给这家:同样点名征一次。
+            .alert(
+                Text("发送给 \(CloudCatalog.providerName(for: jobs.pendingConsent?.providerId ?? ""))？"),
+                isPresented: Binding(
+                    get: { jobs.pendingConsent != nil },
+                    set: { if !$0 { jobs.declineConsent() } }
+                )
+            ) {
+                Button("同意并开始", action: jobs.confirmConsent)
+                Button("取消", role: .cancel, action: jobs.declineConsent)
+            } message: {
+                Text("这件后台任务的说明，连同它需要查的资料和记忆，会发送给第三方模型服务来完成，由对方按它自己的隐私政策处理。")
             }
             .sheet(isPresented: $isShowingStatus) {
                 HealthStatusView(
@@ -391,6 +430,20 @@ struct ChatView: View {
     /// 不在这份名单里,那一下输入框真的离开了层级,系统自己会收。
     private var isCoveringConversation: Bool {
         isShowingMedications || isShowingStatus || isShowingDataUseNotice || isShowingEphemeral
+            || isShowingTasks || openedTask != nil
+    }
+
+    /// 点了一张「今天」卡片。
+    private func perform(_ action: TodayAction) {
+        switch action {
+        case .openTasks: isShowingTasks = true
+        case .openTask(let id): openedTask = id
+        case .openMemory: menuRoute = .memory
+        case .ask(let prompt): model.send(prompt)
+        case .openSurface(let id):
+            if id == PluginSurface.medications { isShowingMedications = true } else { menuRoute = .plugins }
+        case .openHealthStatus: isShowingStatus = true
+        }
     }
 
     /// 家人成员这儿不请求授权。这台设备的健康数据不属于他,请他去授权一份读不到的数据是一句
@@ -412,6 +465,17 @@ struct ChatView: View {
                 Button("关闭", action: onClose)
             }
         } else {
+            // 「任务」:提醒、目标、后台任务。角标是需要他看一眼的那几件。
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isShowingTasks = true
+                } label: {
+                    Image(systemName: "checklist")
+                }
+                .badge(model.attentionCount)
+                .accessibilityLabel(model.attentionCount > 0 ? "任务，\(model.attentionCount) 件需要你看" : "任务")
+            }
+
             // 一颗「⋯」收住所有「离开对话去看别的东西」:记忆、插件、不留痕、设置。没有会话列表
             // 了,也就没有左上角那颗抽屉按钮;用药表这类领域入口收进插件页,核心界面不认识它们。
             ToolbarItem(placement: .topBarTrailing) {
@@ -753,6 +817,8 @@ private struct ReasoningPanel: View {
 
 private struct MessageBubble: View, Equatable {
     let message: ChatMessage
+    /// `start_task` 那张确认卡读它。它自己会观察任务表,气泡本身不必跟着重画。
+    let taskBoard: TaskBoard
     /// 这条正在生成:生成期间不给操作按钮,retry 一条还没写完的回复没有意义。
     let isStreaming: Bool
     let canRetry: Bool
@@ -769,6 +835,7 @@ private struct MessageBubble: View, Equatable {
     let onOpenSetup: () -> Void
     let onDelete: () -> Void
     let onWithdraw: () -> Void
+    let onOpenTask: (UUID) -> Void
     let onAnswerAsk: (String, AskUserAnswer) -> Void
 
     /// 只比画出来会不一样的东西。
@@ -933,6 +1000,23 @@ private struct MessageBubble: View, Equatable {
             // 一轮里问了两次就摆两张(理论上不该发生,系统提示里写着一轮只问一个)。**不去重、
             // 不只留最后一张**:两张卡各自对应上下文里一次真实的提问,吞掉一张会让他答了一个
             // 问题、模型却在等另一个。
+            // 派后台任务的那张确认卡。和问题卡一样排在正文下面:先说清为什么要派,再给他按钮。
+            ForEach(showsToolCards ? startedTasks : [], id: \.self) { taskId in
+                TaskCard(board: taskBoard, taskId: taskId, onOpen: onOpenTask)
+                    .padding(.top, 2)
+            }
+
+            // 后台任务的结果那条主动消息:详情(全文、来源、它建议的事)在任务页。
+            if message.origin == .task, let taskId = message.refTaskId {
+                Button {
+                    onOpenTask(taskId)
+                } label: {
+                    Label("查看详情", systemImage: "chevron.right")
+                        .font(.footnote)
+                }
+                .buttonStyle(.borderless)
+            }
+
             ForEach(showsToolCards ? askQuestions : [], id: \.id) { asked in
                 AskUserCard(
                     question: asked.question,
@@ -997,6 +1081,10 @@ private struct MessageBubble: View, Equatable {
     /// 代价是卡片在收尾那一刻才出现。可以接受:它本来就是"读完再动手"的东西,而在读的过程中
     /// 让它先占住屏幕底下那块,反而把还在写的正文一直往上顶。
     private var showsToolCards: Bool { !isStreaming }
+
+    private var startedTasks: [UUID] {
+        message.toolCalls.compactMap(\.startedTaskId)
+    }
 
     /// 这一轮摆出去的问题卡。**只认工具返回的那份**,不去正文里认 A/B/C(同动作卡)。
     private var askQuestions: [(id: String, question: AskUserQuestion, answer: AskUserAnswer?)] {

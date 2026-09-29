@@ -44,6 +44,16 @@ enum PluginRegistry {
         snapshot.filtered { isMemoryVisible($0.kind, isEnabled: isEnabled) }
     }
 
+    /// 「今天」头上的卡片:各插件贡献的合起来,重要的在前,一次最多 `limit` 张。关掉的插件不出卡。
+    static func todayCards(_ context: TodayContext, limit: Int = 8) -> [TodayCard] {
+        Array(all.filter { context.isEnabled($0.manifest.id) }
+            .flatMap { $0.todayCards(context) }
+            .enumerated()
+            .sorted { $0.element.priority != $1.element.priority ? $0.element.priority > $1.element.priority : $0.offset < $1.offset }
+            .map(\.element)
+            .prefix(limit))
+    }
+
     /// 插件页里列出来的:用户能开关的那些。
     static var togglable: [any VanaPlugin] { all.filter { $0.manifest.togglable } }
 

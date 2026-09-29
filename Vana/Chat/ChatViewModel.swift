@@ -61,6 +61,10 @@ final class ChatViewModel {
     private(set) var isWritingSummary = false
     /// 接着刚才那段回答问的几条追问。空着不是错误状态,是常态的一半。
     private(set) var followUps: [String] = []
+    /// 「今天」头上的卡片。本机数据拼的,零模型调用;不留痕浮层里不出。
+    private(set) var todayCards: [TodayCard] = []
+    /// 顶栏「任务」上的角标:需要他看一眼的有几件。
+    var attentionCount: Int { TodaySummary.attention(todayCards) }
     /// 健康插件那一格建议:本地按处境挑的,模型写好了原地换掉。
     private var healthSuggestions: [SuggestedQuestion] = []
     /// 输入框上方那排还没发出去的照片。
@@ -115,6 +119,7 @@ final class ChatViewModel {
     /// 回复期间有后台消息落进线程了,等这一轮结束再并进来。
     private var hasPendingBackgroundMessages = false
     private var backgroundObserver: (any NSObjectProtocol)?
+    private var tasksObserver: (any NSObjectProtocol)?
     private var idleHarvestTask: Task<Void, Never>?
 
     /// 每轮现造引擎。测试注入一个脚本化的假引擎,就能在不碰 Keychain 和网络的前提下
@@ -124,6 +129,9 @@ final class ChatViewModel {
     private let engineFactory: EngineFactory?
     private let memoryStore: MemoryStore
     private let medicationStore: MedicationStore
+    let taskStore: TaskStore
+    /// 任务页、详情页、对话里那张确认卡读的那一份。
+    let taskBoard: TaskBoard
     /// 这个 view model 服务的是哪位成员。**一个 view model 一位成员,不给它换人的方法**。
     /// 切成员在 `ChatView` 那边是整个换掉这个对象(`.id(tenant.id)`)。
     private let tenant: Tenant
@@ -171,7 +179,8 @@ final class ChatViewModel {
         tenant: Tenant = TenantScope.current,
         memoryStore: MemoryStore = .shared,
         medicationStore: MedicationStore = .shared,
-        thread: ThreadStore = TenantScope.currentStores.thread
+        thread: ThreadStore = TenantScope.currentStores.thread,
+        tasks: TaskStore = TenantScope.currentStores.tasks
     ) {
         self.engineFactory = engineFactory
         self.isEphemeral = isEphemeral
@@ -179,6 +188,8 @@ final class ChatViewModel {
         self.memoryStore = memoryStore
         self.medicationStore = medicationStore
         self.thread = thread
+        self.taskStore = tasks
+        taskBoard = TaskBoard(store: tasks, tenantId: tenant.id)
         persists = loadsPersistedThread && !isEphemeral
         refreshEngineAvailability()
         guard loadsPersistedThread, !isEphemeral else {
@@ -196,11 +207,52 @@ final class ChatViewModel {
             guard (note.object as? URL) == directory else { return }
             MainActor.assumeIsolated { self?.backgroundMessageArrived() }
         }
-        Task { await loadInitialHistory() }
+        let tasksFile = tasks.fileURL
+        tasksObserver = NotificationCenter.default.addObserver(
+            forName: .vanaTasksDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] note in
+            guard (note.object as? URL) == tasksFile else { return }
+            MainActor.assumeIsolated { self?.refreshTodaySoon() }
+        }
+        Task {
+            await loadInitialHistory()
+            await refreshToday()
+        }
     }
 
     isolated deinit {
         if let backgroundObserver { NotificationCenter.default.removeObserver(backgroundObserver) }
+        if let tasksObserver { NotificationCenter.default.removeObserver(tasksObserver) }
+    }
+
+    // MARK: - 今天
+
+    private var todayTask: Task<Void, Never>?
+
+    private func refreshTodaySoon() {
+        todayTask?.cancel()
+        todayTask = Task {
+            try? await Task.sleep(for: .milliseconds(50))
+            guard !Task.isCancelled else { return }
+            await refreshToday()
+        }
+    }
+
+    /// 「今天」那几张卡。**零模型调用**:本机的任务、到期的待跟进、用药回访、那句本地处境。
+    func refreshToday() async {
+        guard persists else { return }
+        let now = Date()
+        let dueFollowUps = EngineSettings.memoryEnabled ? await memoryStore.snapshot(now: now).due(at: now) : []
+        let context = TodayContext(
+            now: now,
+            tasks: await taskStore.all(),
+            dueFollowUps: dueFollowUps,
+            medications: medications,
+            healthSummary: hasHealthData && situation != nil ? quickSummary : nil
+        )
+        todayCards = PluginRegistry.todayCards(context)
     }
 
     // MARK: - 线程:读、持久化、往前翻
@@ -853,6 +905,7 @@ final class ChatViewModel {
             self.situation = situation
             healthSuggestions = situation.questions
             quickSummary = situation.quickSummary
+            await refreshToday()
 
             guard isThreadEmpty,
                   let settings = try? cloudSettings(),
@@ -990,15 +1043,15 @@ final class ChatViewModel {
 
     /// 没配 key 时那句引导。**一处定义**:发送被挡下、欢迎卡上那条横幅、首屏那段话底下的
     /// 小字说的都是它。三处各写一句的话,它们会慢慢漂成三种说法,而用户会以为是三件事。
-    static let cloudSetupGuidance = String(localized: "还没配置云端模型。到设置里填一把 API key，再选 provider 和模型，就能开始问了。")
+    nonisolated static let cloudSetupGuidance = String(localized: "还没配置云端模型。到设置里填一把 API key，再选 provider 和模型，就能开始问了。")
 
     /// key 填好了、模型没选上时那句。和上面那句分开:两句话要他做的事不一样,而
     /// 「到设置里填一把 API key」对一个已经填好 key 的人是一句读不懂的话。
-    static let modelSetupGuidance = String(localized: "还没选好云端模型。到设置里的「模型」那一行选一个，就能开始问了。")
+    nonisolated static let modelSetupGuidance = String(localized: "还没选好云端模型。到设置里的「模型」那一行选一个，就能开始问了。")
 
     /// key 存在但没通过验证时那句。**一处定义**:气泡上要认出这一类失败(重试解不掉,
     /// 该去的是设置页),靠的就是和这句对上。
-    static let authFailureGuidance = String(
+    nonisolated static let authFailureGuidance = String(
         localized: "API key 没通过验证。请到「设置 › 云端模型」确认 key 填对了、没有过期，并且和选中的 provider 对得上。"
     )
 
@@ -1066,6 +1119,7 @@ final class ChatViewModel {
             persist()
             if hasPendingBackgroundMessages { await mergeBackgroundMessages() }
             scheduleIdleHarvest()
+            await refreshToday()
         }
     }
 
@@ -1275,7 +1329,7 @@ final class ChatViewModel {
     /// 分类交给 `ModelFailure.kind`,这里只把每一类翻成一句「你现在能做什么」。分不出来的
     /// 那一类**照旧给原文**:说不出所以然的时候,一句编出来的通用错误比原文更没用,而原文
     /// 至少还是排查的线索。
-    static func userFacingFailure(_ error: any Error) -> String {
+    nonisolated static func userFacingFailure(_ error: any Error) -> String {
         let raw = error.localizedDescription
         switch ModelFailure.kind(of: raw) {
         case .authentication:
@@ -1338,7 +1392,15 @@ final class ChatViewModel {
             // 用药表同理:不留痕照样**读**——「他不能吃什么」这一条在想问点私密事的时候
             // 尤其不能关掉。
             medications: medications,
-            focusMedication: focusMedication
+            focusMedication: focusMedication,
+            // 不留痕的那一层不写任何东西,提醒和目标也不例外——写的那几个本来就会被
+            // `isPrivate` 挡掉,整组不带省得连只读的也要解释一遍。
+            tasks: isEphemeral ? nil : TasksEnvironment(
+                store: taskStore,
+                tenantId: tenant.id,
+                activeGoals: await taskStore.active().filter { $0.kind == .goal },
+                jobs: AppJobControls.shared
+            )
         )
     }
 

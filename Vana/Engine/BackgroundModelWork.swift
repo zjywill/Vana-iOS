@@ -15,6 +15,23 @@ actor BackgroundModelWork {
     static let shared = BackgroundModelWork()
 
     private var isBusy = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+
+    /// **排队等这把锁**,不是「忙就跳过」:用户点了开始的后台任务不能因为这一刻恰好有别的活
+    /// 就丢掉。抽记忆、待跟进那几件照旧走 `run`(拿不到就这次不跑)。
+    func runExclusive<T: Sendable>(_ work: @Sendable () async -> T) async -> T {
+        while isBusy {
+            await withCheckedContinuation { waiters.append($0) }
+        }
+        isBusy = true
+        defer { release() }
+        return await work()
+    }
+
+    private func release() {
+        isBusy = false
+        if !waiters.isEmpty { waiters.removeFirst().resume() }
+    }
 
     /// 有位子就跑,没有就返回 nil。
     ///
@@ -23,7 +40,7 @@ actor BackgroundModelWork {
     func run<T: Sendable>(_ work: @Sendable () async -> T) async -> T? {
         guard !isBusy else { return nil }
         isBusy = true
-        defer { isBusy = false }
+        defer { release() }
         return await work()
     }
 

@@ -394,10 +394,11 @@ struct ComposerBar: View {
     /// `lineLimit(1...6)` 是给超长粘贴兜底的那一档:到第六行就不再长,里面自己滚。没有它
     /// 的话粘一篇文章进来,输入框会一路顶到屏幕顶上,对话一条都看不见。
     private var field: some View {
-        // 家人那边不写「问问你的健康数据」——那句话许的正是这条路上唯一给不了的东西。
+        // 家人那边换成他的名字:这一条对话问的是他的事。机主这边不写「问问你的健康数据」——
+        // Vana 是日常助手,健康只是其中一个插件。
         TextField(
-            model.hasHealthData
-                ? String(localized: "问问你的健康数据…")
+            model.currentTenant.isOwner
+                ? String(localized: "跟 Vana 说点什么…")
                 : String(localized: "问问\(model.currentTenant.displayName)的情况…"),
             text: $model.input,
             axis: .vertical

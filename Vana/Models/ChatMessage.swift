@@ -27,6 +27,8 @@ struct ToolCallRecord: Identifiable, Equatable, Codable, Sendable {
     ///
     /// 跟着会话落盘:不存的话,三天前答过的问题重开会话时会变回一张还能点的卡。
     var askAnswer: AskUserAnswer?
+    /// `start_task` 放出去的那条任务。卡片照着它去任务表里找状态。
+    var startedTaskId: UUID?
     var isError: Bool
     /// 发起这次调用的那一刻,正文已经写到第几个字。
     ///
@@ -55,6 +57,7 @@ struct ToolCallRecord: Identifiable, Equatable, Codable, Sendable {
         exerciseIDs: [String]? = nil,
         askQuestion: AskUserQuestion? = nil,
         askAnswer: AskUserAnswer? = nil,
+        startedTaskId: UUID? = nil,
         isError: Bool = false,
         textOffset: Int? = nil,
         reasoningOffset: Int? = nil
@@ -67,6 +70,7 @@ struct ToolCallRecord: Identifiable, Equatable, Codable, Sendable {
         self.exerciseIDs = exerciseIDs
         self.askQuestion = askQuestion
         self.askAnswer = askAnswer
+        self.startedTaskId = startedTaskId
         self.isError = isError
         self.textOffset = textOffset
         self.reasoningOffset = reasoningOffset
@@ -81,7 +85,12 @@ struct ToolCallRecord: Identifiable, Equatable, Codable, Sendable {
             return ExerciseSelection.encodeForToolMetadata(.init(moveIDs: exerciseIDs))
         }
         if let askQuestion { return AskUserQuestion.encodeForToolMetadata(askQuestion) }
+        if let startedTaskId { return .object([SubagentTools.taskIdKey: .string(startedTaskId.uuidString)]) }
         return nil
+    }
+
+    static func startedTaskId(fromToolMetadata metadata: RuntimeJSONValue?) -> UUID? {
+        metadata?[SubagentTools.taskIdKey]?.stringValue.flatMap(UUID.init(uuidString:))
     }
 
     /// 同 `ChatMessage.rendersIdentically`。`report` 只比行数:它和 `output` 是
@@ -97,6 +106,7 @@ struct ToolCallRecord: Identifiable, Equatable, Codable, Sendable {
             && askQuestion == other.askQuestion
             // 他点完那张卡,卡上的勾和底下那行字都要跟着变。漏掉这一项,表现就是点了没反应。
             && askAnswer == other.askAnswer
+            && startedTaskId == other.startedTaskId
             // 它决定这颗 chip 插在正文的哪儿。写进去之后就不会再变,但漏掉这一项的话,
             // 那次改变永远刷不出来。
             && textOffset == other.textOffset
@@ -113,7 +123,7 @@ extension ToolCallRecord {
     ///
     /// 不出胶囊的那条**也不在正文里切一刀**(见 `ChatMessage.turnSegments`):屏幕上没有
     /// 任何东西落在那个位置,切开只会让一段话在莫名其妙的地方断开。
-    var showsChip: Bool { askQuestion == nil }
+    var showsChip: Bool { askQuestion == nil && startedTaskId == nil }
 }
 
 /// 一条回复摊回发生顺序之后的一段。
@@ -595,6 +605,7 @@ extension ChatMessage: AgentTurnSink {
         toolCalls[index].exerciseIDs = ExerciseSelection
             .decode(fromToolMetadata: output.metadata)?.moveIDs
         toolCalls[index].askQuestion = AskUserQuestion.decode(fromToolMetadata: output.metadata)
+        toolCalls[index].startedTaskId = ToolCallRecord.startedTaskId(fromToolMetadata: output.metadata)
         toolCalls[index].isError = isError
     }
 
@@ -656,6 +667,7 @@ private extension ToolCallRecord {
         exerciseIDs = dto.output
             .flatMap { ExerciseSelection.decode(fromToolMetadata: $0.metadata)?.moveIDs }
         askQuestion = dto.output.flatMap { AskUserQuestion.decode(fromToolMetadata: $0.metadata) }
+        startedTaskId = ToolCallRecord.startedTaskId(fromToolMetadata: dto.output?.metadata)
         // 他点了什么只有 app 这一侧知道:runtime 那边从头到尾没见过这个字段。
         askAnswer = nil
         isError = dto.isError

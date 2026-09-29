@@ -31,7 +31,8 @@ enum TenantPaths {
         Item(name: "sessions", hint: .isDirectory),
         Item(name: "attachments", hint: .isDirectory),
         Item(name: "memory.json", hint: .notDirectory),
-        Item(name: "medications.json", hint: .notDirectory)
+        Item(name: "medications.json", hint: .notDirectory),
+        Item(name: TaskStore.fileName, hint: .notDirectory)
     ]
 
     /// 某个成员的数据根。四个 store 拿它当 parent。

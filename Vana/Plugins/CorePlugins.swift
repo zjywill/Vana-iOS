@@ -138,31 +138,13 @@ struct LocationPlugin: AgentPlugin {
     }
 }
 
-/// 用户正在做的那几件长期的事。进行中的目标常驻 system 段易变区——模型随时知道,
-/// 不用他每次从头介绍一遍。
-struct GoalsPlugin: AgentPlugin {
-    let id = "goals"
-    let goals: [String]
-
-    func promptBlocks(context: PluginContext, mountedTools: Set<String>) -> [PromptBlock] {
-        guard !goals.isEmpty else { return [] }
-        let lines = goals.map { "- \($0)" }.joined(separator: "\n")
-        return [PromptBlock(
-            order: PromptOrder.goals,
-            text: "他眼下在做的几件长期的事：\n\(lines)\n"
-                + "这些事已经聊过一段时间了，眼前这几句可能只是最近的一段。"
-                + "回答时和这些事挂上钩，不要每次都从头介绍一遍他的情况。"
-        )]
-    }
-}
-
 /// 任何 Vana 都带着的那几样。
 struct CorePlugin: VanaPlugin {
     var manifest: PluginManifest {
         PluginManifest(
             id: PluginIds.core,
             name: String(localized: "基础能力"),
-            summary: String(localized: "记忆、召回、反问、网页搜索、位置"),
+            summary: String(localized: "记忆、召回、反问、网页搜索、位置、提醒与目标、后台任务"),
             icon: "sparkles",
             defaultEnabled: true,
             togglable: false
@@ -174,6 +156,7 @@ struct CorePlugin: VanaPlugin {
     func suggestions(_ context: SuggestionContext) -> SuggestionSet {
         var items = [
             SuggestedQuestion(icon: "checklist", text: String(localized: "帮我整理一下今天要做的事")),
+            SuggestedQuestion(icon: "bell", text: String(localized: "明天早上八点提醒我带伞")),
             SuggestedQuestion(icon: "lightbulb", text: String(localized: "帮我想想周末去哪儿玩"))
         ]
         if context.isEnabled(PluginIds.memory) {
@@ -181,6 +164,8 @@ struct CorePlugin: VanaPlugin {
         }
         return SuggestionSet(items: items)
     }
+
+    func todayCards(_ context: TodayContext) -> [TodayCard] { CoreToday.cards(context) }
 
     func agentPlugins(_ env: PluginEnvironment, route: PluginRoute) -> [any AgentPlugin] {
         // 召回归在记忆开关下面:关掉记忆的人不指望 Vana 还在引用他上个月说过的话。
@@ -198,14 +183,13 @@ struct CorePlugin: VanaPlugin {
             if let recall { plugins.append(recall) }
             plugins.append(memory)
             plugins.append(LocationPlugin(snapshot: env.location))
-            plugins.append(GoalsPlugin(goals: env.goals))
+            if let tasks = env.tasks { plugins.append(TasksPlugin(env: tasks)) }
         case .background:
             // 用户不在场。只带记忆(只读,写的那三个由 `PluginContext.isBackground` 丢掉)、召回
             // 和调用方明确给的搜索——多挂一样就多花一份钱。
             if let webSearch = env.webSearch { plugins.append(WebSearchPlugin(client: webSearch)) }
             if let recall { plugins.append(recall) }
             plugins.append(memory)
-            plugins.append(GoalsPlugin(goals: env.goals))
         }
         return plugins
     }

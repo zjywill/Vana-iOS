@@ -163,6 +163,8 @@ struct HealthVanaPlugin: VanaPlugin {
         ])
     }
 
+    func todayCards(_ context: TodayContext) -> [TodayCard] { HealthToday.cards(context) }
+
     func agentPlugins(_ env: PluginEnvironment, route: PluginRoute) -> [any AgentPlugin] {
         guard env.isEnabled(PluginIds.health) else { return [] }
         var plugins: [any AgentPlugin] = [HealthRulesPlugin()]

@@ -182,6 +182,216 @@
     "strictPreferred" : false
   },
   {
+    "description" : "读取现在的日期、星期、时间和用户所在的时区。要把「明晚 8 点」「三天后」这类说法换算成具体时间之前先调用它。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+
+      },
+      "required" : [
+
+      ],
+      "type" : "object"
+    },
+    "name" : "get_current_time",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "设一条提醒：到点手机会发一条通知。给 at（用户当地时间，形如 2026-10-01T20:00）或 in_minutes（多少分钟以后）二选一。重复提醒用 repeat。提醒到点只发通知，不会再调用你。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "at" : {
+          "description" : "用户当地时间，形如 2026-10-01T20:00",
+          "type" : "string"
+        },
+        "in_minutes" : {
+          "description" : "多少分钟以后",
+          "maximum" : 43200,
+          "minimum" : 1,
+          "type" : "integer"
+        },
+        "repeat" : {
+          "description" : "重复方式，默认不重复",
+          "enum" : [
+            "none",
+            "daily",
+            "weekly"
+          ],
+          "type" : "string"
+        },
+        "text" : {
+          "description" : "提醒的内容，一句话，比如「给妈妈打电话」",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "text"
+      ],
+      "type" : "object"
+    },
+    "name" : "create_reminder",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "列出进行中的提醒、目标和任务，带短编号。要改或取消某一条之前先用它拿编号。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "kind" : {
+          "description" : "只看某一种，默认全部",
+          "enum" : [
+            "all",
+            "reminder",
+            "goal",
+            "job"
+          ],
+          "type" : "string"
+        }
+      },
+      "required" : [
+
+      ],
+      "type" : "object"
+    },
+    "name" : "list_tasks",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "对一条提醒、目标或任务做：complete 完成、cancel 取消、reschedule 改期（只有提醒能改期，给 at 或 in_minutes）。按 list_tasks 给的短编号指到那一条。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "action" : {
+          "description" : "要做什么",
+          "enum" : [
+            "complete",
+            "cancel",
+            "reschedule"
+          ],
+          "type" : "string"
+        },
+        "at" : {
+          "description" : "改期用：用户当地时间，形如 2026-10-01T20:00",
+          "type" : "string"
+        },
+        "id" : {
+          "description" : "短编号，来自 list_tasks",
+          "type" : "string"
+        },
+        "in_minutes" : {
+          "description" : "改期用：多少分钟以后",
+          "maximum" : 43200,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "id",
+        "action"
+      ],
+      "type" : "object"
+    },
+    "name" : "update_task",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "把用户想长期坚持的一件事记成目标（备半马、学吉他、把作息调回来）。只在用户表示要长期做这件事时才建；同时进行中的目标最多 5 个。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "plan" : {
+          "description" : "初步的几个步骤，可选",
+          "items" : {
+            "type" : "string"
+          },
+          "type" : "array"
+        },
+        "title" : {
+          "description" : "目标名称，短一点",
+          "type" : "string"
+        },
+        "why" : {
+          "description" : "他为什么要做这件事，一句话，可选",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "title"
+      ],
+      "type" : "object"
+    },
+    "name" : "create_goal",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "更新一个目标：改名、改原因、加步骤、勾掉做完的步骤、记一条进展。按 list_tasks 或系统提示里给的短编号指到目标。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "add_plan" : {
+          "description" : "要加的步骤，可选",
+          "items" : {
+            "type" : "string"
+          },
+          "type" : "array"
+        },
+        "complete_plan" : {
+          "description" : "做完了的步骤（写步骤原文的一部分即可），可选",
+          "items" : {
+            "type" : "string"
+          },
+          "type" : "array"
+        },
+        "id" : {
+          "description" : "目标的短编号",
+          "type" : "string"
+        },
+        "note" : {
+          "description" : "一条进展记录，可选",
+          "type" : "string"
+        },
+        "title" : {
+          "description" : "新名称，可选",
+          "type" : "string"
+        },
+        "why" : {
+          "description" : "新的原因，可选",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "id"
+      ],
+      "type" : "object"
+    },
+    "name" : "update_goal",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "把一件**独立、要花几分钟**的事（查很多资料、比较几个方案、整理一个主题）派给后台助手去做。它看不到这段对话，所以 brief 必须自己讲得清清楚楚。会先给用户一张确认卡，他点了「开始」才会跑；结果出来后会出现在对话里。一句话能答的问题不要派。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "brief" : {
+          "description" : "交给后台助手的完整说明：要做什么、要什么样的结果、用户的相关偏好和限制。不超过 1500 字，不要写进用户不必要的个人信息。",
+          "type" : "string"
+        },
+        "title" : {
+          "description" : "任务名，短一点，比如「比较三款空气净化器」",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "title",
+        "brief"
+      ],
+      "type" : "object"
+    },
+    "name" : "start_task",
+    "strictPreferred" : false
+  },
+  {
     "description" : "当用户问及步数、活动量或久坐情况时调用。返回最近若干天的每日步数、步行跑步距离、爬楼层数和运动分钟。",
     "inputSchema" : {
       "additionalProperties" : false,

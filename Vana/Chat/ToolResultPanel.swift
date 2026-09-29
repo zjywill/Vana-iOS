@@ -79,7 +79,9 @@ struct ToolCallChip: View {
         if isExercise { return "figure.flexibility" }
         if isMemory { return "brain" }
         if isWebSearch { return "globe" }
-        return isRecall ? "clock.arrow.circlepath" : "heart.text.square"
+        if isRecall { return "clock.arrow.circlepath" }
+        if CoreToolLabels.title(for: call) == String(localized: "任务") { return "checklist" }
+        return HealthTools.all.contains(where: { $0.name == call.name }) ? "heart.text.square" : "wrench.and.screwdriver"
     }
 
     private var note: String {
@@ -399,6 +401,16 @@ private struct HourlyChart: View {
 enum CoreToolLabels {
     static func note(for call: ToolCallRecord) -> String? {
         switch call.name {
+        case TasksTools.getTimeToolName: String(localized: "看了一眼时间")
+        case TasksTools.createReminderToolName:
+            call.isError ? String(localized: "没能设好提醒") : String(localized: "设了一个提醒")
+        case TasksTools.listToolName: String(localized: "查看了任务清单")
+        case TasksTools.updateTaskToolName: String(localized: "更新了一项任务")
+        case TasksTools.createGoalToolName:
+            call.isError ? String(localized: "没能记成目标") : String(localized: "记成了一个目标")
+        case TasksTools.updateGoalToolName: String(localized: "更新了一个目标")
+        case SubagentTools.startToolName:
+            call.isError ? String(localized: "没能派出后台任务") : String(localized: "派了一个后台任务")
         case MedicationTools.listToolName: String(localized: "查看了用药表")
         case MedicationTools.logToolName, MedicationTools.updateToolName:
             call.isError ? String(localized: "没能更新用药表") : String(localized: "更新了用药表")
@@ -408,6 +420,10 @@ enum CoreToolLabels {
 
     static func title(for call: ToolCallRecord) -> String? {
         switch call.name {
+        case TasksTools.getTimeToolName, TasksTools.createReminderToolName, TasksTools.listToolName,
+             TasksTools.updateTaskToolName, TasksTools.createGoalToolName, TasksTools.updateGoalToolName,
+             SubagentTools.startToolName:
+            String(localized: "任务")
         case MedicationTools.listToolName, MedicationTools.logToolName, MedicationTools.updateToolName:
             String(localized: "用药与补剂")
         default: nil

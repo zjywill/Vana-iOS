@@ -16,7 +16,7 @@ enum TestAssembly {
         webSearch: WebSearchClient? = nil,
         recall: Bool = false,
         includesHealthData: Bool = true,
-        goals: [String] = [],
+        tasks: TasksEnvironment? = nil,
         isEnabled: @escaping @Sendable (String) -> Bool = EngineSettings.isPluginEnabled
     ) -> PluginEnvironment {
         PluginEnvironment(
@@ -35,7 +35,7 @@ enum TestAssembly {
             medicationStore: stores?.medications,
             medications: medications,
             focusMedication: focusMedication,
-            goals: goals
+            tasks: tasks
         )
     }
 
