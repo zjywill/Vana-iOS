@@ -71,12 +71,10 @@ struct ChatView: View {
                     // 代价可控:一段会话最多几十条(`SessionThreadPolicy` 攒够 40 条就
                     // 另起一段),全量布局一次远比每帧猜错一次便宜。
                     VStack(spacing: 16) {
-                        // 「今天」:本机数据拼的那几张卡,横着一排,是这一列里的第一项——跟着
-                        // 内容一起滚,**不悬浮**:浮在顶上的话对话从它底下穿过去,两层字叠在一起。
-                        // 左右各伸出 16 点贴到屏幕边,下一张卡才露得出来。不留痕那一层里不出。
-                        if !model.isEphemeral {
-                            TodayStrip(cards: model.todayCards, onAction: perform)
-                                .padding(.horizontal, -16)
+                        // 空线程时「今天」排在最前面(那时候最前面就是最后面)。有消息之后它是
+                        // 今天那一段的段头,见下面的 `todayStrip`。
+                        if model.isThreadEmpty || model.isLoadingConversation {
+                            todayStrip
                         }
 
                         if model.isLoadingConversation {
@@ -130,7 +128,10 @@ struct ChatView: View {
                             ForEach(Array(model.messages.enumerated()), id: \.element.id) { index, message in
                                 // 单线程里消息跨天:按天出一条分隔,不然「昨天说的」和「刚才说的」
                                 // 在屏幕上长得一样。
-                                if let label = dayLabel(at: index) {
+                                if index == todayStartIndex {
+                                    // 今天那一段的段头:它自己就写着「今天」,日期分隔让位。
+                                    todayStrip
+                                } else if let label = dayLabel(at: index) {
                                     DaySeparator(label: label)
                                 }
 
@@ -180,6 +181,12 @@ struct ChatView: View {
                                 if let folded = message.foldedSpan {
                                     CompactionDivider(artifact: folded)
                                 }
+                            }
+
+                            // 今天还一句话都没说:排在最后,就在输入框上面——打开 app 第一眼
+                            // 看到的正是它。一开口,它就挪到那句话上面去当段头,位置不变。
+                            if todayStartIndex == nil {
+                                todayStrip.id(Self.todayAnchor)
                             }
 
                             // 退避重试期间界面上什么都不动的话,等十几秒和卡死没有区别。
@@ -534,6 +541,25 @@ struct ChatView: View {
     }
 
     private static let welcomeAnchor = "welcome"
+    private static let todayAnchor = "today"
+
+    /// 「今天」:本机数据拼的那几张卡,横着一排。**是对话这一列里的一项,不悬浮**——浮在顶上的话
+    /// 对话从它底下穿过去,两层字叠在一起。位置是今天那一段的段头:今天说过话,就排在今天第一条
+    /// 消息上面;还没说过,就排在最后。于是每次打开都在眼前,聊起来它也不跟着动。
+    /// 左右各伸出 16 点贴到屏幕边,下一张卡才露得出来。不留痕那一层里不出。
+    @ViewBuilder
+    private var todayStrip: some View {
+        if !model.isEphemeral {
+            TodayStrip(cards: model.todayCards, onAction: perform)
+                .padding(.horizontal, -16)
+        }
+    }
+
+    /// 今天第一条消息在手里这一段的哪儿。nil:今天还没说过话(或者今天的还没翻到——不会,
+    /// 翻页是往前翻的,最新的永远在手里)。
+    private var todayStartIndex: Int? {
+        model.messages.firstIndex { $0.createdAt.map(Calendar.current.isDateInToday) ?? false }
+    }
 
     /// 离底多远才算"翻上去了"。半屏太迟(他已经翻过好几条了),几十点太早(流式期间
     /// 手指轻轻一顶就冒出来)。240 点大概是一条长回复的高度:少于这个距离,他自己往下
@@ -659,8 +685,11 @@ struct ChatView: View {
     }
 
     private func scroll(with proxy: ScrollViewProxy, animated: Bool) {
+        // 今天还没说过话时「今天」排在最后一条消息下面,贴底要贴到它。
         let target: (id: AnyHashable, anchor: UnitPoint) = model.messages.last
-            .map { (AnyHashable($0.id), UnitPoint.bottom) }
+            .map { todayStartIndex == nil && !model.isEphemeral && !model.todayCards.isEmpty
+                ? (AnyHashable(Self.todayAnchor), UnitPoint.bottom)
+                : (AnyHashable($0.id), UnitPoint.bottom) }
             ?? (AnyHashable(Self.welcomeAnchor), UnitPoint.top)
 
         if animated, !reduceMotion {
