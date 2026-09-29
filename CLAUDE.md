@@ -58,6 +58,8 @@ xcodebuild -project Vana.xcodeproj -scheme Vana \
   并在 PR 里逐段看 diff:
   `TEST_RUNNER_VANA_RECORD_GOLDEN=1 xcodebuild ... test -only-testing:VanaTests/AssemblyGoldenTests`。
   录制那一遍会故意报失败(防止把开关留在 CI 里),去掉环境变量再跑一遍应该全绿。
+  失败之后 xcodebuild 会接着跑 `simctl diagnose` 收集诊断,最长卡十分钟;文件第一分钟就写好了,
+  看到 `Golden/` 下的文件更新之后可以直接中止它。
 - 装配换了形状,只改 `AssemblyFixtures` 里那两处映射,断言不用动。
 
 ## 运行
