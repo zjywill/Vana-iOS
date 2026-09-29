@@ -71,8 +71,8 @@ struct ChatView: View {
                     // 代价可控:一段会话最多几十条(`SessionThreadPolicy` 攒够 40 条就
                     // 另起一段),全量布局一次远比每帧猜错一次便宜。
                     VStack(spacing: 16) {
-                        // 空线程时「今天」排在最前面(那时候最前面就是最后面)。有消息之后它是
-                        // 今天那一段的段头,见下面的 `todayStrip`。
+                        // 打开时线程是空的:「今天」排在最前面(那时候最前面就是最新的)。
+                        // 有消息之后它排在打开那一刻的最新一条下面,见 `todayStrip`。
                         if model.isThreadEmpty || model.isLoadingConversation {
                             todayStrip
                         }
@@ -128,10 +128,11 @@ struct ChatView: View {
                             ForEach(Array(model.messages.enumerated()), id: \.element.id) { index, message in
                                 // 单线程里消息跨天:按天出一条分隔,不然「昨天说的」和「刚才说的」
                                 // 在屏幕上长得一样。
-                                if index == todayStartIndex {
-                                    // 今天那一段的段头:它自己就写着「今天」,日期分隔让位。
-                                    todayStrip
-                                } else if let label = dayLabel(at: index) {
+                                // 打开时线程是空的,之后才说的话:「今天」在它们上面。
+                                if index == 0, model.todayAfterMessageId == nil, !model.isThreadEmpty {
+                                    todayStrip.id(Self.todayAnchor)
+                                }
+                                if let label = dayLabel(at: index) {
                                     DaySeparator(label: label)
                                 }
 
@@ -181,13 +182,13 @@ struct ChatView: View {
                                 if let folded = message.foldedSpan {
                                     CompactionDivider(artifact: folded)
                                 }
+
+                                // 打开 app 那一刻的最新一条下面。之后说的话排在它下面,它不跟着挪。
+                                if message.id == model.todayAfterMessageId {
+                                    todayStrip.id(Self.todayAnchor)
+                                }
                             }
 
-                            // 今天还一句话都没说:排在最后,就在输入框上面——打开 app 第一眼
-                            // 看到的正是它。一开口,它就挪到那句话上面去当段头,位置不变。
-                            if todayStartIndex == nil {
-                                todayStrip.id(Self.todayAnchor)
-                            }
 
                             // 退避重试期间界面上什么都不动的话,等十几秒和卡死没有区别。
                             if let notice = model.retryNotice {
@@ -230,6 +231,10 @@ struct ChatView: View {
                     // ——流式一秒几十次,每次再起一个 0.25 秒的动画,十几个叠在一起各自
                     // 朝一个已经过期的目标去,那就是抖动。
                     scroll(with: proxy, animated: new.messageCount != old.messageCount)
+                }
+                // 回到前台时「今天」挪到了最新那条下面:贴一次底,让他一打开就看见它。
+                .onChange(of: model.todayAfterMessageId) {
+                    scroll(with: proxy, animated: false)
                 }
                 // 往前翻了一页:新塞进顶部的内容会把他正看的那条顶下去,滚回刚才那条的顶上。
                 .onChange(of: model.olderPageToken) {
@@ -370,17 +375,21 @@ struct ChatView: View {
                 Text("你的问题，连同它需要用到的内容（这条对话的往来、从 Apple「健康」读到的聚合数值、长期记忆和用药表里的条目），会发送给第三方模型服务 \(pendingConsentProviderName) 来生成回答，由对方按它自己的隐私政策处理。这台设备上发给这家服务的请求只问这一次；换用其他服务时会再次询问。")
             }
             .navigationDestination(isPresented: $isShowingCloudSetup) {
-                SettingsView(chat: model.isEphemeral ? nil : model)
+                SettingsView(chat: model.isEphemeral ? nil : model, openMedications: { isShowingMedications = true })
             }
             .navigationDestination(item: $menuRoute) { route in
                 switch route {
                 case .memory: MemoryView()
                 case .plugins: PluginsView(openMedications: { isShowingMedications = true })
-                case .settings: SettingsView(chat: model)
+                case .settings: SettingsView(chat: model, openMedications: { isShowingMedications = true })
                 }
             }
             // 切到后台:趁这时候把水位线之后攒下的抽一遍记忆。
             .onChange(of: scenePhase) { _, phase in
+                // 回到前台就是又打开了一次:「今天」挪到最新那条下面,再贴一次底让他看见它。
+                if phase == .active, !model.isEphemeral, !model.isReplying {
+                    model.pinTodayToLatest()
+                }
                 guard phase == .background else { return }
                 model.harvestMemoryInBackground()
             }
@@ -535,22 +544,21 @@ struct ChatView: View {
     private static let welcomeAnchor = "welcome"
     private static let todayAnchor = "today"
 
-    /// 「今天」:本机数据拼的那几张卡,横着一排。**是对话这一列里的一项,不悬浮**——浮在顶上的话
-    /// 对话从它底下穿过去,两层字叠在一起。位置是今天那一段的段头:今天说过话,就排在今天第一条
-    /// 消息上面;还没说过,就排在最后。于是每次打开都在眼前,聊起来它也不跟着动。
-    /// 左右各伸出 16 点贴到屏幕边,下一张卡才露得出来。不留痕那一层里不出。
+    /// 「今天」:本机数据拼的那张卡。**是对话这一列里的一项,不悬浮**——浮在顶上的话对话从它底下
+    /// 穿过去,两层字叠在一起。**每次打开 app 时它是最新的一条**(排在那一刻最后一条消息下面,
+    /// `ChatViewModel.todayAfterMessageId`),之后说的话排在它下面。只是屏幕上的一张卡,不进线程、
+    /// 不进给模型的上下文。不留痕那一层里不出。
     @ViewBuilder
     private var todayStrip: some View {
         if !model.isEphemeral {
             TodayStrip(cards: model.todayCards, onAction: perform)
-                .padding(.horizontal, -16)
         }
     }
 
-    /// 今天第一条消息在手里这一段的哪儿。nil:今天还没说过话(或者今天的还没翻到——不会,
-    /// 翻页是往前翻的,最新的永远在手里)。
-    private var todayStartIndex: Int? {
-        model.messages.firstIndex { $0.createdAt.map(Calendar.current.isDateInToday) ?? false }
+    /// 贴底时要贴到「今天」:它排在最后一条消息下面的时候。
+    private var isTodayLast: Bool {
+        !model.isEphemeral && !model.todayCards.isEmpty
+            && model.todayAfterMessageId != nil && model.todayAfterMessageId == model.messages.last?.id
     }
 
     /// 离底多远才算"翻上去了"。半屏太迟(他已经翻过好几条了),几十点太早(流式期间
@@ -677,9 +685,9 @@ struct ChatView: View {
     }
 
     private func scroll(with proxy: ScrollViewProxy, animated: Bool) {
-        // 今天还没说过话时「今天」排在最后一条消息下面,贴底要贴到它。
+        // 「今天」排在最后一条消息下面的时候,贴底要贴到它。
         let target: (id: AnyHashable, anchor: UnitPoint) = model.messages.last
-            .map { todayStartIndex == nil && !model.isEphemeral && !model.todayCards.isEmpty
+            .map { isTodayLast
                 ? (AnyHashable(Self.todayAnchor), UnitPoint.bottom)
                 : (AnyHashable($0.id), UnitPoint.bottom) }
             ?? (AnyHashable(Self.welcomeAnchor), UnitPoint.top)

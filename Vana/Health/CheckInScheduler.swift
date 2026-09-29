@@ -43,7 +43,9 @@ enum CheckInScheduler {
             withIdentifiers: [morningIdentifier, eveningIdentifier]
         )
 
+        // 正文是 `HealthSituation.detect()` 写的:健康插件关着就无话可说,整个不排。
         guard defaults.bool(forKey: EngineSettings.checkInsEnabledKey),
+              EngineSettings.isPluginEnabled(PluginIds.health, defaults: defaults),
               await isAuthorized() else {
             return
         }

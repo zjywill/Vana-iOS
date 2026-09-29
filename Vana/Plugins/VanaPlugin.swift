@@ -18,6 +18,10 @@ struct PluginSurface: Identifiable, Sendable, Equatable {
     static let family = "family"
     static let notes = "notes"
     static let exercises = "exercises"
+    /// Apple 健康的读取授权。
+    static let appleHealth = "appleHealth"
+    /// 每日 check-in。
+    static let checkIns = "checkIns"
 
     let id: String
     let title: String

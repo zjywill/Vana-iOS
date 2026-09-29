@@ -479,3 +479,13 @@ struct TodayTests {
         #expect(cards.isEmpty)
     }
 }
+
+/// 设置归哪儿:关掉插件就没意义的那几件,归插件自己的详情页。
+@Suite("Plugin settings")
+struct PluginSettingsTests {
+    @Test func healthOwnsItsPermissionCheckInsAndMedications() {
+        let ids = HealthVanaPlugin().surfaces.map(\.id)
+        #expect(ids == [PluginSurface.appleHealth, PluginSurface.medications, PluginSurface.checkIns, PluginSurface.family])
+        #expect(NotesVanaPlugin().surfaces.map(\.id) == [PluginSurface.notes])
+    }
+}

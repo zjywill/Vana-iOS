@@ -117,13 +117,29 @@ struct HealthVanaPlugin: VanaPlugin {
     }
 
     var surfaces: [PluginSurface] {
+        // 排在详情页里的顺序:先是数据从哪儿来,再是这个插件自己存的东西,最后是它主动找你的那件事。
         [
+            PluginSurface(
+                id: PluginSurface.appleHealth,
+                title: HealthKitAttribution.settingsSection,
+                subtitle: HealthKitAttribution.settingsFooter,
+                icon: "heart.text.square"
+            ),
             PluginSurface(
                 id: PluginSurface.medications,
                 title: String(localized: "用药与补剂"),
                 subtitle: String(localized: "在吃的、不能吃的、试过没用的，分开记"),
                 icon: "pills",
                 toggleId: PluginIds.healthMedications
+            ),
+            PluginSurface(
+                id: PluginSurface.checkIns,
+                title: String(localized: "每日 check-in"),
+                subtitle: String(localized: """
+                    早上说昨晚的睡眠，晚上说今天的活动量，都基于本机算出来的数据；\
+                    点开通知会接着那条对话聊。文案在每次打开 app 时刷新。
+                    """),
+                icon: "bell.badge"
             ),
             PluginSurface(
                 id: PluginSurface.family,

@@ -73,6 +73,7 @@
 		609671AB2C7BEFDAAFDC62E8 /* NotesPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8ACD182F9FB684CC6E7FB6A /* NotesPlugin.swift */; };
 		616B59B20EAEDCD7A491E2A3 /* TenantListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B861A762760D45BFC60668 /* TenantListView.swift */; };
 		6214F5163305F838CF110CB2 /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239A40955F48FD4A3D4822D7 /* DocumentScannerView.swift */; };
+		63EE3CCDA650E458714E02E0 /* HealthSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F021B819869DED8B660F1 /* HealthSettings.swift */; };
 		644FA8EC936AEDACF2F7F1F2 /* WebSearchTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1170C732A9B82C3956F0ED92 /* WebSearchTools.swift */; };
 		657E5D068418FD84495B268E /* AgentEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B71162584BAB8B0A6B744CC8 /* AgentEngine.swift */; };
 		65F07233734515BD8D51D212 /* QuickSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A9E97C04DE37021479681 /* QuickSummaryTests.swift */; };
@@ -263,6 +264,7 @@
 		3D550B0AB7872F50B561F9D2 /* EngineSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineSettings.swift; sourceTree = "<group>"; };
 		405CE0F84C135DF2B98CD651 /* ComplianceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplianceTests.swift; sourceTree = "<group>"; };
 		40650E35AF07EB1ADA88BD9B /* ReminderScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderScheduler.swift; sourceTree = "<group>"; };
+		418F021B819869DED8B660F1 /* HealthSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSettings.swift; sourceTree = "<group>"; };
 		423C4962744F79A776C50986 /* TenantStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TenantStore.swift; sourceTree = "<group>"; };
 		44CCBBD75BD3BA12D7A9882D /* CorePlugins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorePlugins.swift; sourceTree = "<group>"; };
 		45452567FC033D63A31B9379 /* CoreInstructions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreInstructions.swift; sourceTree = "<group>"; };
@@ -560,6 +562,7 @@
 				44CCBBD75BD3BA12D7A9882D /* CorePlugins.swift */,
 				3D1AC7788403AD99BBC8261B /* HealthInstructions.swift */,
 				3589BF018D165AF6DD640AA5 /* HealthPlugin.swift */,
+				418F021B819869DED8B660F1 /* HealthSettings.swift */,
 				B9316E3219947D9239AEADFB /* HealthTopics.swift */,
 				B8ACD182F9FB684CC6E7FB6A /* NotesPlugin.swift */,
 				D7AB847A06B9A84AB6AD514F /* PluginRegistry.swift */,
@@ -1040,6 +1043,7 @@
 				73420A9807BAC741F3F0CD6C /* HealthKitAttribution.swift in Sources */,
 				4C3B3FFB7E6BAFCF791E5D93 /* HealthPlugin.swift in Sources */,
 				C93E08516048BC8A6015E920 /* HealthReport.swift in Sources */,
+				63EE3CCDA650E458714E02E0 /* HealthSettings.swift in Sources */,
 				2477E00C81BA12BA55A41DB5 /* HealthSituation.swift in Sources */,
 				EBAA7A4953D0B45B709B25AF /* HealthStatusView.swift in Sources */,
 				7FBBBB446DE2A5100F124A1E /* HealthStore.swift in Sources */,

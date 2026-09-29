@@ -63,6 +63,10 @@ final class ChatViewModel {
     private(set) var followUps: [String] = []
     /// 「今天」头上的卡片。本机数据拼的,零模型调用;不留痕浮层里不出。
     private(set) var todayCards: [TodayCard] = []
+    /// 「今天」那张卡排在哪条消息后面。**每次打开 app 时定一次**(`pinTodayToLatest`):那一刻它是
+    /// 最新的一条;之后说的话排在它下面,它不跟着往下挪。nil 表示打开时线程是空的——排在最前面。
+    /// 它只是屏幕上的一张卡,不进线程、不进上下文。
+    private(set) var todayAfterMessageId: UUID?
     /// 顶栏「任务」上的角标:需要他看一眼的有几件。
     var attentionCount: Int { TodaySummary.attention(todayCards) }
     /// 健康插件那一格建议:本地按处境挑的,模型写好了原地换掉。
@@ -290,6 +294,13 @@ final class ChatViewModel {
         syncedIds = Set(loaded.map(\.id))
         // 读盘期间他要是已经发了话(极少),别把它盖掉。
         messages = loaded + messages
+        pinTodayToLatest()
+    }
+
+    /// 打开 app(冷启动读完线程、或者从后台回到前台)时调一次:把「今天」挪到最新那条消息下面。
+    /// 排队中的不算——那几条还没被 Vana 看到,「今天」排在它们上面才对得上时间。
+    func pinTodayToLatest() {
+        todayAfterMessageId = messages.last { !$0.isQueued }?.id
     }
 
     /// 滑到顶了,再往前读一页。

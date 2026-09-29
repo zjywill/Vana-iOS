@@ -562,71 +562,57 @@ struct TodayStrip: View {
     let cards: [TodayCard]
     var onAction: (TodayAction) -> Void
 
-    /// 收起来只剩标题那一行。默认摊开:卡片本身就是这一条存在的理由。
-    @AppStorage("todayCardsCollapsed") private var isCollapsed = false
+    /// 一张卡里最多列几件。再多就是把对话写成一份日报,剩下的在任务页里。
+    private static let maxRows = 5
 
-    /// 一次最多摆几张。再多就是把首屏写成一份日报,剩下的在任务页里。
-    private static let maxCards = 6
-
+    /// 一张普通的卡:头上一行「今天 · 日期」,下面一件事一行。**不折叠**——它每次打开只出现一次,
+    /// 就排在最新的位置上,没有需要收起来腾地方的时候。
     var body: some View {
-        if let summary = TodaySummary.line(cards) {
-            VStack(alignment: .leading, spacing: 8) {
-                header(summary)
-                if !isCollapsed {
-                    row
-                        .transition(.opacity.combined(with: .move(edge: .top)))
+        if !cards.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 6) {
+                    Image(systemName: "sun.max.fill").foregroundStyle(.orange)
+                    Text("今天").font(.subheadline.weight(.semibold))
+                    Text(Date.now.formatted(.dateTime.month().day().weekday()))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer(minLength: 0)
                 }
-            }
-            .padding(.top, 4)
-            .padding(.bottom, 6)
-            .animation(.smooth(duration: 0.2), value: isCollapsed)
-        }
-    }
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
+                .padding(.bottom, 6)
+                .accessibilityElement(children: .combine)
+                .accessibilityAddTraits(.isHeader)
 
-    private func header(_ summary: String) -> some View {
-        Button {
-            isCollapsed.toggle()
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: "sun.max.fill").foregroundStyle(.orange)
-                Text("今天").font(.subheadline.weight(.semibold))
-                // 摊开时卡片自己就说清了,这行汇总只在收起来时顶上。
-                if isCollapsed {
-                    Text(summary).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-                }
-                Spacer(minLength: 0)
-                Image(systemName: "chevron.down")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .rotationEffect(.degrees(isCollapsed ? -90 : 0))
-            }
-            .padding(.horizontal, 20)
-            .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("今天：\(summary)")
-        .accessibilityHint(isCollapsed ? "展开卡片" : "收起卡片")
-    }
-
-    /// 横着一排,下一张露出一截:「还能往右滑」要让人一眼看出来,而不是先去发现。
-    /// 只有一张时占满整行,露一截空白反而像少了什么。
-    private var row: some View {
-        let shown = Array(cards.prefix(Self.maxCards))
-        return ScrollView(.horizontal) {
-            LazyHStack(alignment: .top, spacing: 10) {
-                ForEach(shown) { card in
+                let shown = Array(cards.prefix(Self.maxRows))
+                ForEach(Array(shown.enumerated()), id: \.element.id) { index, card in
+                    if index > 0 {
+                        Divider().padding(.leading, 52)
+                    }
                     TodayCardView(card: card) { onAction(card.action) }
-                        .containerRelativeFrame(.horizontal) { width, _ in
-                            shown.count == 1 ? width : min(width * 0.78, 300)
-                        }
+                }
+
+                if cards.count > Self.maxRows {
+                    Divider().padding(.leading, 52)
+                    Button {
+                        onAction(.openTasks)
+                    } label: {
+                        Text("还有 \(cards.count - Self.maxRows) 件，去任务页看")
+                            .font(.footnote)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 52)
+                            .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Color.accentColor)
                 }
             }
-            .scrollTargetLayout()
+            .padding(.bottom, 6)
+            .background(
+                Color(.secondarySystemGroupedBackground),
+                in: RoundedRectangle(cornerRadius: 20, style: .continuous)
+            )
         }
-        .contentMargins(.horizontal, 16, for: .scrollContent)
-        .scrollTargetBehavior(.viewAligned)
-        .scrollIndicators(.hidden)
-        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -635,49 +621,42 @@ private struct TodayCardView: View {
     let card: TodayCard
     let action: () -> Void
 
+    /// 一行:左边一颗按类别上色的图标,右边「类别」小字、标题、进展。
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 6) {
-                    Image(systemName: card.icon)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white)
-                        .frame(width: 22, height: 22)
-                        .background(tint, in: Circle())
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: card.icon)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 26, height: 26)
+                    .background(tint, in: Circle())
+                VStack(alignment: .leading, spacing: 2) {
                     Text(kindLabel)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(tint)
-                    Spacer(minLength: 0)
-                    Image(systemName: "chevron.right")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.tertiary)
+                    Text(card.title)
+                        .font(.subheadline)
+                        .foregroundStyle(.primary)
+                        .lineLimit(card.kind == .health ? 3 : 2)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .contentTransition(.opacity)
+                    if let body = card.body {
+                        Text(body)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
                 }
-                Text(card.title)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.primary)
-                    .lineLimit(card.kind == .health ? 3 : 2)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .contentTransition(.opacity)
-                if let body = card.body {
-                    Text(body)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-                Spacer(minLength: 0)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .padding(.top, 4)
             }
-            .padding(14)
-            .frame(maxWidth: .infinity, minHeight: 104, alignment: .topLeading)
-            .background(
-                Color(.secondarySystemGroupedBackground),
-                in: RoundedRectangle(cornerRadius: 18, style: .continuous)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .strokeBorder(tint.opacity(card.kind == .overdue || card.kind == .needsYou ? 0.45 : 0), lineWidth: 1)
-            )
-            .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .contentShape(.rect)
             .animation(.smooth(duration: 0.2), value: card.title)
         }
         .buttonStyle(.plain)

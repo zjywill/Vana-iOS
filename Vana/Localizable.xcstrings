@@ -741,6 +741,7 @@
       }
     },
     "Vana 可以把一件要花几分钟的事（查资料、比较方案）交给后台助手去做。默认每一件都先给你一张确认卡，你点了「开始」才跑。打开这一项之后，它派出去的任务直接开始。后台助手只读——想设提醒、记目标都只能先提议，你点了才执行；任务的说明和它查到的资料会发给你配置的模型服务。一次只跑一件，每天最多 %lld 件，每件最多 5 分钟。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1215,6 +1216,7 @@
       }
     },
     "今天：%@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1952,6 +1954,16 @@
         }
       }
     },
+    "健康、笔记与清单这些能整个开关的能力，以及它们各自的设置（比如 Apple 健康的读取权限、每日 check-in）。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capabilities you can turn on or off as a whole, like Health and Notes and lists, together with their own settings (such as Apple Health access and the daily check-in)."
+          }
+        }
+      }
+    },
     "健康分析仅供参考，不能替代专业医疗建议。" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2684,6 +2696,7 @@
       }
     },
     "占用空间、清掉很早以前的，或者全部清空。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2874,11 +2887,22 @@
       }
     },
     "只读任务自动开始" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Start read-only tasks automatically"
+          }
+        }
+      }
+    },
+    "只读的后台任务自动开始" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start read-only background tasks automatically"
           }
         }
       }
@@ -3579,6 +3603,7 @@
       }
     },
     "对话" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3594,6 +3619,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conversation history"
+          }
+        }
+      }
+    },
+    "对话历史里可以看占用空间、清掉很早以前的，或者全部清空。Vana 可以把一件要花几分钟的事（查资料、比较方案）交给后台助手去做。默认每一件都先给你一张确认卡，你点了「开始」才跑。打开这一项之后，它派出去的任务直接开始。后台助手只读——想设提醒、记目标都只能先提议，你点了才执行；任务的说明和它查到的资料会发给你配置的模型服务。一次只跑一件，每天最多 %lld 件，每件最多 5 分钟。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Conversation history you can see how much space it uses, clear old messages, or clear everything. Vana can hand a job that takes a few minutes (researching, comparing options) to a background assistant. By default each one first shows you a confirmation card and runs only after you tap “Start”. With this on, the tasks it starts run right away. The background assistant is read-only — setting reminders or goals can only be proposed and happens when you tap; the task brief and what it finds are sent to the model service you configured. One runs at a time, at most %lld a day, up to 5 minutes each."
           }
         }
       }
@@ -3640,6 +3675,7 @@
       }
     },
     "展开卡片" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3705,6 +3741,16 @@
         }
       }
     },
+    "已关闭" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off"
+          }
+        }
+      }
+    },
     "已取消" : {
       "localizations" : {
         "en" : {
@@ -3741,6 +3787,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Completed"
+          }
+        }
+      }
+    },
+    "已开启" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On"
           }
         }
       }
@@ -4633,6 +4689,7 @@
       }
     },
     "收起卡片" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4985,7 +5042,18 @@
         }
       }
     },
+    "早上说昨晚的睡眠，晚上说今天的活动量，都基于本机算出来的数据；点开通知会接着那条对话聊。文案在每次打开 app 时刷新。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the morning, last night's sleep; in the evening, today's activity — both from data worked out on this device. Tapping the notification continues the conversation. The text is refreshed each time you open the app."
+          }
+        }
+      }
+    },
     "早上说昨晚的睡眠，晚上说今天的活动量，都基于本机算出来的数据；点开通知会直接带着对应话题开一条新对话。文案在每次打开 app 时刷新。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7427,6 +7495,16 @@
         }
       }
     },
+    "记忆与对话" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Memory & conversation"
+          }
+        }
+      }
+    },
     "记忆现在是关着的" : {
       "localizations" : {
         "en" : {
@@ -7932,6 +8010,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Back to the conversation"
+          }
+        }
+      }
+    },
+    "还有 %lld 件，去任务页看" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld more on the Tasks page"
           }
         }
       }
