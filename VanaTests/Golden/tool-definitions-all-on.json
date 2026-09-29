@@ -64,6 +64,24 @@
     "strictPreferred" : false
   },
   {
+    "description" : "读一个公开网页的正文（去掉了导航和广告，最多 8000 字）。只在用户给了一个链接、或搜索结果里有一条值得细看时用。只能读 http/https 的公开网页；不要自己拼地址，更不要把用户的个人信息写进网址里。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "url" : {
+          "description" : "完整的网址，以 http:// 或 https:// 开头",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "url"
+      ],
+      "type" : "object"
+    },
+    "name" : "fetch_url",
+    "strictPreferred" : false
+  },
+  {
     "description" : "搜索这条对话里更早的、已经不在上面的部分，返回相关的那几处。只在用户自己提起过去时调用：他说了「上次」「之前说过」「我们聊过」「你还记得」，或者直接问一件他以前交代过、这次没再说的事。眼前的数据不走这里——今天怎么样、最近的趋势，一律直接调对应的工具现查。用户没提过去就不要试探性地找一次。找到相关的那处之后用 read_session 读它。",
     "inputSchema" : {
       "additionalProperties" : false,
@@ -106,7 +124,7 @@
     "strictPreferred" : false
   },
   {
-    "description" : "记住一条关于这位用户的事，之后每次对话都会带上。只在两种情况下调用：用户明确要求记住某件事，或者他说出了一个长期成立的个人情况（作息、工作安排、身体上的限制、正在进行的目标、他希望你怎么说话）。\n不要记具体的数值和某一天的数据——那些每次都该重新查，记下来第二天就是错的。不要记只在这次对话里成立的话题。同一件事已经在系统提示的「关于这位用户」里出现过了，就不要再记一遍。Apple 健康里查得到的数字、用药与补剂已经有专门的存放处，不要用 remember 再记一份。",
+    "description" : "记住一条关于这位用户的事，之后每次对话都会带上。只在两种情况下调用：用户明确要求记住某件事，或者他说出了一个长期成立的个人情况（作息、工作安排、身体上的限制、正在进行的目标、他希望你怎么说话）。\n不要记具体的数值和某一天的数据——那些每次都该重新查，记下来第二天就是错的。不要记只在这次对话里成立的话题。同一件事已经在系统提示的「关于这位用户」里出现过了，就不要再记一遍。购物单、待办清单、草稿这类他要留着的内容（有笔记存着）、Apple 健康里查得到的数字、用药与补剂已经有专门的存放处，不要用 remember 再记一份。",
     "inputSchema" : {
       "additionalProperties" : false,
       "properties" : {
@@ -389,6 +407,129 @@
       "type" : "object"
     },
     "name" : "start_task",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "把用户要留着的一段文字或一张清单存成笔记（购物单、行李单、想法、草稿）。给 items 就是清单（逐条可勾），否则是一段文字（body）。只在用户要你记下这类内容时用；关于他这个人的长期事实（偏好、家人、习惯）不是笔记，用记忆。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "body" : {
+          "description" : "一段文字的内容，可选",
+          "type" : "string"
+        },
+        "items" : {
+          "description" : "清单的条目，可选；给了就存成清单",
+          "items" : {
+            "type" : "string"
+          },
+          "type" : "array"
+        },
+        "title" : {
+          "description" : "标题，短一点",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "title"
+      ],
+      "type" : "object"
+    },
+    "name" : "save_note",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "列出笔记和清单（最近动过的在前），带短编号。给 query 就只列标题或内容里含它的。要读或改某一条之前先用它拿编号。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "query" : {
+          "description" : "只看含这个词的，可选",
+          "type" : "string"
+        }
+      },
+      "required" : [
+
+      ],
+      "type" : "object"
+    },
+    "name" : "list_notes",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "读一条笔记或清单的全部内容。按 list_notes 给的短编号指到那一条。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "id" : {
+          "description" : "短编号",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "id"
+      ],
+      "type" : "object"
+    },
+    "name" : "read_note",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "改一条笔记或清单：改标题、整段改写（body）、在末尾追加一段（append）；清单可以加条目、勾掉、取消勾、去掉条目（写条目原文的一部分即可）。按 list_notes 给的短编号指到那一条。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "add_items" : {
+          "description" : "清单要加的条目",
+          "items" : {
+            "type" : "string"
+          },
+          "type" : "array"
+        },
+        "append" : {
+          "description" : "在原文末尾追加的一段，可选",
+          "type" : "string"
+        },
+        "body" : {
+          "description" : "整段改写成这段文字，可选（会覆盖原文）",
+          "type" : "string"
+        },
+        "check_items" : {
+          "description" : "清单里要勾掉的条目",
+          "items" : {
+            "type" : "string"
+          },
+          "type" : "array"
+        },
+        "id" : {
+          "description" : "短编号",
+          "type" : "string"
+        },
+        "remove_items" : {
+          "description" : "清单里要去掉的条目",
+          "items" : {
+            "type" : "string"
+          },
+          "type" : "array"
+        },
+        "title" : {
+          "description" : "新标题，可选",
+          "type" : "string"
+        },
+        "uncheck_items" : {
+          "description" : "清单里要取消勾选的条目",
+          "items" : {
+            "type" : "string"
+          },
+          "type" : "array"
+        }
+      },
+      "required" : [
+        "id"
+      ],
+      "type" : "object"
+    },
+    "name" : "update_note",
     "strictPreferred" : false
   },
   {

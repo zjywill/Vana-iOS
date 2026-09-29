@@ -73,6 +73,8 @@ struct PluginEnvironment: @unchecked Sendable {
     var memory: MemorySnapshot = .empty
     var location: LocationSnapshot = .unknown
     var webSearch: WebSearchClient?
+    /// 读网页。前台和后台任务带,待跟进回访那一轮不带。
+    var webFetch: WebFetchClient?
     var exerciseLibrary: ExerciseLibrary?
     /// Apple 健康那几个工具。**只有机主有**,而且只在前台和明确要它的后台一轮里挂。
     var includesHealthData = false
@@ -81,6 +83,8 @@ struct PluginEnvironment: @unchecked Sendable {
     var focusMedication: MedicationItem?
     /// 提醒、目标、现在几点、派后台任务。nil 就不挂(不留痕浮层里不写,后台那几轮只带只读的)。
     var tasks: TasksEnvironment?
+    /// 笔记与清单。只前台挂;不留痕那一层也照挂(写的那两个由 `isPrivate` 挡掉)。
+    var notes: NoteStore?
 }
 
 /// app 层的插件:名片加它在某条路上贡献的那几个 `AgentPlugin`。

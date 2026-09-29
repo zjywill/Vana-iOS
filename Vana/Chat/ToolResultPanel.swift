@@ -78,7 +78,8 @@ struct ToolCallChip: View {
         if isAsk { return "questionmark.bubble" }
         if isExercise { return "figure.flexibility" }
         if isMemory { return "brain" }
-        if isWebSearch { return "globe" }
+        if isWebSearch || call.name == WebFetchTools.fetchToolName { return "globe" }
+        if CoreToolLabels.title(for: call) == String(localized: "笔记与清单") { return "note.text" }
         if isRecall { return "clock.arrow.circlepath" }
         if CoreToolLabels.title(for: call) == String(localized: "任务") { return "checklist" }
         return HealthTools.all.contains(where: { $0.name == call.name }) ? "heart.text.square" : "wrench.and.screwdriver"
@@ -411,6 +412,14 @@ enum CoreToolLabels {
         case TasksTools.updateGoalToolName: String(localized: "更新了一个目标")
         case SubagentTools.startToolName:
             call.isError ? String(localized: "没能派出后台任务") : String(localized: "派了一个后台任务")
+        case WebFetchTools.fetchToolName:
+            call.isError ? String(localized: "没能读这个网页") : String(localized: "读了一个网页")
+        case NotesTools.save:
+            call.isError ? String(localized: "没能存下笔记") : String(localized: "存了一条笔记")
+        case NotesTools.list: String(localized: "查找了笔记")
+        case NotesTools.read: String(localized: "读了一条笔记")
+        case NotesTools.update:
+            call.isError ? String(localized: "没能更新笔记") : String(localized: "更新了笔记")
         case MedicationTools.listToolName: String(localized: "查看了用药表")
         case MedicationTools.logToolName, MedicationTools.updateToolName:
             call.isError ? String(localized: "没能更新用药表") : String(localized: "更新了用药表")
@@ -426,6 +435,8 @@ enum CoreToolLabels {
             String(localized: "任务")
         case MedicationTools.listToolName, MedicationTools.logToolName, MedicationTools.updateToolName:
             String(localized: "用药与补剂")
+        case WebFetchTools.fetchToolName: String(localized: "读回的网页")
+        case NotesTools.save, NotesTools.list, NotesTools.read, NotesTools.update: String(localized: "笔记与清单")
         default: nil
         }
     }

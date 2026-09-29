@@ -130,6 +130,7 @@ final class ChatViewModel {
     private let memoryStore: MemoryStore
     private let medicationStore: MedicationStore
     let taskStore: TaskStore
+    let noteStore: NoteStore
     /// 任务页、详情页、对话里那张确认卡读的那一份。
     let taskBoard: TaskBoard
     /// 这个 view model 服务的是哪位成员。**一个 view model 一位成员,不给它换人的方法**。
@@ -180,7 +181,8 @@ final class ChatViewModel {
         memoryStore: MemoryStore = .shared,
         medicationStore: MedicationStore = .shared,
         thread: ThreadStore = TenantScope.currentStores.thread,
-        tasks: TaskStore = TenantScope.currentStores.tasks
+        tasks: TaskStore = TenantScope.currentStores.tasks,
+        notes: NoteStore = TenantScope.currentStores.notes
     ) {
         self.engineFactory = engineFactory
         self.isEphemeral = isEphemeral
@@ -189,6 +191,7 @@ final class ChatViewModel {
         self.medicationStore = medicationStore
         self.thread = thread
         self.taskStore = tasks
+        self.noteStore = notes
         taskBoard = TaskBoard(store: tasks, tenantId: tenant.id)
         persists = loadsPersistedThread && !isEphemeral
         refreshEngineAvailability()
@@ -1384,6 +1387,7 @@ final class ChatViewModel {
             // **每轮现取**:人会走动,而这块东西存在的理由正是「他此刻在哪」。
             location: LocationProvider.shared.snapshot,
             webSearch: .storedKey(),
+            webFetch: .direct(),
             exerciseLibrary: .shared,
             // 这台设备的 HealthKit 只有机主一个人的数据。`HealthDataPlugin` 的 `dataScope`
             // 兜着这一条:给家人挂上,查回来的是**机主的**数字。
@@ -1400,7 +1404,8 @@ final class ChatViewModel {
                 tenantId: tenant.id,
                 activeGoals: await taskStore.active().filter { $0.kind == .goal },
                 jobs: AppJobControls.shared
-            )
+            ),
+            notes: noteStore
         )
     }
 

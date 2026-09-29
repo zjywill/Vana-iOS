@@ -14,9 +14,11 @@ enum TestAssembly {
         focusMedication: MedicationItem? = nil,
         location: LocationSnapshot = .unknown,
         webSearch: WebSearchClient? = nil,
+        webFetch: WebFetchClient? = nil,
         recall: Bool = false,
         includesHealthData: Bool = true,
         tasks: TasksEnvironment? = nil,
+        notes: NoteStore? = nil,
         isEnabled: @escaping @Sendable (String) -> Bool = EngineSettings.isPluginEnabled
     ) -> PluginEnvironment {
         PluginEnvironment(
@@ -30,12 +32,14 @@ enum TestAssembly {
             memory: memory,
             location: location,
             webSearch: webSearch,
+            webFetch: webFetch,
             exerciseLibrary: .shared,
             includesHealthData: includesHealthData,
             medicationStore: stores?.medications,
             medications: medications,
             focusMedication: focusMedication,
-            tasks: tasks
+            tasks: tasks,
+            notes: notes
         )
     }
 

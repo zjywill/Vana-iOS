@@ -1,6 +1,6 @@
 import Foundation
 
-/// 每个成员一个目录:`Documents/tenants/<uuid>/{thread,attachments,memory.json,medications.json}`。
+/// 每个成员一个目录:`Documents/tenants/<uuid>/{thread,attachments,memory.json,medications.json,tasks.json,notes.json}`。
 ///
 /// **目录隔离,不是给每条记录加 tenantId。** 判据是失败模式:加字段要求每一处查询都记得带上
 /// 过滤条件,而漏一处的后果是**串数据**——拿妹妹的化验单去解释爸爸的心率,静默、看着正常、
@@ -32,7 +32,8 @@ enum TenantPaths {
         Item(name: "attachments", hint: .isDirectory),
         Item(name: "memory.json", hint: .notDirectory),
         Item(name: "medications.json", hint: .notDirectory),
-        Item(name: TaskStore.fileName, hint: .notDirectory)
+        Item(name: TaskStore.fileName, hint: .notDirectory),
+        Item(name: NoteStore.fileName, hint: .notDirectory)
     ]
 
     /// 某个成员的数据根。四个 store 拿它当 parent。

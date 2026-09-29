@@ -57,6 +57,8 @@ struct AssemblyContractTests {
         // 核心
         if !flags.background { names.append(AskUserTools.askToolName) }
         if flags.webSearch { names.append(WebSearchTools.searchToolName) }
+        // 读网页不要 key,前台总挂;后台只跟着搜索一起给(后台任务那一种)。
+        if !flags.background || flags.webSearch { names.append(WebFetchTools.fetchToolName) }
         // 召回和记忆写入都归在记忆开关下面。
         if flags.memoryOn && flags.recall {
             names += [HistoryRecallTools.searchToolName, HistoryRecallTools.readToolName]
@@ -71,6 +73,12 @@ struct AssemblyContractTests {
                 TasksTools.updateTaskToolName, TasksTools.createGoalToolName, TasksTools.updateGoalToolName,
                 SubagentTools.startToolName
             ]
+        }
+        // 笔记:只前台挂;不留痕只挂读的那两个。
+        if !flags.background {
+            if writes { names.append(NotesTools.save) }
+            names += [NotesTools.list, NotesTools.read]
+            if writes { names.append(NotesTools.update) }
         }
         // 健康
         guard flags.health else { return names }
@@ -114,9 +122,11 @@ struct AssemblyContractTests {
         ("召回", "这条对话更早的部分已经滑出了"),
         ("记忆的指令", "用户明确要求记住某件事"),
         ("上网搜", "遇到你的知识里没有"),
+        ("读网页", "用户发来一个链接想让你看"),
         ("反问", "他的描述里缺一个"),
         ("提醒与目标", "用户要你在某个时间提醒他做某件事时"),
         ("后台任务", "遇到**独立的、要花几分钟**的事"),
+        ("笔记", "用户有自己的笔记和清单"),
         ("健康规则", "处理健康相关的话题"),
         ("急症规则", "急症优先于一切"),
         ("Apple 健康", "他的 Apple 健康数据"),
@@ -174,6 +184,8 @@ struct AssemblyContractTests {
             ("background", "他的描述里缺一个", { $0.background = true }),
             ("webSearch", "遇到你的知识里没有", { $0.webSearch = false }),
             ("recall", "这条对话更早的部分已经滑出了", { $0.recall = false }),
+            ("background", "用户有自己的笔记和清单", { $0.background = true; $0.webSearch = false }),
+            ("background", "用户发来一个链接想让你看", { $0.background = true; $0.webSearch = false }),
             ("isPrivate", "用户明确要求记住某件事", { $0.isPrivate = true }),
             ("memoryOn", "用户明确要求记住某件事", { $0.memoryOn = false }),
             ("isPrivate", "用户说出他和某样药或补剂的关系时", { $0.isPrivate = true }),

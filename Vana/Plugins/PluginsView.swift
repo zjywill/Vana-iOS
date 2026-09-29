@@ -85,6 +85,15 @@ struct PluginsView: View {
                     Text(surface.subtitle).font(.caption).foregroundStyle(.secondary)
                 }
             }
+        case PluginSurface.notes:
+            NavigationLink {
+                NotesView()
+            } label: {
+                VStack(alignment: .leading, spacing: 2) {
+                    Label(surface.title, systemImage: surface.icon)
+                    Text(surface.subtitle).font(.caption).foregroundStyle(.secondary)
+                }
+            }
         default:
             EmptyView()
         }

@@ -64,7 +64,8 @@ enum BackgroundTurn {
         memoryStore: MemoryStore,
         thread: ThreadStore,
         tenant: Tenant,
-        webSearch: WebSearchClient? = nil
+        webSearch: WebSearchClient? = nil,
+        webFetch: WebFetchClient? = nil
     ) async -> PluginEnvironment {
         var recall: CapabilityRegistry?
         if let hidden = await thread.meta().windowStartPos, await thread.hasArchiveRows(before: hidden) {
@@ -77,6 +78,7 @@ enum BackgroundTurn {
             // 读记忆照旧——不认识用户的话,这一轮回答的质量还不如不跑。
             memory: EngineSettings.memoryEnabled ? await memoryStore.snapshot(now: now) : .empty,
             webSearch: webSearch,
+            webFetch: webFetch,
             includesHealthData: true
         )
     }

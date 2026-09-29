@@ -5,7 +5,7 @@ import AgentRuntime
 /// 开关已经兑现在 `PluginEnvironment` 里(关着就没有 store),这里只按整个插件的开关过滤。
 /// 隐私会话和后台一轮不在这里分,由 `PluginContext` 按工具声明的副作用统一过滤。
 enum PluginRegistry {
-    static let all: [any VanaPlugin] = [CorePlugin(), HealthVanaPlugin()]
+    static let all: [any VanaPlugin] = [CorePlugin(), NotesVanaPlugin(), HealthVanaPlugin()]
 
     static func agentPlugins(_ env: PluginEnvironment, route: PluginRoute) -> [any AgentPlugin] {
         all.filter { env.isEnabled($0.manifest.id) }

@@ -114,7 +114,8 @@ actor SubagentScheduler {
             memoryStore: stores.memory,
             thread: stores.thread,
             tenant: tenant,
-            webSearch: .storedKey()
+            webSearch: .storedKey(),
+            webFetch: .direct()
         )
         let runner = SubagentRunner(store: stores.tasks, engineFor: { collector in
             AIKitEngine(

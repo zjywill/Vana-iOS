@@ -90,6 +90,7 @@ enum AssemblyFixtures {
 
     /// 网页搜索的替身。只要「挂没挂」,不要真的发请求。
     private static let searchStub = WebSearchClient { _ in WebSearchResults(query: "") }
+    private static let fetchStub = WebFetchClient { url in WebPage(url: url, title: nil, text: "", truncated: false) }
 
     static let managedMember = Tenant(name: "妈妈", kind: .managed, ageBand: .senior)
 
@@ -105,6 +106,8 @@ enum AssemblyFixtures {
             focusMedication: scenario.focusMedication,
             location: scenario.location,
             webSearch: flags.webSearch ? searchStub : nil,
+            // 读网页不要 key:前台总是挂;后台只有后台任务那种一轮给(和搜索一起给)。
+            webFetch: !flags.background || flags.webSearch ? fetchStub : nil,
             recall: flags.recall,
             // 前台才有提醒和目标(不留痕那一层不带);后台那几轮本来就不挂。
             tasks: flags.isPrivate ? nil : TasksEnvironment(
@@ -114,6 +117,7 @@ enum AssemblyFixtures {
                 activeGoals: scenario.goals,
                 jobs: Jobs()
             ),
+            notes: stores.bundle.notes,
             isEnabled: flags.isEnabled
         )
         return TestAssembly.engine(

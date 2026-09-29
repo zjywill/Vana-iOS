@@ -10,6 +10,7 @@ struct TenantStores: Sendable {
     let medications: MedicationStore
     let attachments: AttachmentStore
     let tasks: TaskStore
+    let notes: NoteStore
 
     init(root: URL) {
         self.root = root
@@ -20,6 +21,7 @@ struct TenantStores: Sendable {
         medications = MedicationStore(directory: root)
         attachments = AttachmentStore(parent: root)
         tasks = TaskStore(directory: root)
+        notes = NoteStore(directory: root)
         thread = ThreadStore(directory: root.appending(path: "thread", directoryHint: .isDirectory), attachments: attachments)
     }
 }
