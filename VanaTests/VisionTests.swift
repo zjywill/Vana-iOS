@@ -170,30 +170,20 @@ struct VisionTests {
         #expect(message.agentDTO.text.hasPrefix("帮我看看"))
     }
 
-    @Test("只拍了一张图、一个字没打，列表上不该叫「新对话」")
-    func photoOnlySessionGetsATitle() {
-        let session = ChatSession(messages: [
-            ChatMessage(role: .user, text: "", attachments: [ChatAttachment(text: "布洛芬缓释胶囊")])
-        ])
-        #expect(session.title == "照片")
-    }
-
     @Test("附件跟着会话存下来又读回来")
     func attachmentsSurviveARoundTrip() throws {
-        let session = ChatSession(messages: [
-            ChatMessage(
-                role: .user,
-                text: "这个能吃吗",
-                attachments: [ChatAttachment(text: "布洛芬 | 0.3g", droppedLines: 2, imageFileName: "a.jpg")]
-            )
-        ])
+        let message = ChatMessage(
+            role: .user,
+            text: "这个能吃吗",
+            attachments: [ChatAttachment(text: "布洛芬 | 0.3g", droppedLines: 2, imageFileName: "a.jpg")]
+        )
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
 
-        let restored = try decoder.decode(ChatSession.self, from: encoder.encode(session))
-        let attachment = try #require(restored.messages.first?.attachments.first)
+        let restored = try decoder.decode(ChatMessage.self, from: encoder.encode(message))
+        let attachment = try #require(restored.attachments.first)
         #expect(attachment.text == "布洛芬 | 0.3g")
         #expect(attachment.droppedLines == 2)
         #expect(attachment.imageFileName == "a.jpg")
@@ -229,9 +219,10 @@ struct VisionTests {
             turns: [.init(text: "这张图里没有文字。")]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: client, capabilities: stubRegistry([:])) },
-            // 这条路开出来的会话就是隐私会话(不读盘、不写盘)。
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: client, capabilities: stubRegistry([:])) },
+            // 不留痕的那条对话:不读盘、不写盘。
+            loadsPersistedThread: false,
+            isEphemeral: true
         )
 
         AttachmentIntake.scanned([Self.blankImage()], into: viewModel)
@@ -253,7 +244,7 @@ struct VisionTests {
     @MainActor
     @Test("选完那一刻格子就在，东西还在路上")
     func selectionShowsPlaceholdersImmediately() async throws {
-        let viewModel = ChatViewModel(loadsPersistedSession: false)
+        let viewModel = ChatViewModel(loadsPersistedThread: false)
 
         AttachmentIntake.scanned([Self.blankImage(), Self.blankImage()], into: viewModel)
 
@@ -276,7 +267,7 @@ struct VisionTests {
     @MainActor
     @Test("占位也守着一句话最多六件")
     func placeholdersRespectTheAttachmentLimit() throws {
-        let viewModel = ChatViewModel(loadsPersistedSession: false)
+        let viewModel = ChatViewModel(loadsPersistedThread: false)
 
         let ids = viewModel.reserveAttachments(10)
 
@@ -369,8 +360,8 @@ struct VisionTests {
             turns: [.init(text: "这看着像一份炒饭。")]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: client, capabilities: stubRegistry([:])) },
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: client, capabilities: stubRegistry([:])) },
+            loadsPersistedThread: false
         )
 
         AttachmentIntake.scanned([Self.blankImage()], into: viewModel)
@@ -417,12 +408,12 @@ struct VisionTests {
             turns: [.init(text: "我看不了图像本身。")]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in
+            engineFactory: {
                 var engine = LoopEngine(client: client, capabilities: stubRegistry([:]))
                 engine.supportsVision = false
                 return engine
             },
-            loadsPersistedSession: false
+            loadsPersistedThread: false
         )
 
         AttachmentIntake.scanned([Self.blankImage()], into: viewModel)
@@ -458,8 +449,8 @@ struct VisionTests {
             turns: [.init(text: "我看不了图像本身。")]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: client, capabilities: stubRegistry([:])) },
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: client, capabilities: stubRegistry([:])) },
+            loadsPersistedThread: false
         )
 
         AttachmentIntake.scanned([Self.blankImage()], into: viewModel)

@@ -64,16 +64,16 @@
     "strictPreferred" : false
   },
   {
-    "description" : "在过往对话里找出相关的那几次，返回摘要列表。只在用户自己提起过去时调用：他说了「上次」「之前说过」「我们聊过」「你还记得」，或者直接问一件他以前交代过、这次没再说的事。眼前的数据不走这里——今天怎么样、最近的趋势，一律直接调对应的工具现查。过往对话里只有当时的旧数字，翻出来既慢又不准。用户没提过去就不要试探性地找一次；一次对话里通常一次都不需要，更不该找第二次。找到相关的那条之后用 read_session 读它。",
+    "description" : "搜索这条对话里更早的、已经不在上面的部分，返回相关的那几处。只在用户自己提起过去时调用：他说了「上次」「之前说过」「我们聊过」「你还记得」，或者直接问一件他以前交代过、这次没再说的事。眼前的数据不走这里——今天怎么样、最近的趋势，一律直接调对应的工具现查。用户没提过去就不要试探性地找一次。找到相关的那处之后用 read_session 读它。",
     "inputSchema" : {
       "additionalProperties" : false,
       "properties" : {
         "query" : {
-          "description" : "要找的话题，用中文关键词，比如「装修 预算」「周末计划」。只有用户问「我们之前都聊过什么」这类问题时才留空",
+          "description" : "检索词，来自用户提到过去时说的话，用中文关键词，比如「装修 预算」「周末计划」",
           "type" : "string"
         },
         "since_days" : {
-          "description" : "只找最近多少天以内的对话，1–365。不传就不限时间",
+          "description" : "只看最近多少天，1–365，可选",
           "maximum" : 365,
           "minimum" : 1,
           "type" : "integer"
@@ -88,12 +88,12 @@
     "strictPreferred" : false
   },
   {
-    "description" : "读回某一次过往对话里说过的话。id 用 search_sessions 给出的短编号，比如 S3。读到的每一段都标着日期，里面的具体数值都是当时查的，现在多半已经变了——要用数值就重新调工具查，以本次返回的为准。",
+    "description" : "按 search_sessions 给出的短编号读取那一处前后的对话原文。读到的都标着日期，里面的具体数值都是当时的，现在多半已经变了——要用数值就重新调工具查，以本次返回的为准。",
     "inputSchema" : {
       "additionalProperties" : false,
       "properties" : {
         "id" : {
-          "description" : "search_sessions 给出的短编号，形如 S3",
+          "description" : "search_sessions 给出的短编号，形如 H3F2A",
           "type" : "string"
         }
       },

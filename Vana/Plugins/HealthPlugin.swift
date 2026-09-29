@@ -103,17 +103,6 @@ struct MedicationPlugin: AgentPlugin {
     }
 }
 
-/// 旧会话模型里「这条对话的话题」(跑步、睡眠、心率……)。每一颗都指着一个健康工具,
-/// 所以归健康。一条对话落地之后删。
-struct TopicPlugin: AgentPlugin {
-    let id = "\(PluginIds.health).topic"
-    let topic: ChatTopic
-
-    func promptBlocks(context: PluginContext, mountedTools: Set<String>) -> [PromptBlock] {
-        [PromptBlock(order: PromptOrder.topic, text: "本次对话的话题：\(topic.name)。\(topic.focus)")]
-    }
-}
-
 /// 健康:规则、Apple 健康、用药表、动作库、家人身份。整个可关;用药表另有子开关。
 /// 后台一轮只带规则和(调用方明确要的)Apple 健康——结论不取决于别的。
 struct HealthVanaPlugin: VanaPlugin {
@@ -164,6 +153,9 @@ struct HealthVanaPlugin: VanaPlugin {
                 exclusive: true
             )
         }
+        if !context.healthQuestions.isEmpty {
+            return SuggestionSet(items: context.healthQuestions)
+        }
         return SuggestionSet(items: [
             SuggestedQuestion(icon: "bed.double", text: String(localized: "昨晚睡得怎么样？")),
             SuggestedQuestion(icon: "doc.text.viewfinder", text: String(localized: "帮我看看这张化验单")),
@@ -182,7 +174,6 @@ struct HealthVanaPlugin: VanaPlugin {
             plugins.append(MedicationPlugin(store: env.medicationStore, snapshot: env.medications, focus: env.focusMedication))
         }
         plugins.append(FamilyPlugin(tenant: env.tenant))
-        if let topic = env.topic { plugins.append(TopicPlugin(topic: topic)) }
         return plugins
     }
 }

@@ -138,8 +138,8 @@ struct CloudSetupTests {
             turns: [.init(finishReason: .init(unified: .error), failureMessage: providerMessage)]
         )
         let model = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: client, capabilities: stubRegistry([:])) },
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: client, capabilities: stubRegistry([:])) },
+            loadsPersistedThread: false
         )
         model.send("昨晚睡得怎么样？")
         try await waitUntil("这轮以失败收场") { !model.isReplying }

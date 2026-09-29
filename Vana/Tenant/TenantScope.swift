@@ -1,19 +1,24 @@
 import Foundation
 import Synchronization
 
-/// 某个成员那一套 store。四个一起给,因为它们必须落在**同一个** parent 下面——
-/// 会话删除要连附件一起删,拿两个不同 parent 的实例来做这件事,删掉的是另一个人的图。
+/// 某个成员那一套 store。一起给,因为它们必须落在**同一个** parent 下面——删消息要连附件
+/// 一起删,拿两个不同 parent 的实例来做这件事,删掉的是另一个人的图。
 struct TenantStores: Sendable {
-    let sessions: SessionStore
+    let root: URL
+    let thread: ThreadStore
     let memory: MemoryStore
     let medications: MedicationStore
     let attachments: AttachmentStore
 
     init(root: URL) {
-        sessions = SessionStore(parent: root)
+        self.root = root
+        // 旧的「一个会话一个文件」在新线程存储上线时整个清掉,不迁移(`LegacySessions`)。
+        // 放在造 store 之前:清的是旧目录,和新线程互不相干,但要在任何人读盘之前做完。
+        LegacySessions.clearIfNeeded(root: root)
         memory = MemoryStore(directory: root)
         medications = MedicationStore(directory: root)
         attachments = AttachmentStore(parent: root)
+        thread = ThreadStore(directory: root.appending(path: "thread", directoryHint: .isDirectory), attachments: attachments)
     }
 }
 

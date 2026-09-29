@@ -1,13 +1,29 @@
 import SwiftUI
 import AgentRuntime
 
+/// 那条永远的对话。
+///
+/// 没有「会话」这个用户能管理的东西了:打开就接着上次,一条时间线。内存里持有的是线程**末尾**
+/// 的一段(`messages`,滑到顶再往前翻),盘上是追加式的 `ThreadStore`。
+///
+/// 三件事在这里接线,都是「每一轮请求带多少历史」这个问题的一部分:
+/// - **窗口**(`ThreadWindow`):请求里只带窗口内的原文。窗口只在涨到高水位时一次砍到低水位,
+///   两次淘汰之间请求前缀是纯追加,prompt 缓存稳定。窗口之外的历史不丢——记忆管长期事实,
+///   档案按需检索(`search_sessions`)。
+/// - **持久化**:只写变了的,排成一条队,和后台追加的主动消息不抢。
+/// - **收割**:记忆抽取按水位线做,和窗口解耦(`MemoryHarvester`)。
+///
+/// `isEphemeral` 是「不留痕」浮层:内存里聊,不读盘不写盘、不抽记忆,关了就没。
 @MainActor
 @Observable
 final class ChatViewModel {
-    private(set) var session = ChatSession()
-    var summaries: [SessionSummary] = []
-    /// 用户自己开的几件长期的事,最近动过的在前。
-    var goals: [GoalSummary] = []
+    /// 线程末尾那一段,按位置排好。
+    private(set) var messages: [ChatMessage] = []
+    /// 不留痕:这一段不留任何本机痕迹。不落盘、不进线程、不写记忆、不进兴趣统计。
+    ///
+    /// 承诺的边界只到本机为止——问题照样要发给用户配置的云端模型才能回答,这一点界面上
+    /// 明说(`ChatView.privacyNote`)。
+    let isEphemeral: Bool
     var input = ""
     var isReplying = false
     /// 正在写的那条回复。事件的收件人,也是气泡判断「我是不是正在流」的依据。
@@ -16,47 +32,38 @@ final class ChatViewModel {
     /// **后面**——照旧取最后一条的话,模型吐出来的字会一个个落进用户刚打的那句话里。
     private(set) var replyingMessageID: UUID?
     var isLoadingConversation = true
+    /// 盘上还有更早的。滑到顶就再往前翻一页。
+    private(set) var hasOlderHistory = false
+    /// 每往前翻一页加一。界面据此把滚动位置补上,不然新塞进顶部的内容会把正看的那条顶下去。
+    private(set) var olderPageToken = 0
+    /// 刚翻出来那一页之前,原来的第一条。界面滚回它。
+    private(set) var olderPageAnchor: UUID?
     var engineGuidance: String?
     /// 他按了发送,但还没配 key。
     ///
     /// **是一次请求,不是一种状态**——界面接住它、把设置页推到他面前,然后立刻置回 false。
-    /// 做成常驻状态的话,从设置页退回来那一刻它还是 true,设置页会当场再推一次。
     var needsCloudSetup = false
     /// 他按了发送,但还没同意过把数据发给当前这家 provider(`ProviderConsent`)。
     ///
-    /// 存的是 provider id,界面拿它弹那个点名确认的 alert。和 `needsCloudSetup` 一样是
-    /// 一次请求不是一种状态:同意或取消都当场清掉。打的字留在输入框里,同意之后再发。
+    /// 存的是 provider id,界面拿它弹那个点名确认的 alert。同意或取消都当场清掉。
+    /// 打的字留在输入框里,同意之后再发。
     private(set) var pendingProviderConsent: String?
-    /// 正在退避重试时给用户看的一句话。
-    ///
-    /// 退避期间界面上什么都不动的话,等十几秒和卡死是一模一样的观感——而这时候 app 其实
-    /// 知道发生了什么。
+    /// 正在退避重试时给用户看的一句话。退避期间界面上什么都不动的话,等十几秒和卡死是一模
+    /// 一样的观感——而这时候 app 其实知道发生了什么。
     private(set) var retryNotice: String?
-    /// 先给按时段挑的默认问题,AI 生成的回来了再替换。
-    var suggestions = SuggestedQuestions.defaults()
     /// 首屏那句话:打开 app 先说发生了什么,不是先问他一个问题。
-    ///
-    /// 和 `suggestions` 同一套两级:本地那句立刻出,模型润色好了原地换掉。`nil` 只出现在
-    /// 处境还没判定完的那几十毫秒里——之后它永远有内容,连"没读到值得留意的波动"都是一种
-    /// 回答("要不要在意"的答案是"不用")。
     private(set) var quickSummary: String?
-    /// 本地判定出来的处境。首屏那张卡点开之后,详情页要按项列出「现在是多少」——那句话是
-    /// 从这里写出来的,而用户想知道的下一件事永远是"这话是根据什么说的"。
+    /// 本地判定出来的处境。首屏那张卡点开之后,详情页要按项列出「现在是多少」。
     ///
     /// 家人成员那条路上永远是 nil:`HealthSituation` 读的是机主的 HealthKit,整个不跑。
     private(set) var situation: HealthSituation?
     /// 那段话正在写。详情页那颗刷新按钮靠它转圈,也靠它挡住连按。
     private(set) var isWritingSummary = false
-    /// 接着刚才那段回答问的几条追问。
-    ///
-    /// 空着不是错误状态,是常态的一半:还没答完、生成失败、没配 key 都是空的,那时候
-    /// `ComposerBar` 用固定那几条顶上。所以这里不需要"正在生成"这种状态——多一个状态就多
-    /// 一个转圈,而它转的那两秒里用户什么都不缺。
+    /// 接着刚才那段回答问的几条追问。空着不是错误状态,是常态的一半。
     private(set) var followUps: [String] = []
+    /// 健康插件那一格建议:本地按处境挑的,模型写好了原地换掉。
+    private var healthSuggestions: [SuggestedQuestion] = []
     /// 输入框上方那排还没发出去的照片。
-    ///
-    /// 排在这儿而不是直接变成气泡:识别要花几百毫秒,而识别错一个小数点在健康场景里不是
-    /// 「有点脏数据」——他得先看见发出去的是什么,才谈得上核对。
     private(set) var draftAttachments: [DraftAttachment] = []
     /// 还有图在读或者在认。这时候发送要等一下:发出去的是空文本的话,模型只能说"没看到"。
     var isRecognizingAttachments: Bool {
@@ -70,152 +77,303 @@ final class ChatViewModel {
     private var recognitionTasks: [UUID: Task<Void, Never>] = [:]
 
     private var currentReplyTask: Task<Void, Never>?
-    /// 首屏那段话的生成。按刷新时先取消在飞的那次:两条流往同一个字段上写,后到的那片
-    /// 会把先到的整段顶掉,屏幕上表现为文字来回跳。
+    /// 首屏那段话的生成。按刷新时先取消在飞的那次。
     private var summaryTask: Task<Void, Never>?
-    /// 思考的增量攒一小会儿再落盘。
-    ///
-    /// 思考模型一秒能吐几十个 delta,而每一次落进 `session.messages` 都是一次
-    /// `@Observable` 失效:整列气泡重新判等,思考面板开着的话那一整段文字还要重新排一遍。
-    /// 攒到 `reasoningFlushInterval` 再一次性落,观感是一样的(一秒十二次已经比眼睛快),
-    /// 重排的次数少一个数量级。
-    ///
-    /// 正文不走这条:它一进来就要撤掉重试提示,而且 provider 给正文的 chunk 本来就不碎——
-    /// 碎的是思考。
+    /// 思考的增量攒一小会儿再落盘(一秒十二次已经比眼睛快),重排的次数少一个数量级。
     private var pendingReasoning = ""
     private var reasoningFlushTask: Task<Void, Never>?
     private static let reasoningFlushInterval = Duration.milliseconds(80)
     private var hasRequestedSuggestions = false
-    /// 没选话题时该显示的那几条,取消话题选择时用它复位。
-    private var situationSuggestions = SuggestedQuestions.defaults()
 
-    /// 这条会话开始时的记忆快照,**会话之内不换**。
-    ///
-    /// 引擎每轮现造,靠它拿到同一份 system 段:中途换记忆既打掉 prompt 缓存,也让模型对
-    /// 用户的认知在一条对话里跳变。抽取写在会话结束、快照读在会话开始,正好配套——这条
-    /// 会话学到的东西,下一条会话生效。
+    /// 这一轮用的记忆快照。**每轮现读**:没有会话边界了,而记忆不变时渲染出来的那一块逐字
+    /// 相同,prompt 缓存不受影响;变了只打掉易变区那一截尾巴。
     private(set) var memory: MemorySnapshot = .empty
-    /// 这条会话开始时的用药与补剂表,同样**会话之内不换**。理由和 `memory` 一样。
+    /// 用药与补剂表,同上。
     private(set) var medications: MedicationSnapshot = .empty
-    /// 这条会话围绕清单里的哪一条(`SessionThread.medication`)。
-    private(set) var focusMedication: MedicationItem?
-    /// 当前这条会话已经发过请求了。发过之后就不再换快照,哪怕后台刚抽完新记忆。
-    private var didStartReplyInSession = false
-    /// 抽取排成一队。两个抽取同时读同一份记忆再各写各的,会写出两条一样的。
-    private var harvestTail: Task<Void, Never>?
-    /// 挂在 loop 生命周期上的那几个旁观者(眼下只有追问 chip)。
+    /// 「问问这个药」带进来的一次性上下文:下一轮回复里带着它,回复完就撤。
     ///
-    /// **一条会话一个**,换会话时整个丢掉:hook 记着"上一句问了什么",那是这条会话的事。
-    /// 第一次真的要发请求时才建——没聊过的会话不该为它多做任何事。
+    /// 以前这会切进一条专属的「用药线」会话;现在只有一条对话,所以只是一个焦点。
+    private(set) var focusMedication: MedicationItem?
+    /// 挂在 loop 生命周期上的那几个旁观者(眼下只有追问 chip)。第一次真的要发请求时才建。
     private var hooks: AgentHookDispatcher?
+
+    // MARK: 线程
+
+    private let thread: ThreadStore
+    /// 这一份要不要落盘。不留痕的不落;测试关掉读盘时也不写——不然写的就是模拟器上那条真的线程。
+    private let persists: Bool
+    /// 界面这一份已经同步给盘的 id。只删这里面有、列表里没了的——后台追加、界面还没读到的
+    /// 不会被误删。
+    private var syncedIds: Set<UUID> = []
+    /// 已经同步过、之后又改过的。
+    private var dirtyIds: Set<UUID> = []
+    private var persistTail: Task<Void, Never>?
+    private var oldestSegment = Int.max
+    private var isLoadingOlder = false
+    /// 窗口第一条消息的 id。窗口只在淘汰时前移。
+    private var windowStartId: UUID?
+    /// 回复期间有后台消息落进线程了,等这一轮结束再并进来。
+    private var hasPendingBackgroundMessages = false
+    private var backgroundObserver: (any NSObjectProtocol)?
+    private var idleHarvestTask: Task<Void, Never>?
 
     /// 每轮现造引擎。测试注入一个脚本化的假引擎,就能在不碰 Keychain 和网络的前提下
     /// 走完整条 loop。
-    typealias EngineFactory = @MainActor @Sendable (ChatTopic?) throws -> any AgentEngine
+    typealias EngineFactory = @MainActor @Sendable () throws -> any AgentEngine
 
     private let engineFactory: EngineFactory?
     private let memoryStore: MemoryStore
-    private let sessionStore: SessionStore
     private let medicationStore: MedicationStore
-    /// 这个 view model 服务的是哪位成员。
-    ///
-    /// **一个 view model 一位成员,不给它换人的方法**。切成员在 `ChatView` 那边是整个换掉
-    /// 这个对象(`.id(tenant.id)`),不是给它发一条「现在换成妈妈」的消息:回复可能正在飞、
-    /// hook 记着上一句、四个 store 的缓存全是上一个人的东西,而漏掉其中任何一样都是把上一位
-    /// 的内容端到下一位名下。换掉整个对象,这几件一次性全没了。
+    /// 这个 view model 服务的是哪位成员。**一个 view model 一位成员,不给它换人的方法**。
+    /// 切成员在 `ChatView` 那边是整个换掉这个对象(`.id(tenant.id)`)。
     private let tenant: Tenant
     /// 这位成员有没有 Apple 健康数据。**只有机主有**(见 `Tenant.Kind`)。
-    var hasHealthData: Bool { tenant.isOwner }
+    var hasHealthData: Bool { tenant.isOwner && EngineSettings.healthEnabled }
     var currentTenant: Tenant { tenant }
 
-    /// 导航栏副标题。成员名字和隐私状态挤在同一行。
-    ///
-    /// **机主不标注**。「我以为在自己这儿、其实在妈妈那儿」是这个功能最糟的失灵,而反过来那次
-    /// 不会出事——所以只给家人挂一直在视线里的名字,单人用户那一屏一个字都没变。给每个人都
-    /// 标上的话,那行字在 99% 的时间里说的是一件恒成立的事,人几天就不看它了,而它恰恰是要
-    /// 在剩下 1% 里被看见的。
+    /// 导航栏副标题。成员名字和不留痕状态挤在同一行。**机主不标注**。
     var navigationSubtitle: String {
         var parts: [String] = []
         if !tenant.isOwner { parts.append(tenant.displayName) }
-        if session.isPrivate { parts.append(String(localized: "隐私对话 · 不保存")) }
+        if isEphemeral { parts.append(String(localized: "不留痕 · 关掉就没了")) }
         return parts.joined(separator: " · ")
     }
 
-    var messages: [ChatMessage] { session.messages }
+    /// 还有话排着没进上下文。停止回复之后队列**不会**自动清空——用户打的字不该被替他扔掉。
+    var hasQueuedInput: Bool { messages.contains { $0.isQueued } }
 
-    /// 还有话排着没进上下文。
-    ///
-    /// 回复期间由 loop 在下一个工具轮边界取走;停止回复之后队列**不会**自动清空——用户
-    /// 打的字不该被替他扔掉,发送按钮会一直亮着等他决定。
-    var hasQueuedInput: Bool { session.messages.contains { $0.isQueued } }
+    /// 线程是真的空的(全新安装、刚清空过)。欢迎卡只在这时候出现。
+    var isThreadEmpty: Bool { messages.isEmpty && !hasOlderHistory }
+
+    /// 首屏那三条:核心先占位,健康分一格。某个插件正处在具体上下文里(聊某样药、替家人问)时
+    /// 只给它的。完全本地拼,一次模型调用都不发。
+    var suggestions: [SuggestedQuestion] {
+        PluginRegistry.suggestions(SuggestionContext(
+            isEnabled: EngineSettings.isPluginEnabled,
+            tenant: tenant,
+            focusMedication: focusMedication,
+            medications: medications,
+            healthQuestions: healthSuggestions
+        ))
+    }
+
+    /// 欢迎语里「我能帮你……」那一段:哪些插件开着就提哪些。
+    var welcomeBody: String { PluginRegistry.welcomeBody(isEnabled: EngineSettings.isPluginEnabled) }
 
     /// - Parameters:
-    ///   - loadsPersistedSession: 关掉就不读盘、不写盘,`isLoadingConversation` 直接是
-    ///     false。测试用。
-    ///   - memoryStore: 测试必须传自己的。app 侧的测试跑在 app host 里,
-    ///     `MemoryStore.shared` 就是模拟器上那份真的 `memory.json`。
-    ///   - sessionStore: 同上。`loadsPersistedSession: false` 只挡住了**写**,而延续线要
-    ///     去读盘找上一段——读到用户真实的会话,测试就会把它拽进来当成自己的。
-    ///   - medicationStore: 同上。`MedicationStore.shared` 是模拟器上那份真的
-    ///     `medications.json`,测试写它等于把用户录的药删了。
+    ///   - loadsPersistedThread: 关掉就不读盘,`isLoadingConversation` 直接是 false。测试用。
+    ///   - memoryStore / medicationStore / thread: 测试必须传自己的。app 侧的测试跑在 app host
+    ///     里,`.shared` 就是模拟器上那份真的数据。
     init(
         engineFactory: EngineFactory? = nil,
-        loadsPersistedSession: Bool = true,
+        loadsPersistedThread: Bool = true,
+        isEphemeral: Bool = false,
         tenant: Tenant = TenantScope.current,
         memoryStore: MemoryStore = .shared,
-        sessionStore: SessionStore = .shared,
-        medicationStore: MedicationStore = .shared
+        medicationStore: MedicationStore = .shared,
+        thread: ThreadStore = TenantScope.currentStores.thread
     ) {
         self.engineFactory = engineFactory
+        self.isEphemeral = isEphemeral
         self.tenant = tenant
         self.memoryStore = memoryStore
-        self.sessionStore = sessionStore
         self.medicationStore = medicationStore
+        self.thread = thread
+        persists = loadsPersistedThread && !isEphemeral
         refreshEngineAvailability()
-        guard loadsPersistedSession else {
-            session = ChatSession(isPrivate: true)
+        guard loadsPersistedThread, !isEphemeral else {
             isLoadingConversation = false
+            Task { await refreshSnapshots() }
             return
         }
+        // 后台来的主动消息(check-in、提醒、任务结果):等这一轮回复结束再并进列表。
+        let directory = thread.directory
+        backgroundObserver = NotificationCenter.default.addObserver(
+            forName: .vanaThreadDidAppend,
+            object: nil,
+            queue: .main
+        ) { [weak self] note in
+            guard (note.object as? URL) == directory else { return }
+            MainActor.assumeIsolated { self?.backgroundMessageArrived() }
+        }
+        Task { await loadInitialHistory() }
+    }
+
+    isolated deinit {
+        if let backgroundObserver { NotificationCenter.default.removeObserver(backgroundObserver) }
+    }
+
+    // MARK: - 线程:读、持久化、往前翻
+
+    /// 冷启动直接落在末尾,接着上次。窗口起点在更早的段里时往前读到能盖住它为止,
+    /// 不然「窗口」比读进来的还长。
+    private func loadInitialHistory() async {
+        defer { isLoadingConversation = false }
+        await refreshSnapshots()
+        var page = await thread.loadTail()
+        let windowPos = await thread.meta().windowStartPos
+        var loaded = page.messages
+        if let windowPos {
+            while page.hasOlder, let first = loaded.first,
+                  (await thread.position(of: first.id) ?? .greatestFiniteMagnitude) > windowPos {
+                page = await thread.loadOlder(beforeSegment: page.oldestSegment)
+                loaded = await thread.sortedByPosition(page.messages + loaded)
+            }
+            var start: UUID?
+            for message in loaded {
+                if let pos = await thread.position(of: message.id), pos >= windowPos {
+                    start = message.id
+                    break
+                }
+            }
+            windowStartId = start ?? loaded.first?.id
+        } else {
+            windowStartId = loaded.first?.id
+        }
+        oldestSegment = page.oldestSegment
+        hasOlderHistory = page.hasOlder
+        syncedIds = Set(loaded.map(\.id))
+        // 读盘期间他要是已经发了话(极少),别把它盖掉。
+        messages = loaded + messages
+    }
+
+    /// 滑到顶了,再往前读一页。
+    func loadOlder() {
+        guard persists, !isLoadingOlder, hasOlderHistory else { return }
+        isLoadingOlder = true
         Task {
-            await loadInitialSession()
+            defer { isLoadingOlder = false }
+            let page = await thread.loadOlder(beforeSegment: oldestSegment)
+            oldestSegment = page.oldestSegment
+            hasOlderHistory = page.hasOlder
+            let fresh = page.messages.filter { !syncedIds.contains($0.id) }
+            guard !fresh.isEmpty else { return }
+            olderPageAnchor = messages.first?.id
+            syncedIds.formUnion(fresh.map(\.id))
+            messages = await thread.sortedByPosition(fresh + messages)
+            olderPageToken += 1
         }
     }
 
-    /// 发一句话。**正在回复时照发不误**。
-    ///
-    /// 等上一句答完才能开口,是这个 app 里最不像跟人说话的一处:模型跑六轮工具要十几秒,
-    /// 而人在这十几秒里想起来的那句「顺便也看看心率」根本没地方说。所以这里不再拦——
-    /// 打出去的字立刻变成气泡,由 loop 在下一个工具轮边界接进上下文。
+    private func backgroundMessageArrived() {
+        guard !isReplying else {
+            hasPendingBackgroundMessages = true
+            return
+        }
+        Task { await mergeBackgroundMessages() }
+    }
+
+    /// 后台追加的新消息并进来。回答还在写的时候不动——等这一轮结束(沿用「插话在轮边界接入」)。
+    private func mergeBackgroundMessages() async {
+        guard persists, !isReplying else { return }
+        hasPendingBackgroundMessages = false
+        let lastPos: Double? = if let last = messages.last { await thread.position(of: last.id) } else { nil }
+        let fresh = await thread.messages(after: lastPos).map(\.message).filter { !syncedIds.contains($0.id) }
+        guard !fresh.isEmpty, !isReplying else { return }
+        syncedIds.formUnion(fresh.map(\.id))
+        messages += fresh
+    }
+
+    /// 请求落盘。多次请求排成一条队,顺序不会乱。
+    private func persist() {
+        guard persists else { return }
+        let previous = persistTail
+        persistTail = Task {
+            await previous?.value
+            await persistNow()
+        }
+    }
+
+    private func persistNow() async {
+        // 还在写的助手消息如果还是个空壳,先不落盘——崩了留下一个空气泡比什么都没有更糟。
+        let inFlight = isReplying ? replyingMessageID : nil
+        let snapshot = messages.filter { message in
+            !(message.id == inFlight && !message.hasVisibleTurnContent && !syncedIds.contains(message.id))
+        }
+        var dirty = dirtyIds
+        if let replyingMessageID { dirty.insert(replyingMessageID) }
+        dirtyIds.removeAll()
+        syncedIds = await thread.sync(snapshot, dirty: dirty, known: syncedIds)
+    }
+
+    /// 等排着的写盘都落下去。测试和切到后台时用。
+    func flushPersistence() async {
+        await persistTail?.value
+    }
+
+    /// 删掉这一条(连同它引用的、别处没在用的照片)。
+    func deleteMessage(_ id: UUID) {
+        guard !isReplying else { return }
+        messages.removeAll { $0.id == id }
+        if windowStartId == id { windowStartId = messages.first?.id }
+        persist()
+    }
+
+    /// 删掉一条回答和它对应的那句提问。
+    func deleteExchange(_ assistantId: UUID) {
+        guard !isReplying, let index = index(of: assistantId) else { return }
+        var doomed: Set<UUID> = [assistantId]
+        if let userIndex = messages[..<index].lastIndex(where: { $0.role == .user }) {
+            doomed.insert(messages[userIndex].id)
+        }
+        messages.removeAll { doomed.contains($0.id) }
+        if let windowStartId, doomed.contains(windowStartId) { self.windowStartId = messages.first?.id }
+        persist()
+    }
+
+    /// 清空整条对话。设置 › 对话历史用。
+    func clearHistory() async {
+        guard !isReplying else { return }
+        stopReply()
+        await persistTail?.value
+        if persists { await thread.deleteAll() }
+        messages = []
+        syncedIds = []
+        dirtyIds = []
+        windowStartId = nil
+        oldestSegment = .max
+        hasOlderHistory = false
+        focusMedication = nil
+        followUps = []
+        hooks = nil
+        draftAttachments = []
+    }
+
+    /// 清掉 `days` 天前的。设置 › 对话历史用。返回删了多少条。
+    @discardableResult
+    func clearHistory(olderThanDays days: Int) async -> Int {
+        guard !isReplying, persists else { return 0 }
+        await persistTail?.value
+        let removed = await thread.deleteOlderThan(Date().addingTimeInterval(-Double(days) * 86_400))
+        // 重新读一遍末尾:删掉的可能正是手里这一段的开头。
+        messages = []
+        syncedIds = []
+        await loadInitialHistory()
+        return removed
+    }
+
+    // MARK: - 发送
+
+    /// 发一句话。**正在回复时照发不误**:打出去的字立刻变成气泡,由 loop 在下一个工具轮边界
+    /// 接进上下文。
     ///
     /// 空文本也是有意义的一次调用:队列里还剩着东西时(停止回复之后),它就是「把排着的
     /// 那几句发出去」。
     func send(_ suggestedQuestion: String? = nil) {
         guard !isLoadingConversation else { return }
 
-        // 没配 key 就别把这句话发出去。
-        //
-        // 发出去的结果是 provider 回一个 401,而那句报错既不是他的错,也没告诉他下一步该做
-        // 什么——**2026-08-16 那次审核走的正是这条路**(Guideline 2.1(a))。原来只有
-        // `sendWhenReady`(Siri 那条)挡了,手动发送这条是敞开的;而欢迎卡上那句引导排在
-        // 免责声明底下、灰色小字、不可点,审核员翻都不会翻到。
-        //
-        // 这里**现查一次钥匙串**而不是信 `engineGuidance`:那个值只在 `onAppear` 和 init
-        // 时刷新,而"刚在设置里填完 key 回来"恰好是最需要它准的那一刻。
+        // 没配 key 就别把这句话发出去——发出去的结果是一个 401,而那句报错既不是他的错,也没告诉
+        // 他下一步该做什么(2026-08-16 那次审核走的正是这条路)。**现查一次钥匙串**:「刚在设置里
+        // 填完 key 回来」恰好是最需要它准的那一刻。
         refreshEngineAvailability()
         guard engineGuidance == nil else {
-            // 打的字留在输入框里。点 chip 进来的那句也放进去——他配完 key 回来按一下就
-            // 发得出去,不用重想一遍刚才要问什么。
             if let suggestedQuestion { input = suggestedQuestion }
             needsCloudSetup = true
             return
         }
 
-        // 第一次要发给这家 provider:先点名征一次同意(Guideline 5.1.2(i),2026-08-29 被判
-        // 的正是「发送之前没问过、也没点过名」)。字留在输入框里,他在 alert 上按「同意并
-        // 发送」会再回到这里,那时候这道闸已经开了。换 provider 会再问,同一家只问一次。
-        //
-        // 注入了假引擎就是在测试里,那条路上没有任何东西真的出设备,不拦。
+        // 第一次要发给这家 provider:先点名征一次同意(Guideline 5.1.2(i))。注入了假引擎就是在
+        // 测试里,那条路上没有任何东西真的出设备,不拦。
         if engineFactory == nil {
             let provider = EngineSettings.selection.provider
             guard ProviderConsent.granted(provider) else {
@@ -226,25 +384,24 @@ final class ChatViewModel {
         }
 
         let text = (suggestedQuestion ?? input).trimmingCharacters(in: .whitespacesAndNewlines)
-        // 排在输入框上方的照片跟着下一句话一起走,不管这句话是打出来的还是点 chip 点出来的:
-        // 规矩只有一条才记得住。
+        // 排在输入框上方的照片跟着下一句话一起走,不管这句话是打出来的还是点 chip 点出来的。
         let attachments = takeDraftAttachments()
         if !text.isEmpty || !attachments.isEmpty {
             input = ""
-            session.messages.append(ChatMessage(
+            messages.append(ChatMessage(
                 role: .user,
                 text: text,
                 attachments: attachments,
                 isQueued: true
             ))
+            persist()
         }
         // 正在回复:这一句排进队列就完了,不再开一轮。取走它的是 `takeQueuedInput`。
         guard !isReplying, hasQueuedInput else { return }
         startReply()
     }
 
-    /// 他在点名确认的 alert 上按了「同意并发送」。记下来,然后把刚才那句发出去——
-    /// 字还在输入框里,`send()` 会再走一遍,这次闸是开的。
+    /// 他在点名确认的 alert 上按了「同意并发送」。
     func confirmProviderConsent() {
         guard let provider = pendingProviderConsent else { return }
         ProviderConsent.record(provider)
@@ -252,7 +409,7 @@ final class ChatViewModel {
         send()
     }
 
-    /// 按了「取消」:什么都不发,字留在输入框里。不记录任何东西——下次按发送会再问。
+    /// 按了「取消」:什么都不发,字留在输入框里。
     func declineProviderConsent() {
         pendingProviderConsent = nil
     }
@@ -262,12 +419,12 @@ final class ChatViewModel {
     /// 只有排队中的能收回:已经发出去的那一句模型已经看过了,从列表里抹掉它只会让屏幕上
     /// 的对话和模型记得的对话对不上。
     func withdrawQueued(_ messageID: UUID) {
-        guard let index = index(of: messageID), session.messages[index].isQueued else { return }
-        let message = session.messages[index]
-        session.messages.remove(at: index)
+        guard let index = index(of: messageID), messages[index].isQueued else { return }
+        let message = messages[index]
+        messages.remove(at: index)
+        persist()
         input = input.isEmpty ? message.text : "\(message.text)\n\(input)"
-        // 照片也一起退回到输入框上方。只把字还回来的话,那几张图就凭空没了,而他收回这条
-        // 多半正是因为发现某一页拍糊了。
+        // 照片也一起退回到输入框上方。只把字还回来的话,那几张图就凭空没了。
         for attachment in message.attachments {
             if let documentName = attachment.documentName {
                 draftAttachments.append(DraftAttachment(
@@ -284,30 +441,23 @@ final class ChatViewModel {
             draft.text = attachment.text
             draft.droppedLines = attachment.droppedLines
             draft.isRecognizing = false
-            // 「要发原图」也跟着退回来。丢掉的话他收回这条改两个字再发,那张图就悄悄不发了,
-            // 而屏幕上没有一个字说过它被关掉。
             draft.sendsImage = attachment.sendsImage
             draftAttachments.append(draft)
         }
     }
 
-    /// 他在某张 `ask_user` 卡上点完了。
+    /// 他在某张 `ask_user` 卡上点完了。**走的就是 `send`**,和他自己打这几个字发出去没有任何区别。
     ///
-    /// **走的就是 `send`**,和他自己打这几个字发出去没有任何区别——排队、劈开、存盘、会话
-    /// 标题、召回索引、记忆抽取因此一条都不用改。这张卡省掉的是"想怎么描述"那一步,
-    /// 不是另开一条消息通道。
-    ///
-    /// 先落 `askAnswer` 再发:那一下就是卡片从"能点"翻成"答过了"的时刻,而发出去的消息
-    /// 在同一帧里出现在它下面。反过来的话,中间那一瞬卡还是能点的,连点两下就是两条一样的
-    /// 消息。
+    /// 先落 `askAnswer` 再发:那一下就是卡片从"能点"翻成"答过了"的时刻。
     func answerAsk(messageID: UUID, callID: String, answer: AskUserAnswer) {
         guard !answer.isEmpty,
               let index = index(of: messageID),
-              let callIndex = session.messages[index].toolCalls.firstIndex(where: { $0.id == callID }),
-              session.messages[index].toolCalls[callIndex].askAnswer == nil
+              let callIndex = messages[index].toolCalls.firstIndex(where: { $0.id == callID }),
+              messages[index].toolCalls[callIndex].askAnswer == nil
         else { return }
 
-        session.messages[index].toolCalls[callIndex].askAnswer = answer
+        messages[index].toolCalls[callIndex].askAnswer = answer
+        dirtyIds.insert(messageID)
         send(answer.messageText)
     }
 
@@ -429,9 +579,10 @@ final class ChatViewModel {
         recognitionTasks.values.forEach { $0.cancel() }
         recognitionTasks = [:]
 
-        // 隐私会话不落盘,图片跟着不落——那条会话的全部意义就是不留本机痕迹。屏幕上照常
+        // 不留痕的那条对话不落盘,图片跟着不落——它的全部意义就是不留本机痕迹。屏幕上照常
         // 看得见:内存里那份还在,关掉就没了。
-        let persists = !session.isPrivate
+        // 不写线程的那几条路(不留痕、测试)也不写图:测试里那就是模拟器上真的附件目录。
+        let persists = self.persists
         // JPEG 只压一次:落盘那份和发给模型那份是同一批字节,压两遍是白花几十毫秒,
         // 而这一下发生在他刚按下发送键的时候。
         let encoded = drafts.reduce(into: [UUID: Data]()) { data, draft in
@@ -495,21 +646,21 @@ final class ChatViewModel {
     private func loadImagePayloads(supportsVision: Bool) async {
         // 一张说好要发的图都没有(绝大多数会话)就整段不跑:下面那两层循环要走遍全部历史,
         // 而这里跑在用户已经在等回复的时候。
-        guard session.messages.contains(where: { $0.attachments.contains(where: \.sendsImage) })
+        guard messages.contains(where: { $0.attachments.contains(where: \.sendsImage) })
         else { return }
-        for index in session.messages.indices {
-            for attachmentIndex in session.messages[index].attachments.indices {
-                let attachment = session.messages[index].attachments[attachmentIndex]
+        for index in messages.indices {
+            for attachmentIndex in messages[index].attachments.indices {
+                let attachment = messages[index].attachments[attachmentIndex]
                 guard attachment.sendsImage else { continue }
                 guard supportsVision else {
-                    session.messages[index].attachments[attachmentIndex].imagePayload = nil
+                    messages[index].attachments[attachmentIndex].imagePayload = nil
                     continue
                 }
                 guard attachment.imagePayload == nil,
                       let name = attachment.imageFileName,
                       let data = await AttachmentStore.shared.data(named: name)
                 else { continue }
-                session.messages[index].attachments[attachmentIndex].imagePayload =
+                messages[index].attachments[attachmentIndex].imagePayload =
                     data.base64EncodedString()
             }
         }
@@ -587,14 +738,12 @@ final class ChatViewModel {
         currentReplyTask?.cancel()
     }
 
-    /// 重新回答某一条回复。
-    ///
-    /// 中间那条也能重答——从它开始后面整段都丢掉,再重新生成。不做"保留旧版本、左右
-    /// 切换"那套:想留着旧的走分支就行,那本来就是分支的意思。
+    /// 重新回答某一条回复。中间那条也能重答——从它开始后面整段都丢掉,再重新生成。
     func retry(_ messageID: UUID) {
         guard canRetry(messageID), let index = index(of: messageID) else { return }
-
-        session.messages.removeSubrange(index...)
+        let removed = messages[index...].map(\.id)
+        messages.removeSubrange(index...)
+        if let windowStartId, removed.contains(windowStartId) { self.windowStartId = messages.first?.id }
         startReply()
     }
 
@@ -602,359 +751,146 @@ final class ChatViewModel {
         guard !isReplying, !isLoadingConversation, let index = index(of: messageID) else {
             return false
         }
-        return session.messages[index].role == .assistant
-            && session.messages[..<index].contains { $0.role == .user }
-    }
-
-    /// 从某条回复分叉出一条新会话:到这条为止的内容照搬过去,原会话原样留在列表里。
-    ///
-    /// 想试另一个问法又不想毁掉现在这条,走这里;愿意毁掉的走 retry。
-    func branch(from messageID: UUID) {
-        guard !isReplying, !isLoadingConversation, let index = index(of: messageID) else { return }
-
-        let history = Array(session.messages[...index])
-        session = ChatSession(
-            messages: history,
-            topicId: session.topicId,
-            // 分叉出来的**不**继承延续线:两条会话都认领同一条线的话,下次 check-in 接哪条
-            // 就成了看谁最后更新的,而用户完全看不出规则。分叉是"另开一支",本来就该断开。
-            threadId: nil,
-            // 隐私会话分叉出来的还是隐私的——说好不存就不能因为换了条会话就存了。
-            isPrivate: session.isPrivate,
-            // 水位跟着搬过来:这段对话原会话已经抽过了,分叉不该让它再被抽一遍。
-            memoryHarvestedMessageCount: min(session.memoryHarvestedMessageCount, history.count)
-        )
-        Task {
-            await saveSession()
-        }
+        return messages[index].role == .assistant
+            && !messages[index].isProactive
+            && messages[..<index].contains { $0.role == .user }
     }
 
     private func index(of messageID: UUID) -> Int? {
-        session.messages.firstIndex { $0.id == messageID }
+        messages.lastIndex { $0.id == messageID }
     }
 
-    // MARK: - 会话
+    // MARK: - 从别处进来
 
-    /// 开一条新会话。当前这条已经存过盘,不会丢。
-    func startNewSession(isPrivate: Bool = false) {
-        guard !isReplying else { return }
-        replaceSession(with: ChatSession(isPrivate: isPrivate), harvestingPrevious: true)
-        suggestions = situationSuggestions
-        Task { await refreshSummaries() }
-    }
-
-    /// 会话还空着时可以随时切换隐私与否;开聊之后就定了,不然"说好不存"会被推翻。
-    func setPrivate(_ isPrivate: Bool) {
-        guard messages.isEmpty, !isReplying else { return }
-        session.isPrivate = isPrivate
-    }
-
-    /// 从 check-in 通知或者 Siri 进来:开一条带话题的新会话,把开场问题填进输入框。
+    /// 从用药详情页那颗「问问 Vana」进来:把它挂成**下一轮回复**的一次性上下文。
     ///
-    /// 默认不自动发送——通知是邀请不是命令,让用户看一眼再决定问不问。Siri 那条置了
-    /// `autoSend`:问题已经说出口了,再要求按一次发送很没道理。
-    func open(_ checkIn: CheckInLaunch) {
-        guard !isReplying else { return }
+    /// **不预填问题**:预填一句「这个有什么副作用」会把对话推向一个他可能没想问的方向,而那三条
+    /// 开场建议本来就按状态分好了(`MedicationItem.openingQuestions`)。
+    func openMedication(_ item: MedicationItem) {
+        guard EngineSettings.isPluginEnabled(PluginIds.healthMedications) else { return }
+        focusMedication = item
+        refreshEngineAvailability()
+    }
 
-        if let question = checkIn.question {
-            input = question
-        }
+    func clearFocus() {
+        focusMedication = nil
+    }
+
+    /// 从 check-in 通知或者 Siri 进来。
+    ///
+    /// 通知是**邀请**:Vana 在线程里开个场(一条主动消息,不调模型),开场问题填进输入框,
+    /// 让他看一眼再决定问不问。Siri 置了 `autoSend`:问题已经说出口了,该直接发——回答正在
+    /// 写的时候它会被当成插话排队,**不会**砍掉进行中的那条回复。
+    func open(_ launch: CheckInLaunch) {
         // 说好回头看的事,这就在看了。留着它只会在接下来几天的早上重复同一句。
-        if let followUpId = checkIn.followUpId {
+        if let followUpId = launch.followUpId {
             Task {
                 _ = try? await memoryStore.delete(id: followUpId)
-                refreshMemory()
+                await refreshSnapshots()
             }
         }
-        // 用药那边的回访同理,但**只清掉约定,不删那条记录**——那样东西他还在吃,要走的只是
-        // 「回头问一句」这个约定。从详情页那颗按钮进来的不走这条路,那不是在兑现约定。
-        if case .medication(let id) = checkIn.thread {
+        // 用药那边的回访同理,但**只清掉约定,不删那条记录**——那样东西他还在吃。
+        if let medicationId = launch.medicationId {
             Task {
-                _ = try? await medicationStore.clearFollowUp(id: id)
-                refreshMedications()
+                _ = try? await medicationStore.clearFollowUp(id: medicationId)
+                await refreshSnapshots()
             }
         }
-
-        // 找线程要读盘,这几十毫秒里 `sendWhenReady` 会被 `isLoadingConversation` 挡着等,
-        // 正好——Siri 冷启动那条路本来就在等它。
-        isLoadingConversation = true
-        Task {
-            var continued: ChatSession?
-            if let thread = checkIn.thread {
-                continued = await sessionStore.openThread(thread)
-            }
-            replaceSession(
-                with: continued ?? ChatSession(
-                    // 延续线不带话题。一条攒了四天 check-in 的会话,今天问活动量、明天问睡眠;
-                    // 话题写死在 system 段里,聊到第三天就和正在问的事对不上了,而中途改它
-                    // 又会让模型对这次对话的认知跳变。重点由那句开场问题自己带。
-                    topicId: checkIn.thread == nil ? checkIn.topicId : nil,
-                    threadId: checkIn.thread?.id
-                ),
-                harvestingPrevious: true
-            )
-            isLoadingConversation = false
-
-            if let topic = session.topic {
-                suggestions = topic.questions.map { SuggestedQuestion(icon: topic.icon, text: $0) }
-            }
-            if let question = checkIn.question, checkIn.autoSend {
-                sendWhenReady(question)
-            }
-            await refreshSummaries()
+        if let opener = launch.opener?.trimmingCharacters(in: .whitespacesAndNewlines), !opener.isEmpty, !isEphemeral {
+            messages.append(ChatMessage(role: .assistant, text: opener, origin: .checkIn))
+            persist()
+        }
+        guard let question = launch.question else { return }
+        if launch.autoSend {
+            sendWhenReady(question)
+        } else if input.isEmpty {
+            input = question
         }
     }
 
-    // MARK: - 目标线
-
-    /// 开一条新的目标线。
-    ///
-    /// 这条会话空着,所以**还不会落盘**(空会话不落盘那条规矩没有例外)。用户问出第一句它才
-    /// 真正存在——比在列表里先摆一条什么都没有的「减脂计划」诚实。
-    func startGoal(named name: String) {
-        guard !isReplying else { return }
-        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-
-        replaceSession(
-            with: ChatSession(threadId: SessionThread.goal(UUID()).id, threadTitle: trimmed),
-            harvestingPrevious: true
-        )
-        suggestions = situationSuggestions
-        Task { await refreshSummaries() }
-    }
-
-    /// 回到某条目标线:接得上就接着上一段聊,接不上就在同一条线上另起一段。
-    ///
-    /// 「另起一段」不是丢历史——上一段一条不少地留在列表和 `search_sessions` 里,模型问一句
-    /// 就能翻回去。换来的是这条线不会长成一份永不结束的日志。
-    func openGoal(_ goal: GoalSummary) {
-        guard !isReplying, let thread = goal.thread else { return }
-
-        isLoadingConversation = true
-        Task {
-            let continued = await sessionStore.openThread(thread)
-            replaceSession(
-                with: continued ?? ChatSession(threadId: thread.id, threadTitle: goal.title),
-                harvestingPrevious: true
-            )
-            isLoadingConversation = false
-            await refreshSummaries()
-        }
-    }
-
-    func renameGoal(_ goal: GoalSummary, to name: String) {
-        guard !isReplying, let thread = goal.thread else { return }
-        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, trimmed != goal.title else { return }
-
-        Task {
-            try? await sessionStore.renameThread(thread, to: trimmed)
-            // 改的可能正是当前这条。盘上改了、手里这份没改,标题栏就会一直显示旧名字。
-            if session.threadId == thread.id {
-                session.threadTitle = trimmed
-            }
-            await refreshSummaries()
-        }
-    }
-
-    /// 整条删掉,包括它已经分出去的每一段。
-    ///
-    /// 用户是把它当成一件事在管的,删的时候也该是一件事——只删最新那段,剩下两段会以
-    /// 「减脂计划 · 7月2日起」的样子留在列表里,看着像没删干净。
-    func deleteGoal(_ goal: GoalSummary) {
-        guard !isReplying, let thread = goal.thread else { return }
-        Task {
-            let isCurrent = session.threadId == thread.id
-            try? await sessionStore.deleteThread(thread)
-            if isCurrent {
-                // 不抽记忆:用户刚把这条线删了,再从里面记下点什么是反着来的。
-                let next = (try? await sessionStore.mostRecent()) ?? ChatSession()
-                replaceSession(with: next, harvestingPrevious: false)
-            }
-            await refreshSummaries()
-        }
-    }
-
-    // MARK: - 用药线
-
-    /// 从用药详情页那颗「问问 Vana」进来。接得上就接着上一段,接不上就在同一条线上另起一段。
-    ///
-    /// 和 `openGoal` 同一套。**不预填问题**:预填一句「这个有什么副作用」会把对话推向一个他
-    /// 可能没想问的方向,而那三条开场建议本来就按状态分好了(`MedicationItem.openingQuestions`)。
-    func openMedication(_ item: MedicationItem) {
-        guard !isReplying else { return }
-        let thread = SessionThread.medication(item.id)
-
-        isLoadingConversation = true
-        Task {
-            let continued = await sessionStore.openThread(thread)
-            replaceSession(
-                // 名字存在每一段的 `threadTitle` 上,同目标线:改了名字要改到每一段,
-                // 但换来的是这条线的名字和内容永远在同一个文件里。
-                with: continued ?? ChatSession(threadId: thread.id, threadTitle: item.name),
-                harvestingPrevious: true
-            )
-            // 快照那条路是异步的,而这一条的 focus 我们此刻就拿在手上——不在这儿设的话,
-            // 空会话的头几百毫秒里 system 段还没有它。
-            focusMedication = item
-            suggestions = item.openingQuestions.map {
-                SuggestedQuestion(icon: item.status.icon, text: $0)
-            }
-            isLoadingConversation = false
-            await refreshSummaries()
-        }
-    }
-
-    /// 等会话载入完再发。
-    ///
-    /// Siri 冷启动 app 时,这一句多半赶在会话还没载入完的时候到,而 `send` 会被
-    /// `isLoadingConversation` 挡掉——问题就这么无声无息地没了。宁可多等几十毫秒。
-    /// 等超过一秒就放弃自动发送,把它留在输入框里:那时候多半是别的地方出了问题,
-    /// 让用户自己按一下,总好过一直转圈。
+    /// 等线程载入完再发。Siri 冷启动 app 时,这一句多半赶在还没载入完的时候到,而 `send` 会被
+    /// `isLoadingConversation` 挡掉——问题就这么无声无息地没了。等超过一秒就放弃自动发送,
+    /// 把它留在输入框里。
     private func sendWhenReady(_ question: String) {
-        // 没配 key 就别自动发了:发出去只会立刻收到一条报错,还占掉一条会话。
-        guard engineGuidance == nil else { return }
-
+        guard engineGuidance == nil else {
+            input = question
+            return
+        }
         Task {
             let deadline = Date().addingTimeInterval(1)
             while isLoadingConversation, Date() < deadline {
                 try? await Task.sleep(for: .milliseconds(20))
             }
-            guard !isLoadingConversation, input == question else { return }
+            guard !isLoadingConversation else {
+                input = question
+                return
+            }
             send(question)
         }
     }
 
-    func openSession(id: UUID) {
-        guard !isReplying, id != session.id else { return }
-        Task {
-            if let opened = try? await sessionStore.load(id: id) {
-                replaceSession(with: opened, harvestingPrevious: true)
-            }
-            await refreshSummaries()
-        }
-    }
+    // MARK: - 首屏
 
-    func deleteSession(id: UUID) {
-        guard !isReplying else { return }
-        Task {
-            try? await sessionStore.delete(id: id)
-            // 删掉的正是当前这条,就换上剩下里最近的一条,没有就开新的。
-            if id == session.id {
-                // 不抽记忆:用户刚把这段对话删了,再从里面记下点什么是反着来的。
-                let next = (try? await sessionStore.mostRecent()) ?? ChatSession()
-                replaceSession(with: next, harvestingPrevious: false)
-            }
-            await refreshSummaries()
-        }
-    }
-
-    func clearConversation() {
-        guard !isReplying else { return }
-        let id = session.id
-        replaceSession(with: ChatSession(), harvestingPrevious: false)
-        Task {
-            try? await sessionStore.delete(id: id)
-            await refreshSummaries()
-        }
-    }
-
-    /// 选话题。只在会话还空着时能改——聊到一半换话题,前面的上下文就对不上了。
+    /// 每次启动只判定一次处境:本地那句和那三条问题是零成本的,首屏和「今天」共用。
     ///
-    /// 选完直接换成这个话题的默认问题:话题已经把范围说清楚了,不值得再花一次模型调用。
-    func selectTopic(_ topic: ChatTopic?) {
-        guard messages.isEmpty, !isReplying else { return }
-        session.topicId = topic?.id
-        suggestions = topic.map { chosen in
-            chosen.questions.map { SuggestedQuestion(icon: chosen.icon, text: $0) }
-        } ?? situationSuggestions
-    }
-
-    /// 每次启动只生成一次:模型那步是一次真实调用,不该每回到首屏就花一遍钱。
-    ///
-    /// 分两级:先本地判定处境(纯 HealthKit 查询,没配 key 也有),再交给模型润色成人话。
-    /// 一次判定喂两个消费者——首屏那句话和下面那三条问题说的必须是同一件事,各判定一遍
-    /// 迟早会在同一屏上说出两种结论。
+    /// **模型那步只在线程真的空着时跑**(全新安装、刚清空):以前每次冷启动都落在新对话上,
+    /// 那一段话每次都要写;一条永远的对话里首屏就是上次聊到的地方,为一张没人看的卡每次启动
+    /// 都花一次钱不值。想要模型写的那段,详情页那颗刷新按钮还在。
     func refreshSuggestionsIfNeeded() {
-        guard !hasRequestedSuggestions, !isLoadingConversation, messages.isEmpty else { return }
+        guard !hasRequestedSuggestions, !isLoadingConversation else { return }
         hasRequestedSuggestions = true
 
         summaryTask = Task {
             // 家人成员这条路上 `HealthSituation` 整个不跑。它读的是 HealthKit,而那份数据
-            // 属于机主——跑一遍拿回来的「昨晚只睡了 6.2 小时」说的是机主,却会印在妈妈的
-            // 首屏上。这是 `HealthStore` 五个调用方里最容易漏掉的一个:它藏在"首屏建议"
-            // 后面,看着和健康数据没关系。
+            // 属于机主——这是 `HealthStore` 几个调用方里最容易漏掉的一个。
             guard hasHealthData else {
-                situationSuggestions = TenantOpening.questions(for: tenant, medications: medications)
-                quickSummary = TenantOpening.quickSummary(for: tenant, medications: medications)
-                if session.topicId == nil {
-                    suggestions = situationSuggestions
+                if !tenant.isOwner {
+                    quickSummary = TenantOpening.quickSummary(for: tenant, medications: medications)
                 }
                 return
             }
-            let situation = await HealthSituation.detect(
-                interests: await sessionStore.interests()
-            )
-            guard messages.isEmpty else { return }
+            let situation = await HealthSituation.detect(interests: await thread.interests())
             self.situation = situation
-            situationSuggestions = situation.questions
+            healthSuggestions = situation.questions
             quickSummary = situation.quickSummary
-            if session.topicId == nil {
-                suggestions = situationSuggestions
-            }
 
-            // 同意之前一次模型调用都不发。这条跑在**启动时**、带着健康结论——正是
-            // 「发送之前没问过」最实打实的一条路。本地那句和那三条本地问题已经摆上了。
-            guard let settings = try? cloudSettings(),
+            guard isThreadEmpty,
+                  let settings = try? cloudSettings(),
                   ProviderConsent.granted(settings.provider) else { return }
             let suggester = QuestionSuggester(
                 providerId: settings.provider,
                 model: settings.model,
                 situation: situation
             )
-            // 并发发出去。串起来的话用户要等两次往返,而这两件事互不相干——一边失败了
-            // 另一边照常换掉,各自的兜底也各自还在。
+            // 并发发出去。两件事互不相干——一边失败了另一边照常换掉。
             async let generated = suggester.suggestions()
             async let written: Void = writeQuickSummary(for: situation, settings: settings)
 
             await written
-            // 回来得太晚就别抢了——用户已经开聊或者已经自己选了话题。
-            if let questions = try? await generated, messages.isEmpty {
-                situationSuggestions = questions
-                if session.topicId == nil {
-                    suggestions = questions
-                }
+            if let questions = try? await generated, isThreadEmpty {
+                healthSuggestions = questions
             }
         }
     }
 
     /// 重新读一遍数据、重新写一遍那段话。详情页上那颗刷新按钮。
     ///
-    /// 生成这件事本来一次启动只跑一次(那是省钱的默认),但**用户对写出来的那段不满意**是
-    /// 一种没有出口的处境:数据是对的,话没说到点上,而他能做的只有关掉 app 再打开。给一颗
-    /// 按钮就够了——这是他自己按的,不是每回到首屏就自动花一次钱。
-    ///
-    /// 顺带重查一遍处境:按这颗按钮的另一半理由是"我刚同步完手表",那时候要换的是数据本身。
+    /// **用户对写出来的那段不满意**是一种没有出口的处境:数据是对的,话没说到点上。给一颗
+    /// 按钮就够了——这是他自己按的,不是每回到首屏就自动花一次钱。顺带重查一遍处境:按这颗
+    /// 按钮的另一半理由是"我刚同步完手表",那一半不需要模型。
     func regenerateQuickSummary() {
         guard hasHealthData, !isWritingSummary else { return }
 
         summaryTask?.cancel()
         isWritingSummary = true
         summaryTask = Task {
-            let situation = await HealthSituation.detect(
-                interests: await sessionStore.interests()
-            )
+            let situation = await HealthSituation.detect(interests: await thread.interests())
             guard !Task.isCancelled else {
                 isWritingSummary = false
                 return
             }
             self.situation = situation
-            // 本地那句先换上。模型那段还没开始写,而数据可能已经变了——这几秒里让详情页
-            // 里的读数和句子对不上,比多等一会儿更糟。
             quickSummary = situation.quickSummary
-            // 没配 key 时这颗按钮也不是白按的:重读一遍数据本身就是它的另一半用处
-            // (「我刚同步完手表」),那一半不需要模型。
             guard let settings = try? cloudSettings(),
                   ProviderConsent.granted(settings.provider) else {
                 isWritingSummary = false
@@ -964,10 +900,7 @@ final class ChatViewModel {
         }
     }
 
-    /// 流式写那段话。每一片回来就往 `quickSummary` 上换一次,详情页里看到的就是它在写。
-    ///
-    /// 收尾才做校验:写超了、写跑题了整段作废,退回本地那句。作废这条路是静默的,所以
-    /// `QuickSummaryWriter` 那边留了一处 DEBUG 日志打模型原文。
+    /// 流式写那段话。收尾才做校验:写超了、写跑题了整段作废,退回本地那句。
     private func writeQuickSummary(
         for situation: HealthSituation,
         settings: (provider: String, model: String),
@@ -988,9 +921,7 @@ final class ChatViewModel {
         var latest = ""
         do {
             for try await text in writer.stream() {
-                // 用户已经开聊了就撒手:首屏那张卡这会儿根本不在屏幕上,而他正在等的是
-                // 另一条流。
-                guard !Task.isCancelled, messages.isEmpty else { return }
+                guard !Task.isCancelled else { return }
                 latest = text
                 quickSummary = QuickSummaryWriter.partial(text)
             }
@@ -998,140 +929,63 @@ final class ChatViewModel {
             quickSummary = situation.quickSummary
             return
         }
-        guard !Task.isCancelled, messages.isEmpty else { return }
+        guard !Task.isCancelled else { return }
         if let written = QuickSummaryWriter.parse(latest) {
             quickSummary = written
         } else {
             #if DEBUG
-            // 作废这条路是静默的:界面上只表现为"本地那句一直没换掉"。写长了、带了壳、
-            // 分成三行写,原因只有原文说得清。
+            // 作废这条路是静默的:界面上只表现为"本地那句一直没换掉"。
             print("[首屏那段话] 这次没能用，模型原样输出：\n\(latest)")
             #endif
             quickSummary = situation.quickSummary
         }
     }
 
-    // MARK: - 记忆
+    // MARK: - 记忆与快照
 
-    /// 换会话:走的那条该抽的记忆在这里抽,新的那条配一份最新的快照。
-    private func replaceSession(with next: ChatSession, harvestingPrevious: Bool) {
-        let previous = session
-        // 接着的正是当前这条(用户已经在这条延续线里了)。不能当成"换会话"处理:那会拿它
-        // 自己去抽一次记忆,还会把盘上那份盖掉刚打的字。
-        guard next.id != previous.id else { return }
-        session = next
-        didStartReplyInSession = false
-        // hook 记着的是上一条会话问到哪儿了,跟着会话一起丢。还在飞的那次生成由交付那一步
-        // 的会话号挡住。
-        hooks = nil
-        followUps = []
-        // 还没发出去的那几张图跟着走的那条会话一起丢:它们是那一刻的东西,跟到新会话里
-        // 只会在他问一件别的事时莫名其妙地被一起发出去。
-        recognitionTasks.values.forEach { $0.cancel() }
-        recognitionTasks = [:]
-        draftAttachments = []
-        if harvestingPrevious {
-            harvestMemory(from: previous)
+    /// 这一轮用的记忆和用药表。**关掉开关只是不给模型看**,不清空盘上那份。
+    private func refreshSnapshots() async {
+        memory = EngineSettings.memoryEnabled ? await memoryStore.snapshot() : .empty
+        medications = EngineSettings.isPluginEnabled(PluginIds.health) && EngineSettings.medicationsEnabled
+            ? await medicationStore.snapshot()
+            : .empty
+    }
+
+    /// app 退到后台:趁这时候把水位线之后攒下的抽一遍。
+    func harvestMemoryInBackground() {
+        guard persists, engineFactory == nil else { return }
+        Task {
+            await persistTail?.value
+            await MemoryHarvester.runIfDue(thread: thread, memory: memoryStore, environment: harvestEnvironment())
         }
-        refreshMemory()
-        refreshMedications()
     }
 
-    /// app 退到后台。多数会话是聊完就切走的,不在这儿抽,那段对话可能几天都轮不到抽一次。
-    func harvestCurrentSessionMemory() {
-        guard !isReplying else { return }
-        harvestMemory(from: session)
+    /// 一轮回复结束、他安静了半小时:抽一次记忆。切到后台那个触发点在 `ChatView` 里。
+    private func scheduleIdleHarvest() {
+        guard persists, engineFactory == nil else { return }
+        idleHarvestTask?.cancel()
+        idleHarvestTask = Task {
+            try? await Task.sleep(for: Self.idleHarvestDelay)
+            guard !Task.isCancelled else { return }
+            harvestMemoryInBackground()
+        }
     }
 
-    /// 按住说话时提示给识别器的那份词表。
-    ///
-    /// 从**这条会话的快照**拼(`medications` / `memory`),不去读盘:词表和 system 段里那两块
-    /// 是同一份材料,而按住说话的那一刻用户已经开口了,不是做磁盘 IO 的时候。两个开关也因此
-    /// 自动生效——关掉记忆或用药表时那两份快照本来就是空的。
+    private static let idleHarvestDelay = Duration.seconds(30 * 60)
+
+    /// 抽取器只需要知道哪些插件开着、各自声明了哪些别记进记忆的话题,不会真的去调工具。
+    private func harvestEnvironment() -> PluginEnvironment {
+        PluginEnvironment(
+            tenant: tenant,
+            memoryStore: memoryStore,
+            includesHealthData: true,
+            medicationStore: medicationStore
+        )
+    }
+
+    /// 按住说话时提示给识别器的那份词表。和 system 段里那两块是同一份材料。
     var voiceVocabulary: [String] {
         VoiceVocabulary.terms(medications: medications, memory: memory)
-    }
-
-    private func refreshMemory() {
-        guard EngineSettings.memoryEnabled else {
-            memory = .empty
-            return
-        }
-        let targetId = session.id
-        Task {
-            let snapshot = await memoryStore.snapshot()
-            // 回来得太晚:人已经换到别的会话,或者已经在这条里问出第一句了。
-            guard session.id == targetId, !didStartReplyInSession else { return }
-            memory = snapshot
-        }
-    }
-
-    /// 用药表的快照跟着会话换。
-    ///
-    /// **关掉开关只是不给模型看**,不清空盘上那份——列表页照常能看能改。这和 `memory` 的
-    /// 处理一致,区别只在开关是另一个(见 `EngineSettings.medicationsEnabled`)。
-    private func refreshMedications() {
-        guard EngineSettings.medicationsEnabled else {
-            medications = .empty
-            focusMedication = nil
-            return
-        }
-        let targetId = session.id
-        // 会话属于哪一条药,由 threadId 说了算——名字会被改,id 不会。
-        let focusId: UUID? = if case .medication(let id) = session.thread { id } else { nil }
-        Task {
-            let snapshot = await medicationStore.snapshot()
-            let focus = focusId.flatMap { id in snapshot.items.first { $0.id == id } }
-            // 回来得太晚:人已经换到别的会话,或者已经在这条里问出第一句了。
-            guard session.id == targetId, !didStartReplyInSession else { return }
-            medications = snapshot
-            focusMedication = focus
-        }
-    }
-
-    /// 后台抽一次记忆。全程失败即放弃——记忆学不到东西是小事,让用户这一步卡住是大事。
-    private func harvestMemory(from harvested: ChatSession) {
-        guard EngineSettings.memoryEnabled, MemoryHarvest.shouldHarvest(harvested) else { return }
-        // 注入了假引擎就是在测试里,别真去调模型。没同意过发给这家的也不抽——能走到这儿
-        // 说明对话发生过,同意几乎必然在;这一句兜的是「聊完之后换了 provider」那条缝。
-        guard engineFactory == nil,
-              let settings = try? cloudSettings(),
-              ProviderConsent.granted(settings.provider) else { return }
-
-        let previous = harvestTail
-        let messageCount = harvested.messages.count
-        harvestTail = Task {
-            await previous?.value
-            // 和后台派生的那一轮抢同一个位子。抢不到就这次不抽——`memoryHarvestedMessageCount`
-            // 没往前走,下次切会话/退后台照样会抽到这一段,一个字都不会漏。
-            await BackgroundModelWork.shared.run {
-                await harvest(harvested, messageCount: messageCount, settings: settings)
-            }
-        }
-    }
-
-    private func harvest(
-        _ harvested: ChatSession,
-        messageCount: Int,
-        settings: (provider: String, model: String)
-    ) async {
-        // 用此刻盘上的记忆,不是这条会话开始时那份快照——中间可能已经抽过别的会话了,
-        // 拿旧的会把同一件事再记一遍。
-        let snapshot = await memoryStore.snapshot()
-        let environment = pluginEnvironment()
-        let extractor = MemoryExtractor(
-            providerId: settings.provider,
-            model: settings.model,
-            snapshot: PluginRegistry.visibleMemory(snapshot, isEnabled: environment.isEnabled),
-            policy: PluginRegistry.memoryPolicy(environment)
-        )
-        guard let operations = try? await extractor.operations(from: harvested.messages) else { return }
-        _ = try? await memoryStore.apply(operations, sessionId: harvested.id)
-        try? await sessionStore.markMemoryHarvested(
-            id: harvested.id,
-            messageCount: messageCount
-        )
-        refreshMemory()
     }
 
     /// 没配 key 时那句引导。**一处定义**:发送被挡下、欢迎卡上那条横幅、首屏那段话底下的
@@ -1176,7 +1030,7 @@ final class ChatViewModel {
     /// 重试然后把这个 build 拒掉的。
     func recovery(for messageID: UUID) -> ErrorRecovery? {
         guard canRetry(messageID), let index = index(of: messageID) else { return nil }
-        guard let failure = session.messages[index].errorDescription else { return nil }
+        guard let failure = messages[index].errorDescription else { return nil }
         // 现在就配不齐:重试发出去的还是同一句话。**现算一次**而不是记在消息上,
         // 这样他配完回来那颗按钮自己就变回「重试」。
         if currentSetupGuidance != nil { return .openSetup }
@@ -1187,32 +1041,87 @@ final class ChatViewModel {
 
     private func startReply() {
         isReplying = true
-        didStartReplyInSession = true
         retryNotice = nil
-        // 定位是异步的,这一次多半来不及赶上下面这轮请求——赶上的是下一句。发一句话就顺手
-        // 定一次(内部按 `LocationProvider.refreshInterval` 节流,没授权直接返回),
-        // 是为了让「他换了个城市」这件事在他开口的时候就已经在路上了。
+        idleHarvestTask?.cancel()
+        // 定位是异步的,这一次多半来不及赶上下面这轮请求——赶上的是下一句。
         LocationProvider.shared.refresh()
-        // 那几条接的是上一段回答,新的一段就要开始写了。留着比空着糟:它们和固定那几条
-        // 长得一模一样,而点下去问的是三句话之前的事。
+        // 那几条接的是上一段回答,新的一段就要开始写了。
         followUps = []
 
         currentReplyTask = Task {
             // 一次「回复」可能跨好几轮。队列里的话赶在最后一次请求之后才到时,loop 已经没有
-            // 边界可以接它了——那几句在这儿接着跑一轮,不用用户再按一次发送。停止之后不续跑:
-            // 他按停止的意思就是别再发了,队列原样留着等他自己决定。
+            // 边界可以接它了——那几句在这儿接着跑一轮。停止之后不续跑。
             while !Task.isCancelled {
                 dequeueAll()
                 beginAssistantMessage()
-                await runTurn()
+                await runTurnShrinkingOnOverflow()
                 guard !Task.isCancelled, hasQueuedInput else { break }
             }
             isReplying = false
             replyingMessageID = nil
             retryNotice = nil
             currentReplyTask = nil
-            await saveSession()
+            // 焦点只管这一轮;回复完就撤。
+            focusMedication = nil
+            persist()
+            if hasPendingBackgroundMessages { await mergeBackgroundMessages() }
+            scheduleIdleHarvest()
         }
+    }
+
+    /// 撞上模型的上下文上限:以前是让用户「开一条新对话」——现在没有新对话可开。改成强制把
+    /// 窗口砍到最近两轮,再原样跑一次;砍不动(本来就只剩两轮)才把错误报给用户。
+    private func runTurnShrinkingOnOverflow() async {
+        do {
+            try await runTurn()
+        } catch let error where Self.isContextOverflow(error) {
+            guard !Task.isCancelled else { return markStopped() }
+            guard let index = replyingIndex(), !messages[index].hasVisibleTurnContent,
+                  await advanceWindow(force: true, overheadTokens: 0)
+            else { return markFailed(error) }
+            do {
+                try await runTurn()
+            } catch {
+                finish(with: error)
+            }
+        } catch {
+            finish(with: error)
+        }
+    }
+
+    private func finish(with error: any Error) {
+        if error is CancellationError || Task.isCancelled {
+            markStopped()
+        } else {
+            markFailed(error)
+        }
+    }
+
+    private static func isContextOverflow(_ error: any Error) -> Bool {
+        if case AgentError.contextWindowExceeded = error { return true }
+        if case AgentLoopError.contextWindowExceeded = error { return true }
+        return false
+    }
+
+    private func runTurn() async throws {
+        await refreshSnapshots()
+        var engine = try await resolveEngine()
+        // 请求之前先看窗口该不该滑:固定开销(system 段、工具定义)先从预算里扣掉。滑动之后
+        // 「有原文滑出去了」这件事变了,召回该不该挂也跟着变——所以要重新装配一次。
+        if await advanceWindow(force: false, overheadTokens: engine.requestOverheadTokens()) {
+            engine = try await resolveEngine()
+        }
+        // 说好要发的那几张原图,冷启动之后只剩一个文件名。补在这儿——**拿到引擎之后、
+        // 发请求之前**:能不能带图是这一轮手上这个引擎的属性,而它每轮现造。
+        await loadImagePayloads(supportsVision: engine.supportsVision)
+        let history = windowMessages().filter { !$0.isQueued }
+        let stream = engine.reply(to: history, pendingInput: pendingInputProvider())
+        for try await event in stream {
+            apply(event)
+        }
+        // AsyncThrowingStream 的消费者被取消时,`for try await` 是**正常**结束的,
+        // 不抛 CancellationError。只靠 catch 抓不到"用户按了停止"。
+        if Task.isCancelled { markStopped() }
     }
 
     /// 在列表末尾起一条空回复,并把它定为接下来所有事件的收件人。
@@ -1223,7 +1132,7 @@ final class ChatViewModel {
             text: "",
             storedTurn: .init(inlinedMessageIDs: inlined)
         )
-        session.messages.append(message)
+        messages.append(message)
         replyingMessageID = message.id
         return message.id
     }
@@ -1240,47 +1149,22 @@ final class ChatViewModel {
         guard let previousID = replyingMessageID, let index = replyingIndex() else { return }
 
         var inlined: [UUID] = []
-        if session.messages[index].hasVisibleTurnContent {
+        if messages[index].hasVisibleTurnContent {
+            dirtyIds.insert(previousID)
             // 前半段和后半段在 runtime 眼里是**同一轮**:整轮的 transcript 到最后会一次性
             // 落在后半段上,里面已经含了前半段说过的话。回放时要跳过前半段那条气泡。
             inlined.append(previousID)
         } else {
-            session.messages.remove(at: index)
+            messages.remove(at: index)
         }
         beginAssistantMessage(inlining: inlined)
     }
 
     /// 排队中的那几条这就要作为普通历史发出去了,不再是「还没进上下文」。
     private func dequeueAll() {
-        for index in session.messages.indices where session.messages[index].isQueued {
-            session.messages[index].isQueued = false
-        }
-    }
-
-    private func runTurn() async {
-        do {
-            let engine = try resolveEngine()
-            // 说好要发的那几张原图,冷启动之后只剩一个文件名。补在这儿——**拿到引擎之后、
-            // 发请求之前**:能不能带图是这一轮手上这个引擎的属性,而它每轮现造。
-            await loadImagePayloads(supportsVision: engine.supportsVision)
-            let stream = engine.reply(to: session.messages, pendingInput: pendingInputProvider())
-            for try await event in stream {
-                apply(event)
-            }
-            // AsyncThrowingStream 的消费者被取消时,`for try await` 是**正常**结束的,
-            // 不抛 CancellationError。只靠 catch 抓不到"用户按了停止",那条回复会既没
-            // 文本也没状态地存下去。
-            if Task.isCancelled {
-                markStopped()
-            }
-        } catch is CancellationError {
-            markStopped()
-        } catch {
-            if Task.isCancelled {
-                markStopped()
-            } else {
-                markFailed(error)
-            }
+        for index in messages.indices where messages[index].isQueued {
+            messages[index].isQueued = false
+            dirtyIds.insert(messages[index].id)
         }
     }
 
@@ -1294,13 +1178,14 @@ final class ChatViewModel {
 
     private func takeQueuedInput() -> [AgentPendingInput] {
         var taken: [AgentPendingInput] = []
-        for index in session.messages.indices where session.messages[index].isQueued {
-            session.messages[index].isQueued = false
+        for index in messages.indices where messages[index].isQueued {
+            messages[index].isQueued = false
+            dirtyIds.insert(messages[index].id)
             taken.append(AgentPendingInput(
-                id: session.messages[index].id,
+                id: messages[index].id,
                 // 插话也可能带着一张刚拍的图。发的是拼好的那一份,和它当成普通历史发出去时
                 // 一模一样(`ChatMessage.modelText`)。
-                text: session.messages[index].modelText
+                text: messages[index].modelText
             ))
         }
         return taken
@@ -1320,8 +1205,9 @@ final class ChatViewModel {
         switch event {
         // 例外:整段摘要挂在早先某条上。存下来,下轮就不用再叫一次模型重算。
         case .historyCompacted(let messageID, let artifact):
-            guard let index = session.messages.firstIndex(where: { $0.id == messageID }) else { return }
-            session.messages[index].storedTurn.compaction = artifact
+            guard let index = messages.firstIndex(where: { $0.id == messageID }) else { return }
+            messages[index].storedTurn.compaction = artifact
+            dirtyIds.insert(messageID)
             return
         case .retryScheduled(let notice):
             retryNotice = String(localized: "连接不稳定，正在重试（\(notice.attempt)/\(notice.maxAttempts)）")
@@ -1335,7 +1221,8 @@ final class ChatViewModel {
             break
         }
         guard let index = replyingIndex() else { return }
-        session.messages[index].apply(event)
+        messages[index].apply(event)
+        dirtyIds.insert(messages[index].id)
     }
 
     private func bufferReasoning(_ delta: String) {
@@ -1355,13 +1242,13 @@ final class ChatViewModel {
         let delta = pendingReasoning
         pendingReasoning = ""
         guard let index = replyingIndex() else { return }
-        session.messages[index].apply(.reasoningDelta(delta))
+        messages[index].apply(.reasoningDelta(delta))
     }
 
     /// 从后往前找:收件人几乎总是最后一条,只有用户中途插话时才往前挪那么一两格。
     private func replyingIndex() -> Int? {
         guard let replyingMessageID else { return nil }
-        return session.messages.lastIndex { $0.id == replyingMessageID }
+        return messages.lastIndex { $0.id == replyingMessageID }
     }
 
     /// 这两条走的是流结束之后的路,没有事件替它们把缓冲区落下去——按停止的那一刻思考已经
@@ -1369,13 +1256,13 @@ final class ChatViewModel {
     private func markStopped() {
         flushReasoning()
         guard let index = replyingIndex() else { return }
-        session.messages[index].markStopped()
+        messages[index].markStopped()
     }
 
     private func markFailed(_ error: any Error) {
         flushReasoning()
         guard let index = replyingIndex() else { return }
-        session.messages[index].markFailed(Self.userFacingFailure(error))
+        messages[index].markFailed(Self.userFacingFailure(error))
     }
 
     /// provider 的原文不能直接上屏。
@@ -1396,7 +1283,7 @@ final class ChatViewModel {
         case .quota:
             return String(localized: "这把 key 的额度用完了，或者账户欠着费。到 provider 那边确认额度之后再试一次。")
         case .contextOverflow:
-            return String(localized: "这条对话太长了，装不下。开一条新对话再问一次，刚才查到的数据都还在。")
+            return String(localized: "这一次要带的内容太多，装不下。把这条消息或附件缩短一点再试一次。")
         case .transient:
             return String(localized: "网络或者模型服务暂时不通，重试几次都没成功。过一会儿再试一次。")
         case .other:
@@ -1406,71 +1293,67 @@ final class ChatViewModel {
 
     // MARK: - 引擎
 
-    private func resolveEngine() throws -> any AgentEngine {
+    private func resolveEngine() async throws -> any AgentEngine {
         if let engineFactory {
             // 注入假引擎的那条路不挂 hook:hook 的行为由 `FollowUpChipTests` 直接对着
             // `AgentLoop` 验,不必穿过这个状态机。
-            return try engineFactory(session.topic)
+            return try engineFactory()
         }
         let settings = try cloudSettings()
-        let environment = pluginEnvironment()
+        let environment = await pluginEnvironment()
         return AIKitEngine(
             providerId: settings.provider,
             model: settings.model,
             environment: environment,
             // 写的那一头由 `PluginContext.isPrivate` 统一堵死:`remember`、用药表的两个写工具
-            // 在这条会话里根本不挂出去。
-            isPrivate: session.isPrivate,
-            // 他自己提起过去,才有「过去」可翻。没提就连工具都不挂——留着的话模型每轮都要
-            // 判一次要不要翻,而对话句句连着上一句,那个判断天然偏向"要"。
-            unlocked: SessionRecallTrigger.unlocksRecall(in: session.messages) ? [RecallPlugin.unlockTrigger] : [],
+            // 在不留痕的那条对话里根本不挂出去。
+            isPrivate: isEphemeral,
             hooks: followUpHooks(settings)
         )
     }
 
     /// 装配要用的全部输入。聊天和抽记忆都从这里取——抽取器要遵守的「哪些话题别记」
     /// 得和聊天时实际挂出去的插件是同一份,不然两边各说各话。
-    private func pluginEnvironment() -> PluginEnvironment {
-        PluginEnvironment(
+    private func pluginEnvironment() async -> PluginEnvironment {
+        // 召回读整条线程的档案;**只有真的有原文滑出了窗口才挂**——没有「看不见的历史」,
+        // 就没有可回顾的。不留痕的那条对话不在线程里,也不去翻它。
+        var recall: CapabilityRegistry?
+        if let hidden = await hiddenBeforePos() {
+            recall = HistoryRecallTools.registry(store: thread, hiddenBefore: hidden)
+        }
+        return PluginEnvironment(
             tenant: tenant,
-            recall: SessionRecallTools.registry(store: sessionStore, currentSessionId: session.id),
+            recall: recall,
             memoryStore: memoryStore,
-            // 隐私会话照样**读**记忆:承诺的是不往盘上写,不是失忆。真要把已经知道的也关掉,
-            // 用户恰恰是在想问点私密事的时候拿到一个不认识他的助手,那这个开关只会没人用。
+            // 不留痕照样**读**记忆:承诺的是不往盘上写,不是失忆。
             memory: memory,
-            // **每轮现取**:人会走动,而这块东西存在的理由正是「他此刻在哪」。没授权就是
-            // `.unknown`,那一段 system 段不发。
+            // **每轮现取**:人会走动,而这块东西存在的理由正是「他此刻在哪」。
             location: LocationProvider.shared.snapshot,
             webSearch: .storedKey(),
             exerciseLibrary: .shared,
-            // 这台设备的 HealthKit 只有机主一个人的数据。给家人挂上健康工具,模型会去查,
-            // 而查回来的是**机主的**数字——`HealthDataPlugin` 的 `dataScope` 兜着这一条。
+            // 这台设备的 HealthKit 只有机主一个人的数据。`HealthDataPlugin` 的 `dataScope`
+            // 兜着这一条:给家人挂上,查回来的是**机主的**数字。
             includesHealthData: true,
             medicationStore: medicationStore,
-            // 用药表同理:隐私会话照样**读**——「他不能吃什么」这一条在想问点私密事的时候
-            // 尤其不能关掉。承诺的是不留痕迹,不是不管他死活。
+            // 用药表同理:不留痕照样**读**——「他不能吃什么」这一条在想问点私密事的时候
+            // 尤其不能关掉。
             medications: medications,
-            focusMedication: focusMedication,
-            topic: session.topic,
-            goals: session.thread?.isGoal == true ? [session.threadTitle].compactMap { $0 } : []
+            focusMedication: focusMedication
         )
     }
 
-    /// 追问 chip 的宿主。第一次要发请求时才建,之后这条会话一直用它。
+    /// 追问 chip 的宿主。第一次要发请求时才建,之后一直用它。
     private func followUpHooks(_ settings: (provider: String, model: String)) -> AgentHookDispatcher {
         if let hooks { return hooks }
 
         let suggester = FollowUpSuggester(providerId: settings.provider, model: settings.model)
-        // 交付时校验会话号。宿主跟着会话丢了,但上一条会话还在飞的那次生成仍然握着自己的
-        // hook——它回来得晚一点,就会把三条属于上一段对话的追问摆到这一条下面。
-        let sessionId = session.id
         let hook = FollowUpSuggestionHook(
             generate: { context in
                 // 失败即放弃。追问 chip 没生成出来,用户手上还有固定那几条和输入框。
                 (try? await suggester.suggestions(for: context)) ?? []
             },
             deliver: { [weak self] suggestions in
-                guard let self, session.id == sessionId, !isReplying else { return }
+                guard let self, !isReplying else { return }
                 followUps = suggestions
             }
         )
@@ -1478,6 +1361,58 @@ final class ChatViewModel {
         hooks = dispatcher
         return dispatcher
     }
+
+    // MARK: - 窗口
+
+    /// 窗口起点的位置——它**之前**的才是「滑出去了」的历史。没淘汰过、或者前面什么都没有,
+    /// 就没有可翻的。读的是线程里持久化的位置,所以重启之后依然对得上。
+    private func hiddenBeforePos() async -> Double? {
+        guard persists, let windowStartId, let pos = await thread.position(of: windowStartId) else { return nil }
+        return await thread.hasArchiveRows(before: pos) ? pos : nil
+    }
+
+    private func windowStartIndex() -> Int {
+        windowStartId.flatMap { id in messages.firstIndex { $0.id == id } } ?? 0
+    }
+
+    /// 这一轮请求里带的历史:窗口起点往后的全部。窗口之外的原文不发。
+    private func windowMessages() -> [ChatMessage] {
+        Array(messages.dropFirst(windowStartIndex()))
+    }
+
+    /// 窗口滑不滑。涨到高水位才动,一次砍到低水位;`force` 是撞上上下文上限时的救援,
+    /// 只留最近两轮。返回窗口起点有没有前移。**淘汰只前移游标**(存进线程 meta),
+    /// 消息本身一条不删。
+    @discardableResult
+    private func advanceWindow(force: Bool, overheadTokens: Int) async -> Bool {
+        let start = windowStartIndex()
+        let newStart: Int
+        if force {
+            newStart = ThreadWindow.forceEvict(messages, from: start, keepTurns: Self.forcedKeepTurns)
+        } else {
+            newStart = ThreadWindow.evict(
+                messages,
+                from: start,
+                policy: .forContext(EngineSettings.contextWindow),
+                overheadTokens: overheadTokens
+            )
+        }
+        guard newStart != start, messages.indices.contains(newStart) else { return false }
+        let id = messages[newStart].id
+        windowStartId = id
+        guard persists else { return true }
+        // 游标要落在一个盘上有位置的消息上。它多半早就同步过了;没同步过就先等这一次写盘。
+        await persistTail?.value
+        if await thread.position(of: id) == nil { await persistNow() }
+        let pos = await thread.position(of: id)
+        await thread.updateMeta { $0.windowStartPos = pos }
+        // 有原文要离开窗口了:趁这时候把还没抽过的收割一遍(不等它,也不因此阻塞这一轮)。
+        harvestMemoryInBackground()
+        return true
+    }
+
+    /// 撞上上下文上限时强制留下的最近轮数。
+    private static let forcedKeepTurns = 2
 
     /// 云端调用要齐的三样:key、provider、model。缺一样就别发请求。
     private func cloudSettings() throws -> (provider: String, model: String) {
@@ -1507,46 +1442,6 @@ final class ChatViewModel {
         return trimmed.isEmpty ? fallback : trimmed
     }
 
-    // MARK: - 存取
-
-    /// 冷启动落在新对话上,不接着上次那条。
-    ///
-    /// 打开 app 的时候人多半是想问一件新的事。续上几天前那句「那第三天呢」,既要先读完
-    /// 才知道自己在哪儿,想问新的还得再点一次「新对话」。上一条一条没丢,在会话列表里
-    /// 一点就回得去。
-    ///
-    /// 代价是被系统回收之后再进来,不会自动回到刚才那条——换来的是每次进来都可预测。
-    private func loadInitialSession() async {
-        defer { isLoadingConversation = false }
-        if EngineSettings.memoryEnabled {
-            memory = await memoryStore.snapshot()
-        }
-        if EngineSettings.medicationsEnabled {
-            medications = await medicationStore.snapshot()
-        }
-        await refreshSummaries()
-    }
-
-    private func saveSession() async {
-        // 空会话不落盘,否则每次点「新对话」都在列表里留一条空壳。
-        // 隐私会话永远不落盘——这是它唯一的意义。会话文件是所有本机痕迹的源头:不落盘,
-        // 会话列表、兴趣统计(`InterestProfile.build(from:)` 只数存下来的会话)就一并没有它。
-        guard !session.isEmpty, !session.isPrivate else { return }
-        session.updatedAt = Date()
-        do {
-            try await sessionStore.save(session)
-        } catch {
-            print("保存会话失败：\(error.localizedDescription)")
-        }
-        await refreshSummaries()
-    }
-
-    private func refreshSummaries() async {
-        summaries = await sessionStore.summaries()
-        // 同一次索引扫描的两个读者,一起刷。分两次去问 actor,列表和目标区就可能有一瞬
-        // 对不上——刚删掉的那条线还在上面挂着。
-        goals = await sessionStore.goals()
-    }
 }
 
 /// 一条报错气泡底下那颗按钮做什么。

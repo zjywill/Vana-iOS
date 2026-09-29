@@ -65,26 +65,24 @@ struct WebSearchPlugin: AgentPlugin {
 
 /// 翻过往对话。归在记忆开关下面:关掉记忆的人不指望 Vana 还在引用他上个月说过的话。
 ///
-/// 挂不挂由 app 判:给了 registry 才构造。`mount` 是那条判据落在工具上的样子——
-/// 旧会话模型里是「用户提起过去才解锁」,一条对话里是「真的有原文滑出了窗口」。
+/// 挂不挂由 app 判:**只有真的有原文滑出了窗口**才给 registry——没有「看不见的历史」,就没有
+/// 可回顾的。挂上就是常挂:一轮挂一轮撤会把 prompt 缓存的前缀反复打掉。
 struct RecallPlugin: AgentPlugin {
-    static let unlockTrigger = "recall"
-
     let id = "recall"
     let registry: CapabilityRegistry
-    var mount: MountPolicy = .always
 
     func tools(context: PluginContext) -> [PluginTool] {
-        PluginTool.from(registry, mount: mount) { _ in [.read] }
+        PluginTool.from(registry) { _ in [.read] }
     }
 
     /// 措辞要窄:对话句句都连着上一句,写成「问题接着一段历史时就翻」等于每轮都翻一次,
     /// 而用户正等着回复。默认是不翻,只有他自己提起过去才翻。
     func promptBlocks(context: PluginContext, mountedTools: Set<String>) -> [PromptBlock] {
-        guard mountedTools.contains(SessionRecallTools.searchToolName) else { return [] }
+        guard mountedTools.contains(HistoryRecallTools.searchToolName) else { return [] }
         return [PromptBlock(
             order: PromptOrder.guideRecall,
-            text: "默认不要去翻过往对话。只有用户自己提起过去"
+            text: "这条对话更早的部分已经滑出了你能直接看到的范围，但原文都还在。"
+                + "默认不要去翻；只有用户自己提起过去"
                 + "（「上次」「之前说过」「我们聊过」「你还记得」，或者问一件他以前交代过、这次没再说的事）时，"
                 + "才用 search_sessions 找到那一段，再用 read_session 读它，然后接着他当时的说法往下讲。"
                 + "他问的是眼前的数据或趋势就直接查，别先翻一遍历史——那里只有过期的数字。"
@@ -187,7 +185,7 @@ struct CorePlugin: VanaPlugin {
     func agentPlugins(_ env: PluginEnvironment, route: PluginRoute) -> [any AgentPlugin] {
         // 召回归在记忆开关下面:关掉记忆的人不指望 Vana 还在引用他上个月说过的话。
         let memoryOn = env.isEnabled(PluginIds.memory)
-        let recall = memoryOn ? env.recall.map { RecallPlugin(registry: $0, mount: .whenUnlocked(RecallPlugin.unlockTrigger)) } : nil
+        let recall = memoryOn ? env.recall.map { RecallPlugin(registry: $0) } : nil
         let memory = MemoryPlugin(
             store: memoryOn ? env.memoryStore : nil,
             snapshot: memoryOn ? PluginRegistry.visibleMemory(env.memory, isEnabled: env.isEnabled) : .empty

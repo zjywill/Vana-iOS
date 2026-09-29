@@ -240,24 +240,32 @@ struct MemoryTests {
 
     // MARK: - 兴趣统计
 
-    @Test("interest is counted from tools actually called, recent sessions weighing more")
+    @Test("interest is counted from tools actually called, recent days weighing more")
     func interestCountsToolCalls() {
-        func session(_ tools: [String]) -> SessionIndexEntry {
-            SessionIndexEntry(ChatSession(messages: [
-                ChatMessage(
-                    role: .assistant,
-                    text: "",
-                    toolCalls: tools.map { ToolCallRecord(id: UUID().uuidString, name: $0, input: "{}") }
-                )
-            ]))
+        let calendar = Calendar(identifier: .gregorian)
+        let today = calendar.startOfDay(for: Date())
+        func row(_ tools: [String], daysAgo: Int, proactive: Bool = false) -> ThreadStore.ArchiveRow {
+            ThreadStore.ArchiveRow(
+                id: UUID(),
+                pos: Double(-daysAgo),
+                createdAt: today.addingTimeInterval(Double(-daysAgo) * 86_400 + 3_600),
+                isUser: false,
+                text: "答",
+                toolNames: tools,
+                isProactive: proactive
+            )
         }
 
-        // 最近的在前。同一条会话里查了三次睡眠也只算一次——那是一个问题被拆成三步。
+        // 同一天里查了三次睡眠也只算一次——那是一个问题被拆成三步。
         let profile = InterestProfile.build(from: [
-            session(["sleep_summary", "sleep_summary", "sleep_summary"]),
-            session(["sleep_summary"]),
-            session(["daily_steps"])
-        ])
+            row(["sleep_summary"], daysAgo: 0),
+            row(["sleep_summary"], daysAgo: 0),
+            row(["sleep_summary"], daysAgo: 1),
+            row(["daily_steps"], daysAgo: 2),
+            // Vana 主动替他查的不算:后台替他查了三次体重不代表他关心体重。
+            row(["body_metrics"], daysAgo: 0, proactive: true),
+            row(["body_metrics"], daysAgo: 1, proactive: true)
+        ], calendar: calendar)
 
         #expect(profile.weight(forTool: "sleep_summary") > profile.weight(forTool: "daily_steps"))
         #expect(profile.weight(forTool: "body_metrics") == 0)
@@ -267,13 +275,7 @@ struct MemoryTests {
     @Test("one stray question is not a tendency")
     func interestIgnoresOneOffs() {
         let profile = InterestProfile.build(from: [
-            SessionIndexEntry(ChatSession(messages: [
-                ChatMessage(
-                    role: .assistant,
-                    text: "",
-                    toolCalls: [ToolCallRecord(id: "c1", name: "body_metrics", input: "{}")]
-                )
-            ]))
+            ThreadStore.ArchiveRow(id: UUID(), pos: 1, createdAt: Date(), isUser: false, text: "答", toolNames: ["body_metrics"], isProactive: false)
         ])
         #expect(profile.ranked.isEmpty)
         #expect(profile.summary == nil)
@@ -312,7 +314,7 @@ struct MemoryTests {
         let morning = CheckInScheduler.content(for: .morning, situation: situation, dueFollowUps: [followUp])
         // 约到今天早上的事没被提起,这个功能就等于没有。
         #expect(morning.body == followUp.text)
-        #expect(morning.question == followUp.text)
+        #expect(morning.opener?.contains("看深睡时长回来没有") == true)
         #expect(morning.followUpId == followUp.id)
 
         // 晚上不再说一遍:两条通知讲一个内容。
@@ -326,7 +328,8 @@ struct MemoryTests {
         let morning = CheckInScheduler.content(for: .morning, situation: situation, dueFollowUps: [])
 
         #expect(morning.followUpId == nil)
-        #expect(morning.topicId == "sleep")
+        // 触发点那句就是 Vana 开场说的那句。
+        #expect(morning.opener?.contains("5.4") == true || morning.opener?.isEmpty == false)
     }
 
     @Test("opening the check-in retires the follow-up it was about")
@@ -341,8 +344,8 @@ struct MemoryTests {
         )
         let id = try #require(stored.first?.id)
 
-        let viewModel = ChatViewModel(loadsPersistedSession: false, memoryStore: store)
-        viewModel.open(CheckInLaunch(topicId: nil, question: "两周后看深睡", followUpId: id))
+        let viewModel = ChatViewModel(loadsPersistedThread: false, memoryStore: store)
+        viewModel.open(CheckInLaunch(question: "两周后看深睡", followUpId: id))
 
         // 说好回头看的事,这就在看了。留着它只会在接下来几天的早上重复同一句。
         var remaining = await store.items()
@@ -370,7 +373,7 @@ struct MemoryTests {
 
     @Test("the extractor sees what was said, never what the tools returned")
     func transcriptExcludesToolOutput() {
-        let session = ChatSession(messages: [
+        let messages = [
             ChatMessage(role: .user, text: "我这周上夜班，睡得怎么样"),
             ChatMessage(
                 role: .assistant,
@@ -384,9 +387,9 @@ struct MemoryTests {
             ),
             // app 写给用户的占位不是任何人说的话。
             ChatMessage(role: .assistant, text: "已停止回复", textIsPlaceholder: true)
-        ])
+        ]
 
-        let transcript = MemoryExtractor.transcript(of: session.messages)
+        let transcript = MemoryExtractor.transcript(of: messages)
         #expect(transcript.contains("我这周上夜班"))
         #expect(transcript.contains("平均 6 小时。"))
         // 「不要记数字」不能只靠提示词——工具结果压根不给它看,它就无从记起。
@@ -430,28 +433,23 @@ struct MemoryTests {
 
     // MARK: - 抽取门槛
 
-    @Test("a private session is never harvested")
-    func privateSessionsAreNeverHarvested() {
-        var session = ChatSession(isPrivate: true)
-        session.messages = [
-            ChatMessage(role: .user, text: "我腰不好"),
-            ChatMessage(role: .assistant, text: "明白"),
-            ChatMessage(role: .user, text: "所以别让我跑步")
-        ]
-        // 说好不存就是不存。从隐私会话里抽记忆,等于换个地方把它存下来了。
-        #expect(!MemoryHarvest.shouldHarvest(session))
+    private static func freshThread() -> ThreadStore {
+        ThreadStore(directory: URL.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory))
+    }
+
+    private static func harvestEnvironment() -> PluginEnvironment {
+        PluginEnvironment(isEnabled: { _ in true })
     }
 
     /// 抽取被挡住只堵了一条路。`remember` 是另一条:模型在对话中途就能调它,落下的还正是
-    /// 用户亲口说的那种事。两条都堵上,「这条对话不会被保存」才不是一句空话。
-    @Test("a private session is not even offered the remember tool")
+    /// 用户亲口说的那种事。两条都堵上,「不留痕」才不是一句空话。
+    @Test("a private conversation is not even offered the remember tool")
     func privateSessionsCannotWriteMemory() {
         let (stores, root) = TestAssembly.freshStores()
         defer { try? FileManager.default.removeItem(at: root) }
         let engine = TestAssembly.engine(TestAssembly.environment(stores: stores), isPrivate: true)
         #expect(!engine.systemInstruction().contains(MemoryTools.rememberToolName))
 
-        // 普通会话不受影响——把工具连带那段提示词一起关掉,是隐私会话独有的代价。
         let normal = TestAssembly.engine(TestAssembly.environment(stores: stores))
         #expect(
             normal.systemInstruction().contains(MemoryTools.rememberToolName)
@@ -459,48 +457,114 @@ struct MemoryTests {
         )
     }
 
-    @Test("a one-question session is not worth a model call, and neither is a re-run")
-    func harvestThresholds() {
-        var session = ChatSession()
-        session.messages = [
+    @Test("one question after the watermark is not worth a model call")
+    func harvestNeedsTwoUserMessages() async {
+        let thread = Self.freshThread()
+        await thread.sync([
             ChatMessage(role: .user, text: "昨晚睡得怎么样"),
             ChatMessage(role: .assistant, text: "6.2 小时。")
-        ]
-        // 一问一答是查数据,不是说自己的事。
-        #expect(!MemoryHarvest.shouldHarvest(session))
-
-        session.messages.append(ChatMessage(role: .user, text: "我最近上夜班，是不是这个原因"))
-        session.messages.append(ChatMessage(role: .assistant, text: "有可能。"))
-        #expect(MemoryHarvest.shouldHarvest(session))
-
-        // 抽过之后没有新内容,别再花一次钱。
-        session.memoryHarvestedMessageCount = session.messages.count
-        #expect(!MemoryHarvest.shouldHarvest(session))
-
-        session.messages.append(ChatMessage(role: .user, text: "那我该怎么调"))
-        #expect(MemoryHarvest.shouldHarvest(session))
+        ], dirty: [], known: [])
+        let outcome = await MemoryHarvester.runIfDue(
+            thread: thread,
+            memory: MemoryStore(directory: URL.temporaryDirectory.appending(path: UUID().uuidString)),
+            environment: Self.harvestEnvironment(),
+            extract: { _, _, _ in [] }
+        )
+        #expect(outcome == .notDue)
     }
 
-    @Test("the harvest watermark survives the session file, old files included")
-    func watermarkRoundTrips() throws {
-        var session = ChatSession()
-        session.messages = [ChatMessage(role: .user, text: "你好")]
-        session.memoryHarvestedMessageCount = 1
+    /// 水位线之后的才喂,从最旧的开始;抽完才推水位线,下一次不会再看一遍。
+    @Test("harvest feeds only what came after the watermark and then moves it")
+    func harvestMovesTheWatermark() async throws {
+        let thread = Self.freshThread()
+        let memory = MemoryStore(directory: URL.temporaryDirectory.appending(path: UUID().uuidString))
+        let first = [
+            ChatMessage(role: .user, text: "我最近上夜班"),
+            ChatMessage(role: .assistant, text: "明白。"),
+            ChatMessage(role: .user, text: "所以白天总犯困"),
+            ChatMessage(role: .assistant, text: "有可能。")
+        ]
+        let known = await thread.sync(first, dirty: [], known: [])
 
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        let seen = Seen()
+        let outcome = await MemoryHarvester.runIfDue(
+            thread: thread,
+            memory: memory,
+            environment: Self.harvestEnvironment(),
+            extract: { _, _, chunk in
+                seen.record(chunk.map(\.text))
+                return [.add(kind: .profile, text: "他上夜班", expiresInDays: nil)]
+            }
+        )
+        #expect(outcome == .done)
+        #expect(seen.batches.first == first.map(\.text))
+        #expect(await memory.items().map(\.text) == ["他上夜班"])
 
-        let restored = try decoder.decode(ChatSession.self, from: encoder.encode(session))
-        #expect(restored.memoryHarvestedMessageCount == 1)
+        // 抽过之后没有新内容,别再花一次钱。
+        let again = await MemoryHarvester.runIfDue(
+            thread: thread, memory: memory, environment: Self.harvestEnvironment(), extract: { _, _, _ in [] }
+        )
+        #expect(again == .notDue)
 
-        // 这个字段是后加的,旧会话文件里没有,得当成"一次都没抽过"。
-        let legacy = """
-        {"id":"\(UUID().uuidString)","messages":[],\
-        "createdAt":"2026-08-01T00:00:00Z","updatedAt":"2026-08-01T00:00:00Z"}
-        """
-        let old = try decoder.decode(ChatSession.self, from: Data(legacy.utf8))
-        #expect(old.memoryHarvestedMessageCount == 0)
+        // 新来的才喂。
+        let more = first + [
+            ChatMessage(role: .user, text: "下周三我要面试"),
+            ChatMessage(role: .assistant, text: "祝顺利。"),
+            ChatMessage(role: .user, text: "有点紧张")
+        ]
+        _ = await thread.sync(more, dirty: [], known: known)
+        _ = await MemoryHarvester.runIfDue(
+            thread: thread, memory: memory, environment: Self.harvestEnvironment(),
+            extract: { _, _, chunk in
+                seen.record(chunk.map(\.text))
+                return []
+            }
+        )
+        #expect(seen.batches.last == ["下周三我要面试", "祝顺利。", "有点紧张"])
+    }
+
+    /// 失败即放弃,水位线不动——下一个触发点再来,一个字都不会漏。
+    @Test("a failed harvest leaves the watermark where it was")
+    func failedHarvestKeepsWatermark() async {
+        let thread = Self.freshThread()
+        await thread.sync([
+            ChatMessage(role: .user, text: "一"),
+            ChatMessage(role: .user, text: "二")
+        ], dirty: [], known: [])
+        struct Boom: Error {}
+        let outcome = await MemoryHarvester.runIfDue(
+            thread: thread,
+            memory: MemoryStore(directory: URL.temporaryDirectory.appending(path: UUID().uuidString)),
+            environment: Self.harvestEnvironment(),
+            extract: { _, _, _ in throw Boom() }
+        )
+        #expect(outcome == .failed)
+        #expect(await thread.meta().harvestedUpToPos == nil)
+    }
+
+    @Test("memory switched off means no harvest")
+    func memoryOffMeansNoHarvest() async {
+        let outcome = await MemoryHarvester.runIfDue(
+            thread: Self.freshThread(),
+            memory: MemoryStore(directory: URL.temporaryDirectory.appending(path: UUID().uuidString)),
+            environment: PluginEnvironment(isEnabled: { $0 != PluginIds.memory }),
+            extract: { _, _, _ in [] }
+        )
+        #expect(outcome == .notDue)
+    }
+}
+
+private final class Seen: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _batches: [[String]] = []
+    var batches: [[String]] {
+        lock.lock()
+        defer { lock.unlock() }
+        return _batches
+    }
+    func record(_ batch: [String]) {
+        lock.lock()
+        _batches.append(batch)
+        lock.unlock()
     }
 }

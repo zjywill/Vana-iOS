@@ -23,7 +23,7 @@ enum SpokenBrief {
             // 触发点的识别逻辑和 check-in 通知、首屏建议共用一套。同一份数据在三个地方
             // 说出三种结论,用户只会觉得这 app 自己都没想清楚。
             let situation = await HealthSituation.detect(
-                interests: await TenantScope.ownerStores.sessions.interests()
+                interests: await TenantScope.ownerStores.thread.interests()
             )
             return todayLine(activity: today, situation: situation)
         } catch {

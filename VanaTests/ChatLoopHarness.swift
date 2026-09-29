@@ -159,7 +159,7 @@ struct LoopEngine: AgentEngine {
                         truncatedToolCallNotice: truncatedToolCallNotice,
                         hooks: hooks
                     )
-                    for try await event in loop.run(history: history.map(\.agentDTO)) {
+                    for try await event in loop.run(history: HistoryMarkers.apply(history)) {
                         continuation.yield(event)
                     }
                     continuation.finish()

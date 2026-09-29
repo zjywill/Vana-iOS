@@ -17,14 +17,14 @@ enum TestAssembly {
         recall: Bool = false,
         includesHealthData: Bool = true,
         goals: [String] = [],
-        topic: ChatTopic? = nil,
         isEnabled: @escaping @Sendable (String) -> Bool = EngineSettings.isPluginEnabled
     ) -> PluginEnvironment {
         PluginEnvironment(
             isEnabled: isEnabled,
             tenant: tenant,
+            // 有看不见的历史才挂召回。这里只管「挂没挂」,位置取一个在所有消息之后的数。
             recall: recall && stores != nil
-                ? SessionRecallTools.registry(store: stores!.sessions, currentSessionId: nil)
+                ? HistoryRecallTools.registry(store: stores!.thread, hiddenBefore: .greatestFiniteMagnitude)
                 : nil,
             memoryStore: stores?.memory,
             memory: memory,
@@ -35,7 +35,6 @@ enum TestAssembly {
             medicationStore: stores?.medications,
             medications: medications,
             focusMedication: focusMedication,
-            topic: topic,
             goals: goals
         )
     }
@@ -43,10 +42,9 @@ enum TestAssembly {
     static func engine(
         _ environment: PluginEnvironment = environment(),
         route: PluginRoute = .foreground,
-        isPrivate: Bool = false,
-        unlocked: Set<String> = [RecallPlugin.unlockTrigger]
+        isPrivate: Bool = false
     ) -> AIKitEngine {
-        AIKitEngine(environment: environment, route: route, isPrivate: isPrivate, unlocked: unlocked)
+        AIKitEngine(environment: environment, route: route, isPrivate: isPrivate)
     }
 
     static func toolNames(_ engine: AIKitEngine) -> [String] {

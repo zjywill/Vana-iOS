@@ -59,7 +59,7 @@ struct AssemblyContractTests {
         if flags.webSearch { names.append(WebSearchTools.searchToolName) }
         // 召回和记忆写入都归在记忆开关下面。
         if flags.memoryOn && flags.recall {
-            names += [SessionRecallTools.searchToolName, SessionRecallTools.readToolName]
+            names += [HistoryRecallTools.searchToolName, HistoryRecallTools.readToolName]
         }
         if flags.memoryOn && writes {
             names += [MemoryTools.rememberToolName, MemoryTools.forgetToolName, MemoryTools.reviseToolName]
@@ -103,7 +103,7 @@ struct AssemblyContractTests {
         ("安全底线", "人身安全优先于一切"),
         ("插话", "用户可能在你还在查资料"),
         ("人格", "语气偏向教练"),
-        ("召回", "默认不要去翻过往对话"),
+        ("召回", "这条对话更早的部分已经滑出了"),
         ("记忆的指令", "用户明确要求记住某件事"),
         ("上网搜", "遇到你的知识里没有"),
         ("反问", "他的描述里缺一个"),
@@ -163,7 +163,7 @@ struct AssemblyContractTests {
         let toggles: [(name: String, marker: String, disable: Disable)] = [
             ("background", "他的描述里缺一个", { $0.background = true }),
             ("webSearch", "遇到你的知识里没有", { $0.webSearch = false }),
-            ("recall", "默认不要去翻过往对话", { $0.recall = false }),
+            ("recall", "这条对话更早的部分已经滑出了", { $0.recall = false }),
             ("isPrivate", "用户明确要求记住某件事", { $0.isPrivate = true }),
             ("memoryOn", "用户明确要求记住某件事", { $0.memoryOn = false }),
             ("isPrivate", "用户说出他和某样药或补剂的关系时", { $0.isPrivate = true }),

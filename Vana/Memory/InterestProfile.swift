@@ -51,25 +51,35 @@ struct InterestProfile: Sendable, Equatable {
         return sentence
     }
 
-    /// 从会话索引里数一遍。传进来的要**最近的在前**。
+    /// 从线程档案里数一遍。**一天算一段**——一条永远的对话里没有「会话」了,而「这几天他在问
+    /// 什么」正是这份统计要的粒度。越近的一天权重越高。
     ///
-    /// 数的是索引不是会话全文:这里要的只是"哪几个工具出现过",为它把一年的对话解成对象图
-    /// 是纯浪费,而这一步在 Siri 那条路上跑在用户等着听话的时候。
-    static func build(from entries: [SessionIndexEntry]) -> InterestProfile {
-        var weights: [String: Double] = [:]
+    /// 只数**用户开口之后**那几轮的工具:Vana 主动说的(check-in、回头看的结论、任务结果)是
+    /// app 替他查的,后台替他查了三次睡眠不代表他关心睡眠——而这份统计反过来又会影响后台去查
+    /// 什么,不挡住就是自己喂自己。
+    static func build(from rows: [ThreadStore.ArchiveRow], calendar: Calendar = .current) -> InterestProfile {
+        var byDay: [Date: Set<String>] = [:]
+        for row in rows where !row.isUser && !row.isProactive && !row.toolNames.isEmpty {
+            guard let createdAt = row.createdAt else { continue }
+            // 一天里同一个工具查了五次也只算一次:那是一个问题被拆成了五步,
+            // 不是他关心这件事的程度是别人的五倍。
+            byDay[calendar.startOfDay(for: createdAt), default: []].formUnion(row.toolNames)
+        }
 
-        for (index, entry) in entries.enumerated() {
-            // app 替他问的那几段不算。后台替他查了三次睡眠不代表他关心睡眠——而这份统计
-            // 反过来又会影响后台去查什么,不挡住就是自己喂自己。
-            guard !entry.isDerived else { continue }
+        var weights: [String: Double] = [:]
+        for (index, day) in byDay.keys.sorted(by: >).enumerated() {
             let weight = pow(decayPerSession, Double(index))
-            // 一条会话里同一个工具查了五次也只算一次:那是一个问题被拆成了五步,
-            // 不是他关心这件事的程度是别人的五倍。`toolNames` 已经去过重了。
-            for tool in entry.toolNames {
+            for tool in byDay[day] ?? [] {
                 weights[tool, default: 0] += weight
             }
         }
-
         return InterestProfile(weights: weights)
+    }
+}
+
+extension ThreadStore {
+    /// 这条线程里他实际在问什么。首屏、check-in、Siri 三处排序用同一份。
+    func interests() -> InterestProfile {
+        InterestProfile.build(from: allArchiveRows())
     }
 }

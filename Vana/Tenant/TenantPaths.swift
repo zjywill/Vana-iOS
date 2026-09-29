@@ -1,6 +1,6 @@
 import Foundation
 
-/// 每个成员一个目录:`Documents/tenants/<uuid>/{sessions,attachments,memory.json,medications.json}`。
+/// 每个成员一个目录:`Documents/tenants/<uuid>/{thread,attachments,memory.json,medications.json}`。
 ///
 /// **目录隔离,不是给每条记录加 tenantId。** 判据是失败模式:加字段要求每一处查询都记得带上
 /// 过滤条件,而漏一处的后果是**串数据**——拿妹妹的化验单去解释爸爸的心率,静默、看着正常、
@@ -23,7 +23,11 @@ enum TenantPaths {
     ///
     /// 少了谁:Keychain 里那两把 key(那是机主的账单,不是成员的属性)、provider / model /
     /// persona / 思考开关(那是"这台设备怎么连模型")、位置授权(系统级的)。
+    ///
+    /// `sessions` 是旧的会话存储,新线程上线之后首次启动就清掉(`LegacySessions`);留在单子上是为了
+    /// 老布局迁移时它也跟着搬进成员目录,在那儿被清掉,而不是赖在 `Documents/` 下面。
     static let perTenantItems: [Item] = [
+        Item(name: "thread", hint: .isDirectory),
         Item(name: "sessions", hint: .isDirectory),
         Item(name: "attachments", hint: .isDirectory),
         Item(name: "memory.json", hint: .notDirectory),

@@ -177,7 +177,7 @@ struct HealthSituation: Sendable {
     /// 把几个短句接成一句话。**分隔号、句号和首字母大小写都跟着语言走**:中文那句是
     /// 「A；B。」,英文那句是「A; B.」,而英文还要把第一个字母大写——每一条 brief 都是
     /// 半句话(「no sleep recorded last night」),它们各自都可能排在最前面。
-    private static func sentence(_ parts: some Sequence<String>, separator: String) -> String {
+    static func sentence(_ parts: some Sequence<String>, separator: String = String(localized: "；")) -> String {
         let joined = parts.joined(separator: separator) + String(localized: "。")
         guard let first = joined.first else { return joined }
         return String(first).localizedUppercase + joined.dropFirst()

@@ -193,12 +193,12 @@ struct MemoryExtractor: Sendable {
     }
 }
 
-/// 什么样的会话值得花一次模型调用去抽记忆。
+/// 水位线之后攒了多少、这一次抽哪一块。
 ///
-/// 抽取跑在会话**结束**时,不是每一轮结束——每问一句多付一次调用,而绝大多数健康对话三五轮
-/// 就完了,那笔钱花在一句「他关心睡眠」上不值。
+/// 抽取不是每一轮结束就跑——每问一句多付一次调用,而那笔钱花在一句「他关心睡眠」上不值。
+/// 触发点在 `MemoryHarvester`。
 enum MemoryHarvest {
-    /// 一问一答的会话没什么可记的:那是查数据,不是说自己的事。
+    /// 水位线之后至少攒到这么多条用户消息才值得叫模型抽一次:一问一答没什么可记的。
     static let minimumUserMessages = 2
 
     static func userMessageCount(_ messages: [ChatMessage]) -> Int {
@@ -229,11 +229,4 @@ enum MemoryHarvest {
         return taken
     }
 
-    static func shouldHarvest(_ session: ChatSession) -> Bool {
-        // 说好不存就是不存。隐私会话里抽记忆,等于换个地方把它存下来了。
-        guard !session.isPrivate else { return false }
-        // 上次抽过之后没有新内容,就别再抽一遍。
-        guard session.messages.count > session.memoryHarvestedMessageCount else { return false }
-        return session.messages.count(where: { $0.role == .user }) >= minimumUserMessages
-    }
 }

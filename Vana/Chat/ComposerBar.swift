@@ -300,9 +300,7 @@ struct ComposerBar: View {
             // 一个容器里的玻璃互相认识:靠近时会融到一起,而不是各糊各的背景。
             GlassEffectContainer(spacing: 8) {
                 HStack(spacing: 8) {
-                    goalChip
-                    topicChip
-                    privacyChip
+                    focusChip
 
                     if !model.messages.isEmpty {
                         ForEach(Array(followUpChips.enumerated()), id: \.element) { index, question in
@@ -344,104 +342,17 @@ struct ComposerBar: View {
         )
     }
 
-    /// 正在哪条目标线里。
-    ///
-    /// 只显示,不可点:换目标是换一件事,该回列表里挑,不是在输入框上方顺手切掉。用户得
-    /// 一眼看见这句话会落进哪条线——尤其是刚从列表点进来、屏幕上还什么都没有的时候。
+    /// 「问问这个药」带进来的焦点。只管下一轮回复,回完就撤;点一下提前撤掉。
     @ViewBuilder
-    private var goalChip: some View {
-        if model.session.thread?.isGoal == true {
-            ChipLabel(
-                icon: "target",
-                title: model.session.threadTitle ?? SessionThread.goal(UUID()).title,
-                isOn: true
-            )
-            .accessibilityLabel("目标：\(model.session.threadTitle ?? String(localized: "长期目标"))")
-        }
-    }
-
-    /// 话题。会话还空着时是个可选的菜单,开聊之后只剩显示——中途换话题,前面的上下文就
-    /// 对不上了(`selectTopic` 本身也拦着)。
-    ///
-    /// 目标线不给话题:那条线本来就是横跨好几个话题的一件事,而话题一旦写进 system 段,
-    /// 聊到第三段就和正在问的事对不上了(同 `ChatViewModel.open`)。
-    @ViewBuilder
-    private var topicChip: some View {
-        // 话题(跑步、睡眠、心率与 HRV…)每一个都指着一个健康工具。家人那边它们一个都不挂,
-        // 选了只会让 system 段声明一个查不了的话题——同这一屏上的话题格子整个不出现。
-        if !model.hasHealthData {
-            EmptyView()
-        } else if model.session.thread?.isGoal == true {
-            EmptyView()
-        } else if model.messages.isEmpty {
-            Menu {
-                Button {
-                    model.selectTopic(nil)
-                } label: {
-                    Label("不限话题", systemImage: "circle.dashed")
-                }
-
-                Section("运动") {
-                    ForEach(ChatTopics.workouts) { topic in
-                        Button {
-                            model.selectTopic(topic)
-                        } label: {
-                            Label(topic.name, systemImage: topic.icon)
-                        }
-                    }
-                }
-
-                Section("指标") {
-                    ForEach(ChatTopics.metrics) { topic in
-                        Button {
-                            model.selectTopic(topic)
-                        } label: {
-                            Label(topic.name, systemImage: topic.icon)
-                        }
-                    }
-                }
-            } label: {
-                ChipLabel(
-                    icon: model.session.topic?.icon ?? "text.bubble",
-                    title: model.session.topic?.name ?? String(localized: "话题"),
-                    isOn: model.session.topic != nil
-                )
-            }
-            // Menu 会拿 tint 给 label 上色,盖过 chip 自己的前景色——不改的话没选话题
-            // 的 chip 也是一颗蓝的,和「已选中」长得一样。
-            .tint(model.session.topic == nil ? Color.secondary : Color.accentColor)
-            .accessibilityLabel("话题：\(model.session.topic?.name ?? String(localized: "不限"))")
-        } else if let topic = model.session.topic {
-            ChipLabel(icon: topic.icon, title: topic.name, isOn: true)
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel("话题：\(topic.name)")
-        }
-    }
-
-    /// 隐私对话开关。**只在会话还空着时出现**。
-    ///
-    /// 开聊之后这颗就整个消失,不留一条不可点的说明文字:那条文字长得和旁边的追问 chip
-    /// 一模一样,点不动只会让人以为坏了。开聊之后的状态归导航栏副标题
-    /// (`ChatView`),那是整条会话的属性,本来就该一直挂在那儿,而不是混在一排动作里。
-    ///
-    /// 开关本身也只在空会话时能动:说好不存就是不存,不给中途推翻的机会。
-    @ViewBuilder
-    private var privacyChip: some View {
-        if model.messages.isEmpty {
+    private var focusChip: some View {
+        if let focus = model.focusMedication {
             Button {
-                model.setPrivate(!model.session.isPrivate)
+                model.clearFocus()
             } label: {
-                // 用 eye.slash 而不是 lock:锁在这个语境里读作「加密了」,而这一句照样
-                // 要发给云端模型。图标也是承诺的一部分,不能替文案吹一个做不到的牛。
-                ChipLabel(
-                    icon: "eye.slash",
-                    title: String(localized: "隐私"),
-                    isOn: model.session.isPrivate
-                )
+                ChipLabel(icon: focus.status.icon, title: focus.name, isOn: true)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("隐私对话，不保存这条对话")
-            .accessibilityAddTraits(model.session.isPrivate ? [.isButton, .isSelected] : .isButton)
+            .accessibilityLabel("正在问：\(focus.name)。点一下取消")
         }
     }
 

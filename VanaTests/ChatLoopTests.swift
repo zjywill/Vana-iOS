@@ -36,8 +36,8 @@ struct ChatLoopTests {
             ]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: client, capabilities: stubRegistry([:])) },
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: client, capabilities: stubRegistry([:])) },
+            loadsPersistedThread: false
         )
 
         viewModel.send("上周走了多少")
@@ -72,8 +72,8 @@ struct ChatLoopTests {
             ]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: client, capabilities: stubRegistry([:])) },
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: client, capabilities: stubRegistry([:])) },
+            loadsPersistedThread: false
         )
 
         viewModel.send("上周走了多少")
@@ -98,10 +98,10 @@ struct ChatLoopTests {
             ]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in
+            engineFactory: {
                 LoopEngine(client: client, capabilities: stubRegistry(["daily_steps": "9,100 步"]))
             },
-            loadsPersistedSession: false
+            loadsPersistedThread: false
         )
 
         viewModel.send("上周走了多少")
@@ -129,8 +129,8 @@ struct ChatLoopTests {
             ]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: client, capabilities: stubRegistry([:])) },
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: client, capabilities: stubRegistry([:])) },
+            loadsPersistedThread: false
         )
 
         viewModel.send("上周走了多少")
@@ -161,7 +161,8 @@ struct ChatLoopTests {
         // 光秃秃的 HTTP 401 也要认出来:有的 provider body 里一个英文单词都没有。
         #expect(ChatViewModel.userFacingFailure(Failure(text: "Error code: 401")).contains("API key"))
         #expect(ChatViewModel.userFacingFailure(Failure(text: "insufficient quota")).contains("额度"))
-        #expect(ChatViewModel.userFacingFailure(Failure(text: "prompt is too long")).contains("新对话"))
+        // 一条永远的对话里没有「开新对话」可劝:说清是这一次要带的太多。
+        #expect(ChatViewModel.userFacingFailure(Failure(text: "prompt is too long")).contains("缩短"))
 
         // 分不出来的照旧给原文:一句编出来的通用错误比原文更没用。
         let odd = "something nobody has seen before"
@@ -187,10 +188,10 @@ struct ChatLoopTests {
             ]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in
+            engineFactory: {
                 LoopEngine(client: client, capabilities: stubRegistry(["sleep_summary": toolOutput]))
             },
-            loadsPersistedSession: false
+            loadsPersistedThread: false
         )
 
         viewModel.send("看看最近睡眠")
@@ -241,13 +242,13 @@ struct ChatLoopTests {
             ]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in
+            engineFactory: {
                 LoopEngine(
                     client: client,
                     capabilities: stubRegistry(["daily_steps": oldOutput, "workouts": newOutput])
                 )
             },
-            loadsPersistedSession: false
+            loadsPersistedThread: false
         )
 
         viewModel.send("上个月走了多少")
@@ -292,10 +293,10 @@ struct ChatLoopTests {
         )
         let clients = ModelSequence(clients: [bigModel, smallModel])
         let viewModel = ChatViewModel(
-            engineFactory: { _ in
+            engineFactory: {
                 LoopEngine(client: clients.next(), capabilities: stubRegistry(["daily_steps": output]))
             },
-            loadsPersistedSession: false
+            loadsPersistedThread: false
         )
 
         viewModel.send("先聊聊上周")
@@ -338,8 +339,8 @@ struct ChatLoopTests {
         let registry = stubRegistry(["daily_steps": detailedOutput])
         let clients = ModelSequence(clients: [bigModel, smallModel])
         let viewModel = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: clients.next(), capabilities: registry) },
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: clients.next(), capabilities: registry) },
+            loadsPersistedThread: false
         )
 
         viewModel.send("先聊聊上周")
@@ -412,10 +413,10 @@ extension ChatLoopTests {
             return CapabilityExecutionResult(output: .init(kind: .table, text: output(turn)))
         }
         let viewModel = ChatViewModel(
-            engineFactory: { _ in
+            engineFactory: {
                 LoopEngine(client: client, capabilities: registry, summarizer: summarizer)
             },
-            loadsPersistedSession: false
+            loadsPersistedThread: false
         )
 
         for turn in 1...4 {

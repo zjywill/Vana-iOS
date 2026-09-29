@@ -182,3 +182,29 @@ struct WindowPolicyTests {
         #expect(WindowPolicy.budget(forContextWindow: 60_000) == 21_000)
     }
 }
+
+@Suite("Token estimate")
+struct TokenEstimateTests {
+    @Test func chineseCountsOneTokenPerCharacter() {
+        #expect(TokenEstimate.text("你好世界") == 4)
+    }
+
+    @Test func asciiCountsRoughlyFourCharactersPerToken() {
+        #expect(TokenEstimate.text("abcd") == 1)
+        #expect(TokenEstimate.text("abcde") == 2)
+        #expect(TokenEstimate.text("") == 0)
+    }
+
+    @Test func mixedTextAddsBoth() {
+        #expect(TokenEstimate.text("睡了 7 小时") == 4 + 1)
+    }
+
+    @Test func definitionsCountTheSchemaThatIsSent() {
+        let definition = CapabilityDefinition(
+            name: "remember",
+            description: "记住一条",
+            inputSchema: .object(["type": "object"])
+        )
+        #expect(TokenEstimate.definition(definition) > TokenEstimate.text("remember") + TokenEstimate.text("记住一条"))
+    }
+}

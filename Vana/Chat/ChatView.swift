@@ -4,12 +4,16 @@ import AgentRuntime
 struct ChatView: View {
     @Binding var openedCheckIn: CheckInLaunch?
 
-    @State private var model = ChatViewModel()
+    @State private var model: ChatViewModel
+    /// 不留痕那一层怎么关。主对话是 nil。
+    private let onClose: (() -> Void)?
     /// 用药表以 sheet 呈现:详情页那颗「问问 Vana」要回到聊天界面,而从 push 出来的两层里
     /// 退回根视图没有干净的写法。它本来也是一次离开对话的 detour,模态是对的形状。
     @State private var isShowingMedications = false
-    /// 会话列表是从左边推进来的抽屉(`SessionDrawer`),不是 push 出去的一页。
-    @State private var isShowingSessions = false
+    /// 「⋯」菜单里 push 出去的那几页。
+    @State private var menuRoute: MenuRoute?
+    /// 不留痕的那一层:内存里聊,关掉就没。盖在整个主对话上面,不进线程。
+    @State private var isShowingEphemeral = false
     /// 首屏那张卡点开之后的那一页。和用药表一样走 sheet:它是一次离开对话的 detour,
     /// 看完就该回到刚才那一屏。
     @State private var isShowingStatus = false
@@ -36,8 +40,20 @@ struct ChatView: View {
     /// 波形一起长高。
     @State private var composerHeight: CGFloat = 0
 
-    init(openedCheckIn: Binding<CheckInLaunch?> = .constant(nil)) {
+    init(
+        openedCheckIn: Binding<CheckInLaunch?> = .constant(nil),
+        isEphemeral: Bool = false,
+        onClose: (() -> Void)? = nil
+    ) {
         _openedCheckIn = openedCheckIn
+        _model = State(initialValue: ChatViewModel(isEphemeral: isEphemeral))
+        self.onClose = onClose
+    }
+
+    private enum MenuRoute: Hashable {
+        case memory
+        case plugins
+        case settings
     }
 
     var body: some View {
@@ -53,25 +69,20 @@ struct ChatView: View {
                         if model.isLoadingConversation {
                             ProgressView("正在载入对话")
                                 .padding(.top, 40)
-                        } else if model.messages.isEmpty {
-                            // 锚点挂在整个首屏上,不是只挂欢迎卡:开新会话时归位归到
-                            // 欢迎卡顶部的话,排在它上面的那段隐私说明正好被顶出屏幕。
+                        } else if model.isThreadEmpty {
+                            // 锚点挂在整个首屏上,不是只挂欢迎卡:归位归到欢迎卡顶部的话,
+                            // 排在它上面的那段不留痕说明正好被顶出屏幕。
                             VStack(spacing: 16) {
-                                // 排在欢迎卡**前面**。挂在后面的话它落在一屏话题加一屏
-                                // 建议之后,人点完开关根本看不到——而这段话正是这个开关的
-                                // 全部内容。
-                                if model.session.isPrivate {
+                                if model.isEphemeral {
                                     Self.privacyNote
                                 }
 
                                 // 排在欢迎卡**前面**:欢迎卡的开头是这个 app 是什么,
-                                // 而回头客要的是"我怎么样"。第一次打开的人少读一句没损失,
-                                // 之后每一次打开都是这句先被读到。
+                                // 而回头客要的是"我怎么样"。
                                 if let summary = model.quickSummary {
                                     QuickSummaryCard(
                                         text: summary,
-                                        // 家人那边没有处境可展开:那份数据属于机主,
-                                        // `HealthSituation` 整个不跑。
+                                        // 家人那边没有处境可展开:那份数据属于机主。
                                         onOpen: model.situation == nil
                                             ? nil
                                             : { isShowingStatus = true }
@@ -80,31 +91,42 @@ struct ChatView: View {
 
                                 WelcomeCard(
                                     setupGuidance: model.engineGuidance,
+                                    blurb: model.welcomeBody,
                                     questions: model.suggestions,
                                     tenant: model.currentTenant,
-                                    selectedTopic: model.session.topic,
-                                    onSelectTopic: model.selectTopic,
+                                    showsHealthAttribution: model.hasHealthData,
                                     onSelectQuestion: model.send,
                                     onOpenSetup: { isShowingCloudSetup = true }
                                 )
                             }
                             .padding(.top, 24)
                             .id(Self.welcomeAnchor)
-                            // 挂在这儿而不是整个视图:只有真的要显示问题时才去生成,
-                            // 挂 onAppear 会在会话还没载入完(此时 messages 是空的)就先跑一次。
-                            .task { model.refreshSuggestionsIfNeeded() }
                         } else {
-                            ForEach(model.messages) { message in
+                            // 滑到顶就往前翻一页。放一行真的看得见的东西而不是只挂 onAppear:
+                            // 翻页要读盘,那几十毫秒里他得知道上面还有。
+                            if model.hasOlderHistory {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                                    .onAppear { model.loadOlder() }
+                            }
+
+                            ForEach(Array(model.messages.enumerated()), id: \.element.id) { index, message in
+                                // 单线程里消息跨天:按天出一条分隔,不然「昨天说的」和「刚才说的」
+                                // 在屏幕上长得一样。
+                                if let label = dayLabel(at: index) {
+                                    DaySeparator(label: label)
+                                }
+
                                 MessageBubble(
                                     // 正在写的那条不一定是最后一条了:用户能在回复期间接着
                                     // 发消息,那几条排在它后面。
                                     message: message,
                                     isStreaming: message.id == model.replyingMessageID,
                                     canRetry: model.canRetry(message.id),
-                                    canBranch: !model.isReplying,
+                                    canDelete: !model.isReplying && !model.isEphemeral,
                                     // `ask_user` 那张卡只有排在最后、而且没有回复在跑的时候
-                                    // 才点得动。往回翻到三轮之前那张再点一下,发出去的是一句
-                                    // 接不上任何东西的话——而模型此刻正在说的是别的事。
+                                    // 才点得动。
                                     canAnswerAsk: message.id == model.messages.last?.id
                                         && !model.isReplying,
                                     // 只有报错的那几条要问一次,它读钥匙串。
@@ -113,7 +135,11 @@ struct ChatView: View {
                                         : model.recovery(for: message.id),
                                     onRetry: { model.retry(message.id) },
                                     onOpenSetup: { isShowingCloudSetup = true },
-                                    onBranch: { model.branch(from: message.id) },
+                                    onDelete: {
+                                        message.role == .assistant && !message.isProactive
+                                            ? model.deleteExchange(message.id)
+                                            : model.deleteMessage(message.id)
+                                    },
                                     onWithdraw: { model.withdrawQueued(message.id) },
                                     onAnswerAsk: { callID, answer in
                                         model.answerAsk(
@@ -123,17 +149,14 @@ struct ChatView: View {
                                         )
                                     }
                                 )
-                                    // 手写判等,见 `MessageBubble.==`。气泡带着闭包,
-                                    // SwiftUI 自己判不了,于是流式期间整列气泡每帧全部
-                                    // 重跑一遍 body——包括每条都重新解析一次 markdown。
+                                    // 手写判等,见 `MessageBubble.==`。
                                     .equatable()
                                     .id(message.id)
 
-                                // 一条会话里只出现一次,挂在**第一段回答**下面。每条都挂的话
-                                // 它三句话之后就变成背景噪音,而这句话要在他第一次读到分析
-                                // 结论的那一刻被读到。之后想再看,「关于」页里一直在。
+                                // 挂在手里这一段的**第一段回答**下面。每条都挂的话它三句话之后
+                                // 就变成背景噪音;之后想再看,「关于」页里一直在。
                                 if message.id == firstAssistantMessageID {
-                                    Self.generatedNotice
+                                    Self.generatedNotice(healthRelated: isHealthRelated(at: index))
                                 }
 
                                 if let folded = message.foldedSpan {
@@ -183,9 +206,10 @@ struct ChatView: View {
                     // 朝一个已经过期的目标去,那就是抖动。
                     scroll(with: proxy, animated: new.messageCount != old.messageCount)
                 }
-                // 换会话/开新会话时消息可能一样(两条空会话),得跟着 id 再归位一次。
-                .onChange(of: model.session.id) {
-                    scroll(with: proxy, animated: true)
+                // 往前翻了一页:新塞进顶部的内容会把他正看的那条顶下去,滚回刚才那条的顶上。
+                .onChange(of: model.olderPageToken) {
+                    guard let anchor = model.olderPageAnchor else { return }
+                    proxy.scrollTo(anchor, anchor: .top)
                 }
                 // 他往回翻了多远。**只问一个布尔**,不是把偏移量搬进 `@State`:
                 // 手指一路滑下来,后者是每帧一次界面刷新,而这一屏要重画的是整列非 Lazy
@@ -237,7 +261,7 @@ struct ChatView: View {
                 .animation(.smooth(duration: 0.2), value: isScrolledUp)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Vana")
+            .navigationTitle(model.isEphemeral ? "不留痕聊天" : "Vana")
             // 隐私是整条会话的属性,不是刚才点过的一个动作,所以它得一直在视线里。放在
             // 标题下面而不是 chip 排里:那排会随着开聊消失,而这条承诺要一直有效。
             .navigationSubtitle(model.navigationSubtitle)
@@ -295,15 +319,19 @@ struct ChatView: View {
                 Text("你的问题，连同它需要用到的内容（这条对话的往来、从 Apple「健康」读到的聚合数值、长期记忆和用药表里的条目），会发送给第三方模型服务 \(pendingConsentProviderName) 来生成回答，由对方按它自己的隐私政策处理。这台设备上发给这家服务的请求只问这一次；换用其他服务时会再次询问。")
             }
             .navigationDestination(isPresented: $isShowingCloudSetup) {
-                SettingsView(
-                    canClearConversation: !model.messages.isEmpty && !model.isReplying,
-                    onClearConversation: model.clearConversation
-                )
+                SettingsView(chat: model.isEphemeral ? nil : model)
             }
-            // 多数会话是聊完直接切走的,不在这儿抽记忆,那段对话可能几天都轮不到抽一次。
+            .navigationDestination(item: $menuRoute) { route in
+                switch route {
+                case .memory: MemoryView()
+                case .plugins: PluginsView(openMedications: { isShowingMedications = true })
+                case .settings: SettingsView(chat: model)
+                }
+            }
+            // 切到后台:趁这时候把水位线之后攒下的抽一遍记忆。
             .onChange(of: scenePhase) { _, phase in
                 guard phase == .background else { return }
-                model.harvestCurrentSessionMemory()
+                model.harvestMemoryInBackground()
             }
             .onChange(of: openedCheckIn) { _, checkIn in
                 guard let checkIn else { return }
@@ -311,14 +339,20 @@ struct ChatView: View {
                 openedCheckIn = nil
             }
             .task {
+                // 本地那句处境和首屏建议:零成本,首屏和「今天」共用。
+                model.refreshSuggestionsIfNeeded()
+                guard !model.isEphemeral else { return }
                 isShowingDataUseNotice = !hasAcceptedDataUseNotice
                 await requestHealthAuthorization()
             }
+            .onChange(of: model.isLoadingConversation) { _, loading in
+                guard !loading else { return }
+                model.refreshSuggestionsIfNeeded()
+            }
         }
-        // 盖在整个 `NavigationStack` 上,导航栏也要被它压住:抽屉推出来的时候,底下那颗
-        // 「会话列表」按钮不该还能再按一次。
-        .overlay {
-            SessionDrawer(isPresented: $isShowingSessions, model: model)
+        // 不留痕那一层盖在整个主对话上。它自己一个 view model,关掉就连同内存里那几条一起没了。
+        .fullScreenCover(isPresented: $isShowingEphemeral) {
+            ChatView(isEphemeral: true, onClose: { isShowingEphemeral = false })
         }
         // 第一次打开时先说清楚数据会去哪儿。它排在 HealthKit 授权面板**前面**——反过来的话,
         // 用户先被问「允许 Vana 读取健康数据吗」,再被告知这些数据会发到哪儿去,而告知的意义
@@ -356,7 +390,7 @@ struct ChatView: View {
     /// 底下那一屏都还在。所以输入框仍然是第一响应者,键盘不会自己走——push 出去的设置页
     /// 不在这份名单里,那一下输入框真的离开了层级,系统自己会收。
     private var isCoveringConversation: Bool {
-        isShowingSessions || isShowingMedications || isShowingStatus || isShowingDataUseNotice
+        isShowingMedications || isShowingStatus || isShowingDataUseNotice || isShowingEphemeral
     }
 
     /// 家人成员这儿不请求授权。这台设备的健康数据不属于他,请他去授权一份读不到的数据是一句
@@ -373,41 +407,61 @@ struct ChatView: View {
     /// 拆出来不是为了整洁:连着 toolbar 一起写在 `body` 里,类型检查器就开始超时。
     @ToolbarContentBuilder
     private var toolbarItems: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                isShowingSessions = true
-            } label: {
-                Image(systemName: "list.bullet")
+        if let onClose {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("关闭", action: onClose)
             }
-            .accessibilityLabel("会话列表")
+        } else {
+            // 一颗「⋯」收住所有「离开对话去看别的东西」:记忆、插件、不留痕、设置。没有会话列表
+            // 了,也就没有左上角那颗抽屉按钮;用药表这类领域入口收进插件页,核心界面不认识它们。
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    if EngineSettings.isPluginEnabled(PluginIds.health),
+                       EngineSettings.isPluginEnabled(PluginIds.healthMedications) {
+                        Button {
+                            isShowingMedications = true
+                        } label: {
+                            Label("用药与补剂", systemImage: "pills")
+                        }
+                    }
+                    Button {
+                        menuRoute = .memory
+                    } label: {
+                        Label("Vana 记住的事", systemImage: "brain")
+                    }
+                    Button {
+                        menuRoute = .plugins
+                    } label: {
+                        Label("插件", systemImage: "puzzlepiece.extension")
+                    }
+                    Button {
+                        isShowingEphemeral = true
+                    } label: {
+                        Label("不留痕聊天", systemImage: "eye.slash")
+                    }
+                    Divider()
+                    Button {
+                        menuRoute = .settings
+                    } label: {
+                        Label("设置", systemImage: "gearshape")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityLabel("更多")
+            }
         }
+    }
 
-        // 和会话列表并排:这两件都是「离开当前对话去看别的东西」,而设置在另一边是另一类。
-        // 用药表不放进设置页——记忆一年改两次可以藏,这张表用户会反复打开看「我上次试的那个
-        // 叫啥来着」。也不两处都放:两个入口做同一件事已经踩过一次。
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                isShowingMedications = true
-            } label: {
-                Image(systemName: "pills")
-            }
-            .accessibilityLabel("用药与补剂")
+    /// 这一条前面要不要出一条日期分隔:第一条,或者和上一条不在同一天。
+    private func dayLabel(at index: Int) -> String? {
+        let messages = model.messages
+        guard let date = messages[index].createdAt else { return nil }
+        if index > 0, let previous = messages[index - 1].createdAt,
+           Calendar.current.isDate(previous, inSameDayAs: date) {
+            return nil
         }
-
-        // 「新对话 / 隐私对话」在会话列表那颗「新建」里,不在这儿也不在输入区:输入区那颗
-        // `+` 现在管「给这句话加张照片」,而开一条新的和切换会话本来就是同一类事。
-        // toolbar 也不另开一颗——空会话时它是 disabled 的,首屏会永远挂着一个灰按钮。
-        ToolbarItem(placement: .topBarTrailing) {
-            NavigationLink {
-                SettingsView(
-                    canClearConversation: !model.messages.isEmpty && !model.isReplying,
-                    onClearConversation: model.clearConversation
-                )
-            } label: {
-                Image(systemName: "gearshape")
-            }
-            .accessibilityLabel("设置")
-        }
+        return DaySeparator.label(for: date)
     }
 
     private static let welcomeAnchor = "welcome"
@@ -465,15 +519,24 @@ struct ChatView: View {
     ///
     /// 首屏那张欢迎卡底下也有一句免责,但它在发出第一条消息之后就再也不出现了——而用户真正
     /// 需要这句话的时刻,恰恰是他正在读一段关于自己身体的结论的时候。
-    private static var generatedNotice: some View {
+    private static func generatedNotice(healthRelated: Bool) -> some View {
         Label(
-            "以上由 AI 生成，可能有误。不构成诊断或用药建议，关键数值请对照原始记录核对。",
+            healthRelated
+                ? "以上由 AI 生成，可能有误。不构成诊断或用药建议，关键数值请对照原始记录核对。"
+                : "以上由 AI 生成，可能有误，重要信息请自行核对。",
             systemImage: "sparkles"
         )
         .font(.footnote)
         .foregroundStyle(.secondary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
+    }
+
+    /// 这一段回答沾不沾健康(`HealthTopics`):调过健康工具,或者他那句话/回答里出现了健康词。
+    private func isHealthRelated(at index: Int) -> Bool {
+        let message = model.messages[index]
+        let question = model.messages[..<index].last { $0.role == .user }?.text
+        return HealthTopics.applies(toolNames: message.toolCalls.map(\.name), texts: [question, message.text])
     }
 
     /// 第一条模型真的写了字的助手消息(见 `ChatMessage.isModelWritten`)。
@@ -490,12 +553,12 @@ struct ChatView: View {
     @ViewBuilder
     private static var privacyNote: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Label("这条对话不会被保存", systemImage: "eye.slash")
+            Label("这里说的话不会被保存", systemImage: "eye.slash")
                 .font(.subheadline.weight(.medium))
-            Text("不进会话列表，不写进记忆，也不影响之后给你的建议。关掉就没了。")
+            Text("不进你和 Vana 的那条对话，不写进记忆，也不影响之后给你的建议。关掉就没了。")
             // 和上面两条同一个灰度。把这句压成最淡的一行,等于承认它是不想让人看见的
             // 小字——那正好毁掉了写它的意义。
-            Text("能问的照样能问——健康数据还是照常查。只是问题本身仍然要发给你配置的模型才能回答，这一步隐私对话挡不住。")
+            Text("能问的照样能问，Vana 也照样认得你。只是问题本身仍然要发给你配置的模型才能回答，这一步不留痕挡不住。")
         }
         .font(.footnote)
         .foregroundStyle(.secondary)
@@ -693,7 +756,8 @@ private struct MessageBubble: View, Equatable {
     /// 这条正在生成:生成期间不给操作按钮,retry 一条还没写完的回复没有意义。
     let isStreaming: Bool
     let canRetry: Bool
-    let canBranch: Bool
+    /// 能不能删这一条(回答连同它那句提问)。回复在跑的时候不行,不留痕那一层里也没有意义。
+    let canDelete: Bool
     /// 这条里的 `ask_user` 卡现在还答得了吗(见 `AskUserCard.isLive`)。
     let canAnswerAsk: Bool
     /// 这条报错底下该给他哪颗按钮:重试,还是去设置。`nil` 是「这条不是报错」。
@@ -703,7 +767,7 @@ private struct MessageBubble: View, Equatable {
     let recovery: ErrorRecovery?
     let onRetry: () -> Void
     let onOpenSetup: () -> Void
-    let onBranch: () -> Void
+    let onDelete: () -> Void
     let onWithdraw: () -> Void
     let onAnswerAsk: (String, AskUserAnswer) -> Void
 
@@ -719,7 +783,7 @@ private struct MessageBubble: View, Equatable {
         lhs.isStreaming == rhs.isStreaming
             && lhs.canRetry == rhs.canRetry
             && lhs.recovery == rhs.recovery
-            && lhs.canBranch == rhs.canBranch
+            && lhs.canDelete == rhs.canDelete
             && lhs.canAnswerAsk == rhs.canAnswerAsk
             && lhs.message.rendersIdentically(to: rhs.message)
     }
@@ -790,6 +854,11 @@ private struct MessageBubble: View, Equatable {
                 Button(role: .destructive, action: onWithdraw) {
                     Label("收回", systemImage: "arrow.uturn.backward")
                 }
+            } else if canDelete {
+                // 删的是本机这一份。清理对话只剩这一种细粒度的办法——没有「删这条会话」了。
+                Button(role: .destructive, action: onDelete) {
+                    Label("删除这条", systemImage: "trash")
+                }
             }
         }
     }
@@ -797,6 +866,14 @@ private struct MessageBubble: View, Equatable {
     private var assistantMessage: some View {
         // 6 而不是 8:chip 自己带了撑到 44 的点击区,间距再按 8 算,几颗 chip 摞起来会散。
         VStack(alignment: .leading, spacing: 6) {
+            // Vana 主动说的(check-in、到点的提醒、回头看的结论、任务结果)要认得出来:它不是
+            // 对上一句的回答,看错了会以为模型答非所问。
+            if message.isProactive {
+                Label(message.origin.label, systemImage: message.origin.icon)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             // 按发生顺序摊开(见 `ChatMessage.turnSegments`):想一段、说一段、查一次,再来一轮。
             // 全部 chip 堆在正文上面的老排法有三处代价——每插一颗 chip 底下写好的正文整个
             // 往下挪一次(那阵跳动)、「现在查这三项：」被排到它引出的那三次查询下面,以及
@@ -929,7 +1006,7 @@ private struct MessageBubble: View, Equatable {
     }
 
     /// 复制放在外面——它是最常用的那个,不值得多点一下。
-    /// 重新回答、分支和这条的时间收进菜单:都是低频操作,平时不该占着屏幕。
+    /// 重新回答、删除和这条的时间收进菜单:都是低频操作,平时不该占着屏幕。
     private var actions: some View {
         // 0 而不是 2:两颗都自带 44 的点击区(比画出来的圆宽 4),再加间距,两颗圆之间就散开了。
         HStack(spacing: 0) {
@@ -954,15 +1031,17 @@ private struct MessageBubble: View, Equatable {
 
     @ViewBuilder
     private var menuItems: some View {
-        Button(action: onRetry) {
-            Label("重新回答", systemImage: "arrow.clockwise")
+        if !message.isProactive {
+            Button(action: onRetry) {
+                Label("重新回答", systemImage: "arrow.clockwise")
+            }
+            .disabled(!canRetry)
         }
-        .disabled(!canRetry)
 
-        Button(action: onBranch) {
-            Label("在新对话里分支", systemImage: "arrow.triangle.branch")
+        Button(role: .destructive, action: onDelete) {
+            Label(message.isProactive ? "删除这条" : "删除这一问一答", systemImage: "trash")
         }
-        .disabled(!canBranch)
+        .disabled(!canDelete)
     }
 
     /// 用户那一侧的气泡。**原样显示,不解析**:他打的字不是 markdown,把「1*2*3」当成斜体
@@ -1033,51 +1112,29 @@ private struct TypingIndicator: View {
     }
 }
 
-/// 新会话选话题。选中的话题会写进系统提示,决定模型先看哪些数据。
-///
-/// 再点一次取消选择——选错了不该只能重开一条会话。
-private struct TopicPicker: View {
-    let selected: ChatTopic?
-    let onSelect: (ChatTopic?) -> Void
+/// 按天的分隔线。单线程里消息跨天,「昨天说的」和「刚才说的」在屏幕上要分得开。
+private struct DaySeparator: View {
+    let label: String
 
-    private let columns = [GridItem(.adaptive(minimum: 96), spacing: 8)]
+    static func label(for date: Date, now: Date = Date(), calendar: Calendar = .current) -> String {
+        if calendar.isDateInToday(date) { return String(localized: "今天") }
+        if calendar.isDateInYesterday(date) { return String(localized: "昨天") }
+        let sameYear = calendar.component(.year, from: date) == calendar.component(.year, from: now)
+        return date.formatted(sameYear
+            ? .dateTime.month().day().weekday(.abbreviated)
+            : .dateTime.year().month().day())
+    }
 
     var body: some View {
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-            ForEach(ChatTopics.all) { topic in
-                let isSelected = topic.id == selected?.id
-
-                Button {
-                    onSelect(isSelected ? nil : topic)
-                } label: {
-                    HStack(spacing: 5) {
-                        Image(systemName: topic.icon)
-                            .font(.caption)
-                        Text(topic.name)
-                            .font(.subheadline)
-                            .lineLimit(1)
-                            // 一格宽 104,「高强度间歇」这种五个字的名字缩到 0.75 才进得去。
-                            // 缩字比截断好:截成「高强度…」等于没说是哪个话题。
-                            .minimumScaleFactor(0.75)
-                    }
-                    .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
-                    .padding(.horizontal, 12)
-                    // 胶囊,和输入区上面那颗话题 chip 同一个样子:同一件事在一屏里出现
-                    // 两种长相,用户会以为它们不是一回事。
-                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                    .background(
-                        isSelected
-                            ? AnyShapeStyle(Color.accentColor)
-                            : AnyShapeStyle(.fill.tertiary),
-                        in: .capsule
-                    )
-                    .contentShape(.capsule)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("话题：\(topic.name)")
-                .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-            }
-        }
+        Text(label)
+            .font(.caption2.weight(.medium))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 3)
+            .background(.fill.quaternary, in: .capsule)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
+            .accessibilityAddTraits(.isHeader)
     }
 }
 
@@ -1148,24 +1205,23 @@ private struct QuickSummaryCard: View {
     }
 }
 
+/// 全新安装、线程还空着时的那张卡。**插件拼出来的**:健康关掉就不提健康,家人那边整张卡
+/// 换一套说法(`TenantOpening`)。
 private struct WelcomeCard: View {
     let setupGuidance: String?
+    let blurb: String
     let questions: [SuggestedQuestion]
-    /// 这一屏是谁的。家人那边整张卡换一套说法,**话题格子整个不出现**。
+    /// 这一屏是谁的。家人那边整张卡换一套说法。
     let tenant: Tenant
-    let selectedTopic: ChatTopic?
-    let onSelectTopic: (ChatTopic?) -> Void
+    /// 机主、健康开着:第一屏上要说得出数据是从 Apple「健康」来的(Guideline 2.5.1)。
+    let showsHealthAttribution: Bool
     let onSelectQuestion: (String) -> Void
     let onOpenSetup: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // 没配 key 时这是这一屏最要紧的一句话,所以它排在最前面、能点、点了直接到设置页。
-            //
-            // 原来它是整张卡**最底下**那行灰色小字,排在免责声明后面:屏幕上最不可能被读到
-            // 的位置,而它说的偏偏是「这个 app 现在一个问题都答不了」。2026-08-16 那次审核
-            // 员就是从它旁边走过去、直接在输入框里打字、然后收到一个 401 的
-            // (Guideline 2.1(a));真实用户第一次打开时走的是同一条路。
+            // 2026-08-16 那次审核员就是从它旁边走过去、直接在输入框里打字、然后收到一个 401 的。
             if let setupGuidance {
                 Button(action: onOpenSetup) {
                     HStack(spacing: 12) {
@@ -1200,46 +1256,30 @@ private struct WelcomeCard: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Image(systemName: tenant.isOwner ? "heart.text.square.fill" : "doc.text.viewfinder")
+                Image(systemName: tenant.isOwner ? "sparkles" : "doc.text.viewfinder")
                     .font(.system(size: 34, weight: .semibold))
-                    .foregroundStyle(.pink)
+                    .foregroundStyle(Color.accentColor)
                     .accessibilityHidden(true)
 
-                Text(tenant.isOwner ? "从你的健康数据开始" : "从\(tenant.displayName)的化验单和用药开始")
+                Text(tenant.isOwner ? "你好，我是 Vana" : "从\(tenant.displayName)的化验单和用药开始")
                     .font(.title2.weight(.semibold))
 
-                // 这两段是同一个位置上的两种承诺,写错一个字就是许一个做不到的诺。家人这边
-                // 不能说"直接问步数睡眠心率"——那几个工具根本没挂出去,他问了只会拿到一句
-                // 「我读不到」,而这是他见到的第一屏。
+                // 家人这边不能说"直接问步数睡眠心率"——那几个工具根本没挂出去。
                 Text(
                     tenant.isOwner
-                        ? "你可以直接询问步数、睡眠、心率、锻炼、体重体脂，以及血压、血氧这类有记录才有的数据。"
+                        ? blurb
                         : "拍一张\(tenant.displayName)的化验单、报告或药盒，Vana 在本机识别成文字再帮你看。\(tenant.displayName)的步数、睡眠、心率这些读不到——Apple 健康数据只有本人有。"
                 )
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-                // 数据是从哪儿来的,要在第一屏上说得出口(Guideline 2.5.1)。图标加
-                // 「你的健康数据」这种说法说不出这一件事——见 `HealthKitAttribution`。
-                // 家人那边不出:那条路上一个健康工具都没挂,写上就是许一个给不了的东西。
-                if tenant.isOwner {
+                if showsHealthAttribution {
                     Label(HealthKitAttribution.welcome, systemImage: "heart.text.square.fill")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityElement(children: .combine)
-                }
-            }
-
-            // 话题格子(跑步、睡眠、心率与 HRV…)每一颗都指着一个健康工具。家人这边它们
-            // 一个都点不出结果,摆在那儿只是十几个坏掉的按钮。
-            if tenant.isOwner {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("想聊什么")
-                        .font(.headline)
-
-                    TopicPicker(selected: selectedTopic, onSelect: onSelectTopic)
                 }
             }
 
@@ -1280,15 +1320,8 @@ private struct WelcomeCard: View {
                     .accessibilityLabel("提问：\(question.text)")
                 }
             }
-
-            Label("健康分析仅供参考，不能替代专业医疗建议。", systemImage: "lock.shield")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(20)
-        // 圆角分三档:大容器 20、卡片里的行 12、气泡 18,chip 和控件一律胶囊。
-        // 之前从卡片到行到格子全是 8,一张六百多点高的卡片配这个圆角在 iOS 26 里太方了。
         .background(
             Color(.secondarySystemGroupedBackground),
             in: RoundedRectangle(cornerRadius: 20, style: .continuous)

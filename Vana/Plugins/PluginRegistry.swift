@@ -12,12 +12,11 @@ enum PluginRegistry {
             .flatMap { $0.agentPlugins(env, route: route) }
     }
 
-    static func context(for env: PluginEnvironment, route: PluginRoute, isPrivate: Bool, unlocked: Set<String> = []) -> PluginContext {
+    static func context(for env: PluginEnvironment, route: PluginRoute, isPrivate: Bool) -> PluginContext {
         PluginContext(
             isPrivate: isPrivate,
             isBackground: route == .background,
-            isDeviceOwner: env.tenant.isOwner,
-            unlockedTriggers: unlocked
+            isDeviceOwner: env.tenant.isOwner
         )
     }
 

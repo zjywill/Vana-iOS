@@ -79,7 +79,7 @@ enum HealthInstructions {
             if hasHealthData { line += "他的健康数据里查得到的（睡了多久、走了多少步、心率多少）一律不要问他，去查。" }
             lines.append(line)
         }
-        if mounted.contains(SessionRecallTools.searchToolName), hasHealthData {
+        if mounted.contains(HistoryRecallTools.searchToolName), hasHealthData {
             lines.append("回顾：他问的是眼前的健康数据或趋势就直接调健康工具，不要先翻一遍历史——那里只有过期的数字。")
         }
         if mounted.contains(MemoryTools.rememberToolName) {

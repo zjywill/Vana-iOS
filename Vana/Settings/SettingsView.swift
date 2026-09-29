@@ -2,8 +2,9 @@ import SwiftUI
 import UIKit
 
 struct SettingsView: View {
-    let canClearConversation: Bool
-    let onClearConversation: () -> Void
+    /// 聊天那一屏的 view model。「对话历史」那一页要用它清理——正在回复时不许清,
+    /// 清完手里那一段也要跟着换。
+    let chat: ChatViewModel?
 
     @AppStorage(EngineSettings.providerKey) private var providerId = EngineSettings.defaultProvider
     @AppStorage(EngineSettings.modelKey) private var model = EngineSettings.defaultModel
@@ -27,7 +28,6 @@ struct SettingsView: View {
     /// 上一次测试的结果。**换了 key / provider / 模型就作废**——一句绿色的「连接正常」
     /// 指着一套已经不存在的配置,比不显示更糟。
     @State private var connectionResult: ConnectionTest.Result?
-    @State private var isShowingClearConfirmation = false
     @State private var isRequestingHealth = false
     @State private var isHealthRequestInFlight = false
     @State private var healthStatus: HealthAuthStatus?
@@ -40,12 +40,8 @@ struct SettingsView: View {
     @FocusState private var focusedField: Field?
     @Environment(\.openURL) private var openURL
 
-    init(
-        canClearConversation: Bool = false,
-        onClearConversation: @escaping () -> Void = {}
-    ) {
-        self.canClearConversation = canClearConversation
-        self.onClearConversation = onClearConversation
+    init(chat: ChatViewModel? = nil) {
+        self.chat = chat
     }
 
     var body: some View {
@@ -457,21 +453,18 @@ struct SettingsView: View {
                 }
             }
 
-            Section {
-                Button(role: .destructive) {
-                    isShowingClearConfirmation = true
-                } label: {
-                    Label {
-                        Text("清空对话")
-                    } icon: {
-                        Image(systemName: "trash").foregroundStyle(.red)
+            if let chat {
+                Section {
+                    NavigationLink {
+                        ConversationHistoryView(model: chat)
+                    } label: {
+                        Label("对话历史", systemImage: "text.bubble")
                     }
+                } header: {
+                    Text("对话")
+                } footer: {
+                    Text("占用空间、清掉很早以前的，或者全部清空。")
                 }
-                .disabled(!canClearConversation)
-            } header: {
-                Text("对话")
-            } footer: {
-                Text("清空会删除本机保存的所有消息，无法撤销。")
             }
 
             Section {
@@ -573,18 +566,6 @@ struct SettingsView: View {
         }
         .onChange(of: eveningHour) { _, _ in
             Task { await CheckInScheduler.reschedule() }
-        }
-        .confirmationDialog(
-            "清空当前对话？",
-            isPresented: $isShowingClearConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button("清空对话", role: .destructive) {
-                onClearConversation()
-            }
-            Button("取消", role: .cancel) {}
-        } message: {
-            Text("此操作会删除本机保存的所有消息，无法撤销。")
         }
     }
 

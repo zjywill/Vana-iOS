@@ -295,8 +295,9 @@ struct MedicationTests {
             dueMedications: [item]
         )
         #expect(checkIn.body.contains("褪黑素"))
-        // 点开落回这条药自己的线,不是 check-in 线——通知说的是褪黑素,点开就该聊褪黑素。
-        #expect(checkIn.threadId == SessionThread.medication(item.id).id)
+        // 点开只清掉这一条的回访约定,Vana 在对话里先问这一句。
+        #expect(checkIn.medicationId == item.id)
+        #expect(checkIn.opener?.contains("褪黑素") == true)
     }
 
     @Test("晚上那条不重复问同一件事")
@@ -319,15 +320,6 @@ struct MedicationTests {
         #expect(store.due(at: Date()).isEmpty)
     }
 
-    // MARK: - 延续线
-
-    @Test("用药线断得和目标线一样宽")
-    func medicationThreadUsesTheLongIdleWindow() {
-        let thread = SessionThread.medication(UUID())
-        #expect(SessionThread(id: thread.id) == thread)
-        #expect(thread.isLongRunning)
-        #expect(thread.isGoal == false)
-    }
 
     // MARK: - 和记忆的隔离
 

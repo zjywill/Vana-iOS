@@ -119,6 +119,8 @@ struct AIKitEngine: AgentEngine {
     private let model: String
     private let plugins: [any AgentPlugin]
     private let pluginContext: PluginContext
+    /// 思考开关。nil 就跟着设置走;后台那几轮显式传 false(辅助调用的规矩)。
+    private let thinking: Bool?
     /// 生命周期上的旁观者。引擎每轮现造,而 hook 跨轮有状态,所以宿主由 app 传进来,
     /// 不在这儿造(见 `AgentHookDispatcher`)。
     ///
@@ -130,12 +132,14 @@ struct AIKitEngine: AgentEngine {
         model: String = "claude-sonnet-5",
         plugins: [any AgentPlugin] = [],
         pluginContext: PluginContext = PluginContext(),
+        thinking: Bool? = nil,
         hooks: AgentHookDispatcher? = nil
     ) {
         self.providerId = providerId
         self.model = model
         self.plugins = plugins
         self.pluginContext = pluginContext
+        self.thinking = thinking
         self.hooks = hooks
     }
 
@@ -146,14 +150,15 @@ struct AIKitEngine: AgentEngine {
         environment: PluginEnvironment,
         route: PluginRoute = .foreground,
         isPrivate: Bool = false,
-        unlocked: Set<String> = [],
+        thinking: Bool? = nil,
         hooks: AgentHookDispatcher? = nil
     ) {
         self.init(
             providerId: providerId,
             model: model,
             plugins: PluginRegistry.agentPlugins(environment, route: route),
-            pluginContext: PluginRegistry.context(for: environment, route: route, isPrivate: isPrivate, unlocked: unlocked),
+            pluginContext: PluginRegistry.context(for: environment, route: route, isPrivate: isPrivate),
+            thinking: thinking,
             hooks: hooks
         )
     }
@@ -165,6 +170,14 @@ struct AIKitEngine: AgentEngine {
     }
 
     var capabilityRegistry: CapabilityRegistry { assembly().registry }
+
+    /// system 段加工具定义占的位子。工具的参数说明按**发出去的 JSON** 算。当前全开时这份开销
+    /// 大约七八千 token,所以 32k 上下文的模型窗口基本就是保底的 6 轮。
+    func requestOverheadTokens() -> Int {
+        let assembly = assembly(acceptsInterjections: true)
+        return TokenEstimate.text(assembly.instruction())
+            + assembly.registry.definitions.reduce(0) { $0 + TokenEstimate.definition($1) }
+    }
 
     /// 核心那几块:身份与规则、插话、人格(静态区),今天(易变区)。
     private func coreBlocks(acceptsInterjections: Bool) -> [PromptBlock] {
@@ -195,23 +208,25 @@ struct AIKitEngine: AgentEngine {
                         providerId: providerId,
                         modelId: model,
                         apiKey: try resolvedAPIKey(),
-                        thinking: EngineSettings.thinkingEnabled ? .on : .off
+                        thinking: (thinking ?? EngineSettings.thinkingEnabled) ? .on : .off
                     )
                     let loop = AgentLoop(
                         client: client,
                         capabilities: assembly.registry,
                         systemInstruction: assembly.instruction(),
                         compactor: .vana,
-                        // 总结走同一个模型。理论上换个便宜的更划算,但那要用户再配一份 key
-                        // 和模型;等真有人抱怨这笔钱再说。
-                        summarizer: ModelSummarizer.vana(client: client),
+                        // **聊天路径不主动摘要**:历史 = 窗口 + 记忆 + 可检索的档案。递归摘要会漂
+                        // (摘要的摘要把最早的细节磨平),还多花一路钱;窗口之外的原文逐字留在档案里,
+                        // 要用就检索。撞上上限时由 `ChatViewModel` 强制淘汰到最近两轮再跑。
+                        summarizer: nil,
                         policy: .vana,
                         maxToolRounds: Self.maxToolRounds,
                         pendingInput: pendingInput,
                         truncatedToolCallNotice: truncatedToolCallNotice,
                         hooks: hooks
                     )
-                    for try await event in loop.run(history: history.map(\.agentDTO)) {
+                    // 隔得久的补时间标记,主动消息折进下一条用户消息开头(`HistoryMarkers`)。
+                    for try await event in loop.run(history: HistoryMarkers.apply(history)) {
                         continuation.yield(event)
                     }
                     continuation.finish()

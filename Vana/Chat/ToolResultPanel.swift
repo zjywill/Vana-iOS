@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// 气泡上方那一行:一次健康查询的入口。
+/// 气泡上方那一行:一次工具调用的入口。
 ///
 /// 原来是就地展开一段等宽文本,聊天流里只有一列的宽度,睡眠那种七八列的数据只能糊成
 /// 一坨。改成点开面板:数据留在下面弹出的那一层,聊天流保持干净。
@@ -48,13 +48,15 @@ struct ToolCallChip: View {
         }
     }
 
-    /// 记一件事没有「查到的数据」可看:面板里只会是同一句话再抄一遍。
-    private var isMemory: Bool { call.name == MemoryTools.rememberToolName }
+    /// 记、忘、改一件事没有「查到的数据」可看:面板里只会是同一句话再抄一遍。
+    private var isMemory: Bool {
+        [MemoryTools.rememberToolName, MemoryTools.forgetToolName, MemoryTools.reviseToolName].contains(call.name)
+    }
 
     /// 翻过往对话。这两条有东西可看——用户有权知道 Vana 到底翻到了哪次对话、读回了什么,
     /// 「它怎么知道的」说不清楚,记性好就变成了让人不安。
     private var isRecall: Bool {
-        call.name == SessionRecallTools.searchToolName || call.name == SessionRecallTools.readToolName
+        call.name == HistoryRecallTools.searchToolName || call.name == HistoryRecallTools.readToolName
     }
 
     /// 上网搜过。这条**尤其**要能点开:回答里引的是外部说法,用户有权看到到底搜到了什么、
@@ -95,15 +97,27 @@ struct ToolCallChip: View {
             return call.isError ? String(localized: "没能搜到「\(query)」") : String(localized: "上网搜了「\(query)」")
         }
         if isMemory {
-            guard let text = MemoryTools.text(fromInput: call.input) else { return String(localized: "记下了一条") }
-            return call.isError ? String(localized: "没能记下「\(text)」") : String(localized: "记住了「\(text)」")
+            switch call.name {
+            case MemoryTools.forgetToolName:
+                return call.isError ? String(localized: "没能忘掉那一条") : String(localized: "忘掉了一条记忆")
+            case MemoryTools.reviseToolName:
+                guard let text = MemoryTools.text(fromInput: call.input) else { return String(localized: "改了一条记忆") }
+                return call.isError ? String(localized: "没能改那一条") : String(localized: "改成了「\(text)」")
+            default:
+                guard let text = MemoryTools.text(fromInput: call.input) else { return String(localized: "记下了一条") }
+                return call.isError ? String(localized: "没能记下「\(text)」") : String(localized: "记住了「\(text)」")
+            }
         }
         if isRecall {
-            guard call.name == SessionRecallTools.readToolName else { return String(localized: "翻了翻过往对话") }
+            guard call.name == HistoryRecallTools.readToolName else { return String(localized: "翻了翻过往对话") }
             // 一轮里常常连着回顾好几次。三个一模一样的胶囊等于没说,而日期正好在读回来的
             // 那段开头——它本来就是给模型标日期用的,顺手也给了用户。
-            return SessionRecallTranscript.dateLabel(inOutput: call.output)
+            return HistoryRecallTools.dateLabel(inOutput: call.output)
                 .map { String(localized: "回顾了 \($0) 的对话") } ?? String(localized: "回顾了之前的一次对话")
+        }
+        if let label = CoreToolLabels.note(for: call) { return label }
+        guard HealthTools.all.contains(where: { $0.name == call.name }) else {
+            return String(localized: "用了 \(call.name)")
         }
         return HealthTools.note(
             for: call.name,
@@ -168,10 +182,12 @@ struct ToolResultPanel: View {
     /// 而面板里摆的是过往对话——对不上的标题比没有标题更让人困惑。
     private var title: String {
         switch call.name {
-        case SessionRecallTools.searchToolName: String(localized: "翻过的对话")
-        case SessionRecallTools.readToolName: String(localized: "回顾的对话")
+        case HistoryRecallTools.searchToolName: String(localized: "翻过的对话")
+        case HistoryRecallTools.readToolName: String(localized: "回顾的对话")
         case WebSearchTools.searchToolName: String(localized: "网页搜索结果")
-        default: HealthTools.localizedLabel(for: call.name, activity: HealthTools.activity(fromInput: call.input))
+        default:
+            CoreToolLabels.title(for: call)
+                ?? HealthTools.localizedLabel(for: call.name, activity: HealthTools.activity(fromInput: call.input))
         }
     }
 
@@ -376,5 +392,25 @@ private struct HourlyChart: View {
     private var accessibilityText: String {
         guard let peak else { return series.title }
         return String(localized: "\(series.title)，峰值 \(format(peak)) \(series.unit)")
+    }
+}
+
+/// 核心插件那几个工具在聊天里怎么写成一行字、面板叫什么。历史消息里的调用照样认,不看插件现在开没开。
+enum CoreToolLabels {
+    static func note(for call: ToolCallRecord) -> String? {
+        switch call.name {
+        case MedicationTools.listToolName: String(localized: "查看了用药表")
+        case MedicationTools.logToolName, MedicationTools.updateToolName:
+            call.isError ? String(localized: "没能更新用药表") : String(localized: "更新了用药表")
+        default: nil
+        }
+    }
+
+    static func title(for call: ToolCallRecord) -> String? {
+        switch call.name {
+        case MedicationTools.listToolName, MedicationTools.logToolName, MedicationTools.updateToolName:
+            String(localized: "用药与补剂")
+        default: nil
+        }
     }
 }

@@ -43,6 +43,8 @@ struct SuggestionContext {
     var tenant: Tenant
     var focusMedication: MedicationItem?
     var medications: MedicationSnapshot
+    /// 按本地处境挑出来的健康问题(模型写好了会原地换掉)。空的时候健康给固定那几条。
+    var healthQuestions: [SuggestedQuestion] = []
 }
 
 /// 一个插件贡献的建议。`exclusive` 为 true 时说明它此刻有一个具体的上下文(正在聊某样药、
@@ -77,8 +79,6 @@ struct PluginEnvironment: @unchecked Sendable {
     var medicationStore: MedicationStore?
     var medications: MedicationSnapshot = .empty
     var focusMedication: MedicationItem?
-    /// 旧会话模型的「话题」。一条对话落地之后删。
-    var topic: ChatTopic?
     /// 用户正在做的那几件长期的事,常驻 system 段易变区。
     var goals: [String] = []
 }

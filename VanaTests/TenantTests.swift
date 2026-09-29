@@ -113,8 +113,8 @@ struct TenantTests {
         #expect(herItems.first?.text.contains("青霉素") == true)
     }
 
-    @Test("一位成员的会话不会出现在另一位的列表和召回里")
-    func sessionsAreIsolatedPerTenant() async throws {
+    @Test("一位成员的对话不会出现在另一位的线程和召回里")
+    func threadsAreIsolatedPerTenant() async throws {
         let parent = Self.freshParent()
         let store = TenantStore(parent: parent)
         let owner = try store.owner()
@@ -123,17 +123,13 @@ struct TenantTests {
         let mine = TenantStores(root: TenantPaths.root(for: owner.id, parent: parent))
         let hers = TenantStores(root: TenantPaths.root(for: mom.id, parent: parent))
 
-        var session = ChatSession()
-        session.messages.append(ChatMessage(role: .user, text: "我最近睡不好"))
-        try await mine.sessions.save(session)
+        await mine.thread.sync([ChatMessage(role: .user, text: "我最近睡不好")], dirty: [], known: [])
 
-        #expect(await mine.sessions.summaries().count == 1)
-        #expect(await hers.sessions.summaries().isEmpty)
-
-        // 召回索引是从同一份会话索引建的,所以它也天然隔离。这条单独盯着——串数据要是从这儿
-        // 漏出去,模型会在妈妈那条对话里引用机主上个月说过的话。
-        let recall = await hers.sessions.recallIndex(excluding: nil)
-        #expect(recall.search(query: "睡不好").isEmpty)
+        #expect(await mine.thread.loadTail().messages.count == 1)
+        #expect(await hers.thread.loadTail().messages.isEmpty)
+        // 召回的档案是从同一条线程建的,所以它也天然隔离。串数据要是从这儿漏出去,模型会在
+        // 妈妈那条对话里引用机主上个月说过的话。
+        #expect(await hers.thread.allArchiveRows().isEmpty)
     }
 
     @Test("删掉一位成员，他那一整个目录都不在了")
@@ -237,11 +233,11 @@ struct TenantTests {
         let parent = Self.freshParent()
         let stores = TenantStores(root: parent)
         let model = ChatViewModel(
-            loadsPersistedSession: false,
+            loadsPersistedThread: false,
             tenant: Tenant(name: "妈妈", kind: .managed),
             memoryStore: stores.memory,
-            sessionStore: stores.sessions,
-            medicationStore: stores.medications
+            medicationStore: stores.medications,
+            thread: stores.thread
         )
         #expect(!model.hasHealthData)
 
@@ -262,15 +258,14 @@ struct TenantTests {
         let stores = TenantStores(root: parent)
         func model(_ tenant: Tenant) -> ChatViewModel {
             ChatViewModel(
-                loadsPersistedSession: false,
+                loadsPersistedThread: false,
                 tenant: tenant,
                 memoryStore: stores.memory,
-                sessionStore: stores.sessions,
-                medicationStore: stores.medications
+                medicationStore: stores.medications,
+                thread: stores.thread
             )
         }
         #expect(model(Tenant(name: "妈妈", kind: .managed)).navigationSubtitle.contains("妈妈"))
-        // `loadsPersistedSession: false` 开的是隐私会话,所以机主这边只剩隐私那一句——
         // 关键是**没有名字**:单人用户那一屏不该因为这个功能多出一行字。
         #expect(!model(.owner()).navigationSubtitle.contains(Tenant.ownerDefaultName))
     }

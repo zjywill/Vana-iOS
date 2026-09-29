@@ -38,8 +38,8 @@ struct QueuedMessageTests {
             turns: [.init(text: "……", beforeResponding: { try await Task.sleep(for: .seconds(30)) })]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: client, capabilities: stubRegistry([:])) },
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: client, capabilities: stubRegistry([:])) },
+            loadsPersistedThread: false
         )
 
         viewModel.send("看看最近睡眠")
@@ -97,10 +97,10 @@ struct QueuedMessageTests {
             ]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in
+            engineFactory: {
                 LoopEngine(client: client, capabilities: stubRegistry(["sleep_summary": "7 小时 12 分"]))
             },
-            loadsPersistedSession: false
+            loadsPersistedThread: false
         )
         box.model = viewModel
 
@@ -158,10 +158,10 @@ struct QueuedMessageTests {
             ]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in
+            engineFactory: {
                 LoopEngine(client: client, capabilities: stubRegistry(["sleep_summary": "7 小时 12 分"]))
             },
-            loadsPersistedSession: false
+            loadsPersistedThread: false
         )
         box.model = viewModel
 
@@ -207,8 +207,8 @@ struct QueuedMessageTests {
             ]
         )
         let viewModel = ChatViewModel(
-            engineFactory: { _ in LoopEngine(client: client, capabilities: stubRegistry([:])) },
-            loadsPersistedSession: false
+            engineFactory: { LoopEngine(client: client, capabilities: stubRegistry([:])) },
+            loadsPersistedThread: false
         )
         box.model = viewModel
 

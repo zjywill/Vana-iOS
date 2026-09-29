@@ -22,7 +22,7 @@ enum AgentError: LocalizedError {
         case .needsModelSelection: "还没选好云端模型。到设置里的「模型」那一行选一个，就能开始问了。"
         case .cloudService(let message): "云端服务返回错误：\(message)"
         case .incompleteResponse: "模型回复没有正常结束，请重试"
-        case .contextWindowExceeded: "当前对话过长，超出模型上下文限制，请开启新对话或缩小问题范围"
+        case .contextWindowExceeded: "这一次要带的内容太多，超出了模型的上下文上限。把这条消息或附件缩短一点再试一次。"
         }
     }
 
@@ -156,6 +156,10 @@ protocol AgentEngine: Sendable {
         to history: [ChatMessage],
         pendingInput: AgentPendingInputProvider?
     ) -> AsyncThrowingStream<AgentEvent, Error>
+
+    /// 每一轮请求都要带、但不在消息列表里的那部分(system 段、工具定义)大概占多少 token。
+    /// 窗口从预算里先扣掉它(`ThreadWindow.evict`)。
+    func requestOverheadTokens() -> Int
 }
 
 extension AgentEngine {
@@ -166,4 +170,6 @@ extension AgentEngine {
     /// 默认按**看不了**算。多带一张图给一个收不了图的模型是一个 400;少带一张,用户最多
     /// 接着用文字描述,而那本来就是这个 app 一直以来的样子。
     var supportsVision: Bool { false }
+
+    func requestOverheadTokens() -> Int { 0 }
 }

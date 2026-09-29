@@ -44,8 +44,6 @@ enum PromptOrder {
     static let today = 300
     static let tenant = 310
     static let location = 320
-    /// 旧会话模型里「这条对话的话题」。一条对话落地之后删。
-    static let topic = 325
     static let memory = 330
     static let medications = 340
     static let focusMedication = 360

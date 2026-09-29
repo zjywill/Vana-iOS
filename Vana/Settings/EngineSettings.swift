@@ -173,4 +173,10 @@ enum EngineSettings {
         let selection = selection
         return ProviderCatalog.model(selection.model, provider: selection.provider)?.1.supportsVision ?? false
     }
+
+    /// 当前选中的模型的上下文窗口。目录里查不到就是 nil(窗口按 16k 算,见 `WindowPolicy`)。
+    static var contextWindow: Int? {
+        let selection = selection
+        return ProviderCatalog.model(selection.model, provider: selection.provider)?.1.contextWindow
+    }
 }

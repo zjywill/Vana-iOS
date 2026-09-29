@@ -139,6 +139,22 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         case assistant
     }
 
+    /// 这条消息从哪来。除了 `.normal`,都是 Vana **主动**说的(不是回答某一句提问)。
+    ///
+    /// 模型要知道自己说过这些话,但它们不是对某句提问的回答:发请求时折进**下一条用户消息**
+    /// 开头(`HistoryMarkers`),请求里助手/用户严格交替。
+    enum Origin: String, Codable, Sendable {
+        case normal
+        /// 早晚 check-in 点开后 Vana 开的场。
+        case checkIn
+        /// 说好回头看的事,后台看过之后的结论。
+        case followUp
+        /// 到点的提醒。
+        case reminder
+        /// 后台任务的结果。
+        case task
+    }
+
     let id: UUID
     let role: Role
     /// **用户打的字**,不含照片识别出来的那几段。
@@ -173,6 +189,12 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
     /// 可空:这个字段是后加的,之前存下来的会话里没有——与其编一个时间,不如在菜单里
     /// 不显示。
     var createdAt: Date?
+    var origin: Origin = .normal
+    /// `.task` 的消息指向哪条任务:气泡上的「查看详情」凭它跳过去。
+    var refTaskId: UUID?
+
+    /// 主动消息:模型要知道自己说过,但它不是对某句提问的回答。
+    var isProactive: Bool { origin != .normal }
 
     /// 这条气泡里的字是不是**模型真的写的**。
     ///
@@ -195,6 +217,8 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         case errorDescription
         case isQueued
         case createdAt
+        case origin
+        case refTaskId
 
         // 旧会话格式:transcript 曾经直接落的是 AIKit 的 Message。
         case replayMessages
@@ -215,7 +239,9 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         storedTurn: StoredAgentTurn = .init(),
         errorDescription: String? = nil,
         isQueued: Bool = false,
-        createdAt: Date? = Date()
+        createdAt: Date? = Date(),
+        origin: Origin = .normal,
+        refTaskId: UUID? = nil
     ) {
         self.id = id
         self.role = role
@@ -228,6 +254,8 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         self.errorDescription = errorDescription
         self.isQueued = isQueued
         self.createdAt = createdAt
+        self.origin = origin
+        self.refTaskId = refTaskId
     }
 
     init(_ dto: AgentChatMessageDTO) {
@@ -263,6 +291,8 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         // 重开这条会话,它们还排在那儿,按一下发送就出去。
         isQueued = try container.decodeIfPresent(Bool.self, forKey: .isQueued) ?? false
         createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
+        origin = (try? container.decodeIfPresent(Origin.self, forKey: .origin)) ?? .normal
+        refTaskId = try container.decodeIfPresent(UUID.self, forKey: .refTaskId)
 
         // 要问 `contains`,不能用 `try? decodeIfPresent`:键不存在时后者是"成功地解出了 nil",
         // 一样会走进这个分支,底下的旧格式就永远读不到了。
@@ -307,6 +337,10 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
             try container.encode(isQueued, forKey: .isQueued)
         }
         try container.encodeIfPresent(createdAt, forKey: .createdAt)
+        if origin != .normal {
+            try container.encode(origin, forKey: .origin)
+        }
+        try container.encodeIfPresent(refTaskId, forKey: .refTaskId)
     }
 }
 
@@ -472,6 +506,7 @@ extension ChatMessage {
             && errorDescription == other.errorDescription
             && createdAt == other.createdAt
             && isQueued == other.isQueued
+            && origin == other.origin
             && stoppedAtToolRoundLimit == other.stoppedAtToolRoundLimit
             && toolCalls.count == other.toolCalls.count
             && zip(toolCalls, other.toolCalls).allSatisfy { $0.rendersIdentically(to: $1) }
@@ -659,4 +694,8 @@ private extension AgentChatMessageDTO.Role {
         case .assistant: self = .assistant
         }
     }
+}
+
+extension String {
+    var nilIfEmpty: String? { isEmpty ? nil : self }
 }
