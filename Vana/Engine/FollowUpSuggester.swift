@@ -34,7 +34,7 @@ struct FollowUpSuggester: Sendable {
     /// 拿 12 去卡英文,两条都凑不齐,英文界面上追问 chip 就永远只剩固定那几颗。
     /// 提示词里的数字和校验必须是同一个。
     static var maxLineCharacters: Int {
-        HealthAssistantInstructions.replyLanguage == "English" ? 36 : 12
+        CoreInstructions.replyLanguage == "English" ? 36 : 12
     }
 
     /// 语言跟着界面走,和聊天回答同一个判据。不是 `let`:语言要在跑的那一刻读。
@@ -45,7 +45,7 @@ struct FollowUpSuggester: Sendable {
 
     要求：
     - 只输出三行，每行一句，不要编号、不要引号、不要任何解释。
-    - 用\(HealthAssistantInstructions.replyLanguage)写——无论下面的对话用什么语言。\
+    - 用\(CoreInstructions.replyLanguage)写——无论下面的对话用什么语言。\
     口语，每行不超过 \(maxLineCharacters) 个字符——放不进按钮的等于没写。
     - 必须是接着刚才那段回答问下去的，而且能用步数、睡眠、静息心率与 HRV、锻炼、\
     体重体脂这几类数据回答。

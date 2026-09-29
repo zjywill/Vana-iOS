@@ -87,30 +87,3 @@ struct Tenant: Identifiable, Codable, Hashable, Sendable {
         )
     }
 }
-
-extension Tenant {
-    /// 进 system 段的那一块。**机主返回 nil**——整份提示词本来就是照着"用户本人"写的,
-    /// 再说一句「这是用户本人」是白花 token 说一件已经成立的事。
-    ///
-    /// 三句话各有各的活,都有测试盯着:
-    /// 1. **这不是用户本人**。不说这一句,模型会把化验单上的指标当成用户自己的,后面每一句
-    ///    人称都是错的。
-    /// 2. **读不到他的健康数据,且没有对应工具**。工具确实一个都没挂(见
-    ///    `CapabilityRegistry.healthChat(includesHealthTools:)`),但不说清楚的话模型会为了
-    ///    有话说而去猜一个数字——而"猜出来的数字"正是这个 app 最不能出的错。
-    /// 3. **要数值就让用户拍一张**。只说"读不到"是把用户留在原地;说清下一步该干什么,
-    ///    这条路才是通的(OCR 那条管线已经在了)。
-    var instructionBlock: String? {
-        guard !isOwner else { return nil }
-        var block = """
-        关于这次对话的对象：
-        - 你现在处理的是用户家人「\(displayName)」的健康情况，**不是用户本人的**。说到身体状况时指的都是\(displayName)，不要和用户自己的数据混为一谈。
-        - \(displayName)的 Apple 健康和可穿戴数据你**读不到**，也没有查这些数据的工具。他的情况只来自这条对话里说过的话、用药与补剂清单，以及用户拍给你的化验单、报告或说明书。
-        - 需要具体数值时，请用户拍一张化验单或报告发给你，不要凭印象猜，也不要说「我看到数据显示……」这种话——你没有他的数据。
-        """
-        if let ageBand {
-            block += "\n- \(displayName)是\(ageBand.label)。参考范围、风险判断和注意事项都按这个年龄段来说；具体用药和剂量仍然交给医生。"
-        }
-        return block
-    }
-}

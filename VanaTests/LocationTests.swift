@@ -80,14 +80,10 @@ struct LocationTests {
 
     @Test("位置进 system 段，没位置时一个字都不进")
     func engineInjectsPlace() {
-        let engine = AIKitEngine(
-            providerId: "anthropic",
-            model: "claude-sonnet-5",
-            location: LocationSnapshot(place: "杭州市, 浙江省, 中国")
-        )
+        let engine = TestAssembly.engine(TestAssembly.environment(location: LocationSnapshot(place: "杭州市, 浙江省, 中国")))
         #expect(engine.systemInstruction().contains("杭州市, 浙江省, 中国"))
 
         // 默认没有位置。用户拒绝授权走的就是这条路——不是降级成一句模糊的话,是整段不发。
-        #expect(!AIKitEngine().systemInstruction().contains("他此刻大概在"))
+        #expect(!TestAssembly.engine().systemInstruction().contains("他此刻大概在"))
     }
 }

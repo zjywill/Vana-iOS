@@ -206,7 +206,7 @@ struct AskUserTests {
 
     @Test("前台会话挂得出来")
     func mountedInForeground() {
-        let registry = CapabilityRegistry.healthChat(webSearch: nil)
+        let registry = TestAssembly.engine().capabilityRegistry
         #expect(registry.definition(named: AskUserTools.askToolName) != nil)
     }
 
@@ -214,21 +214,17 @@ struct AskUserTests {
     /// 假设一个答案接着往下写,而那份结论会原样进早上那条通知。
     @Test("后台派生的那几轮不挂")
     func notMountedInBackground() {
-        let registry = CapabilityRegistry.healthChat(asksUser: false, webSearch: nil)
+        let registry = TestAssembly.engine(route: .background).capabilityRegistry
         #expect(registry.definition(named: AskUserTools.askToolName) == nil)
     }
 
     /// 家人成员那条路上健康工具一个都不挂,但问一句话跟谁的健康数据都没关系。
     @Test("家人成员和隐私会话照挂")
     func mountedForFamilyAndPrivateSessions() {
-        let family = CapabilityRegistry.healthChat(includesHealthTools: false, webSearch: nil)
+        let family = TestAssembly.engine(TestAssembly.environment(tenant: Tenant(name: "妈妈", kind: .managed))).capabilityRegistry
         #expect(family.definition(named: AskUserTools.askToolName) != nil)
 
-        let privateSession = CapabilityRegistry.healthChat(
-            allowsMemoryWrites: false,
-            allowsMedicationWrites: false,
-            webSearch: nil
-        )
+        let privateSession = TestAssembly.engine(isPrivate: true).capabilityRegistry
         #expect(privateSession.definition(named: AskUserTools.askToolName) != nil)
     }
 
@@ -238,17 +234,13 @@ struct AskUserTests {
     /// 模型只会调一次、失败一次,再自己想办法圆场。
     @Test("挂了才发那段指令")
     func instructionFollowsTheRegistry() {
-        let mounted = AIKitEngine(
-            capabilityRegistry: .healthChat(webSearch: nil)
-        ).systemInstruction()
+        let mounted = TestAssembly.engine().systemInstruction()
         #expect(mounted.contains(AskUserTools.askToolName))
         #expect(mounted.contains("同一个问题不要问第二遍"))
         // 查得到的东西不许问他——问一遍是白花一个往返,而答案就在 HealthKit 里。
-        #expect(mounted.contains("查得到的东西一律不要问他"))
+        #expect(mounted.contains("查得到的、他说过的、记忆里已有的一律不要问他"))
 
-        let absent = AIKitEngine(
-            capabilityRegistry: .healthChat(asksUser: false, webSearch: nil)
-        ).systemInstruction()
+        let absent = TestAssembly.engine(route: .background).systemInstruction()
         #expect(!absent.contains(AskUserTools.askToolName))
     }
 }

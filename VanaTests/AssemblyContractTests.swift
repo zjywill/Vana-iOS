@@ -6,23 +6,21 @@ import AgentRuntime
 
 /// 装配契约:**什么条件下挂哪些工具、发哪几段话、按什么顺序**。
 ///
-/// 这一份不依赖任何录下来的文本,断言全是手写的规则,所以它同时是两件事:今天的行为的说明书,
-/// 和往插件系统重构时的防线。重构前后每一条都得成立——包括工具的**顺序**:工具定义排在消息前面,
-/// 顺序一变,prompt 缓存的前缀就整个打掉。
+/// 这一份不依赖任何录下来的文本,断言全是手写的规则。重构前后每一条都得成立——包括工具的
+/// **顺序**:工具定义排在消息前面,顺序一变,prompt 缓存的前缀就整个打掉。
 ///
 /// 和 `AssemblyGoldenTests` 的分工:那份逐字比对,只在「纯搬家」的那几步有意义;这一份只管
-/// 结构(有没有、在不在、先后),所以改措辞的那几步(拆提示词)它照样成立。
+/// 结构(有没有、在不在、先后),所以改措辞的那几步它照样成立。
 ///
-/// 场景和装配入口都在 `AssemblyFixtures`。**`.serialized` 只挡得住本套件内部**:装配要临时改
-/// `UserDefaults` 里的开关,和别的套件并行时有一个极小的窗口(`FollowUpRunnerTests` 那几条
-/// 已经在这么做),夹具里设完就还原。
+/// 场景和装配入口都在 `AssemblyFixtures`。人格要临时改 UserDefaults,`.serialized` 只挡得住
+/// 本套件内部,夹具里设完就还原。
 @Suite("Assembly contract", .serialized)
 struct AssemblyContractTests {
 
     // MARK: - 工具
 
-    /// 256 种开关组合。挂哪些、按什么顺序,写在 `CapabilityRegistry.healthChat` 里的
-    /// 那一串 `if ... registries.append(...)`——这里是把它逐条翻成规则。
+    /// 256 种开关组合。挂哪些、按什么顺序,是各插件的 `tools` 加 `PluginHost` 的过滤——
+    /// 这里是把它逐条翻成规则。
     @Test("every flag combination mounts exactly the tools the rules say, in order")
     func toolMountingMatrix() {
         let stores = AssemblyFixtures.Stores()
@@ -52,34 +50,31 @@ struct AssemblyContractTests {
         #expect(Set(names).count == names.count, "重名的工具:\(names)")
     }
 
-    /// 顺序写死在这儿,不是从代码里抄的:模型看到的工具表的前缀要稳定,健康在前、
-    /// 记忆在最后是现在的样子。
+    /// 顺序写死在这儿,不是从代码里抄的:核心在前、健康在后,是插件的注册顺序。
     private static func expectedToolNames(_ flags: AssemblyFixtures.Flags) -> [String] {
+        let writes = !flags.isPrivate && !flags.background
         var names: [String] = []
-        if flags.includesHealthTools {
-            names += HealthTools.all.map(\.name)
-        }
-        // 动作库没有开关。
-        names.append(ExerciseTools.suggestToolName)
-        if flags.asksUser {
-            names.append(AskUserTools.askToolName)
-        }
-        if flags.webSearch {
-            names.append(WebSearchTools.searchToolName)
-        }
-        // 用药表有自己的开关,不归在记忆下面;隐私会话只挂读的那个。
-        if flags.medicationsEnabled {
-            names.append(MedicationTools.listToolName)
-            if flags.allowsMedicationWrites {
-                names += [MedicationTools.logToolName, MedicationTools.updateToolName]
-            }
-        }
-        // 召回和记忆写入都归在 memoryEnabled 下面。
-        if flags.memoryEnabled && flags.allowsRecall {
+        // 核心
+        if !flags.background { names.append(AskUserTools.askToolName) }
+        if flags.webSearch { names.append(WebSearchTools.searchToolName) }
+        // 召回和记忆写入都归在记忆开关下面。
+        if flags.memoryOn && flags.recall {
             names += [SessionRecallTools.searchToolName, SessionRecallTools.readToolName]
         }
-        if flags.memoryEnabled && flags.allowsMemoryWrites {
-            names.append(MemoryTools.rememberToolName)
+        if flags.memoryOn && writes {
+            names += [MemoryTools.rememberToolName, MemoryTools.forgetToolName, MemoryTools.reviseToolName]
+        }
+        // 健康
+        guard flags.health else { return names }
+        // Apple 健康归机主,家人身上一个都不挂。
+        if flags.owner { names += HealthTools.all.map(\.name) }
+        guard !flags.background else { return names }
+        // 动作库没有开关。
+        names.append(ExerciseTools.suggestToolName)
+        // 用药表有自己的开关,不归在记忆下面;隐私会话只挂读的那个。
+        if flags.medicationsOn {
+            names.append(MedicationTools.listToolName)
+            if writes { names += [MedicationTools.logToolName, MedicationTools.updateToolName] }
         }
         return names
     }
@@ -87,47 +82,46 @@ struct AssemblyContractTests {
     private static func allFlagCombinations() -> [AssemblyFixtures.Flags] {
         (0..<256).map { bits in
             AssemblyFixtures.Flags(
-                includesHealthTools: bits & 1 != 0,
-                allowsMemoryWrites: bits & 2 != 0,
-                allowsRecall: bits & 4 != 0,
-                allowsMedicationWrites: bits & 8 != 0,
-                asksUser: bits & 16 != 0,
-                webSearch: bits & 32 != 0,
-                memoryEnabled: bits & 64 != 0,
-                medicationsEnabled: bits & 128 != 0
+                health: bits & 1 != 0,
+                memoryOn: bits & 2 != 0,
+                medicationsOn: bits & 4 != 0,
+                webSearch: bits & 8 != 0,
+                recall: bits & 16 != 0,
+                isPrivate: bits & 32 != 0,
+                background: bits & 64 != 0,
+                owner: bits & 128 != 0
             )
         }
     }
 
     // MARK: - system 段的顺序
 
-    /// 全开的机主会话里,每一块出现的先后。
-    ///
-    /// 「身份」「日期」「急症」都在基础规则里,基础规则整段在最前面;后面各块的顺序是
-    /// `AIKitEngine.systemInstruction()` 里一段段 `instructions +=` 的顺序。位置紧跟日期那一块
-    /// 之后、记忆在人格前面、用药名单紧跟记忆——这些顺序各有各的理由(见那个函数里的注释),
-    /// 这里只钉住结果。
+    /// 全开的机主会话里,每一块出现的先后。**静态的在前、易变的在后**(`PromptOrder`):
+    /// prompt 缓存认前缀,记忆、位置、今天这些一变只该打掉尾巴。
     private static let ownerBlockOrder: [(name: String, marker: String)] = [
-        ("身份", "你是 Vana 的健康助手"),
-        ("日期", "今天是"),
-        ("急症规则", "急症优先于一切"),
-        ("基础规则结尾", "用户提出与健康数据无关的问题时"),
-        ("位置", "他此刻大概在："),
-        ("话题", "本次对话的话题："),
-        ("目标", "这条对话属于他一件长期在做的事："),
-        ("记忆", "关于这位用户（来自过往对话，不是健康数据）："),
-        ("用药名单", "关于他和药/补剂（他自己记的，不是健康数据）："),
-        ("用药话题", "这条对话围绕他记下的「"),
+        ("身份", "你是 Vana，用户的日常助手"),
+        ("安全底线", "人身安全优先于一切"),
+        ("插话", "用户可能在你还在查资料"),
+        ("人格", "语气偏向教练"),
         ("召回", "默认不要去翻过往对话"),
-        ("记用药的指令", "用户说出他和某样药或补剂的关系时"),
-        ("remember 的指令", "用户明确要求记住某件事"),
+        ("记忆的指令", "用户明确要求记住某件事"),
         ("上网搜", "遇到你的知识里没有"),
         ("反问", "他的描述里缺一个"),
-        ("插话", "用户可能在你还在查数据"),
-        ("人格", "语气偏向教练")
+        ("健康规则", "处理健康相关的话题"),
+        ("急症规则", "急症优先于一切"),
+        ("Apple 健康", "他的 Apple 健康数据"),
+        ("动作库", "建议用户做拉伸或简单锻炼时"),
+        ("记用药的指令", "用户说出他和某样药或补剂的关系时"),
+        ("健康补充", "健康方面的补充"),
+        ("日期", "今天是"),
+        ("位置", "他此刻大概在："),
+        ("记忆", "关于这位用户（来自过往对话）："),
+        ("用药名单", "关于他和药/补剂"),
+        ("用药焦点", "这条对话围绕他记下的「"),
+        ("目标", "他眼下在做的几件长期的事")
     ]
 
-    @Test("the system prompt blocks come in the order the engine builds them")
+    @Test("the system prompt blocks come static first, volatile last")
     func blockOrder() {
         let stores = AssemblyFixtures.Stores()
         defer { stores.remove() }
@@ -136,9 +130,9 @@ struct AssemblyContractTests {
         Self.expectOrdered(Self.ownerBlockOrder, in: text)
     }
 
-    /// 家人成员:成员身份块接在基础规则(含急症)后面,先于位置、记忆和用药——钉的是现状。
-    /// 健康工具那几条规则整个不发,那些工具根本没挂。
-    @Test("a managed member's prompt says who they are and drops the health-tool rules")
+    /// 家人成员:身份块排在易变区最前面,先于记忆和用药——它决定了后面每一句里的「他」指的是谁。
+    /// Apple 健康那几条规则整个不发,那些工具根本没挂。
+    @Test("a managed member's prompt says who they are and drops the health-data rules")
     func managedMemberPrompt() {
         let stores = AssemblyFixtures.Stores()
         defer { stores.remove() }
@@ -147,12 +141,11 @@ struct AssemblyContractTests {
 
         #expect(text.contains("关于这次对话的对象："))
         #expect(!text.contains("先调用合适的健康工具"))
-        #expect(!text.contains("引导其询问步数"))
         Self.expectOrdered(
             [
                 ("急症规则", "急症优先于一切"),
                 ("成员身份", "关于这次对话的对象："),
-                ("用药名单", "关于他和药/补剂（他自己记的，不是健康数据）：")
+                ("用药名单", "关于他和药/补剂")
             ],
             in: text
         )
@@ -160,8 +153,7 @@ struct AssemblyContractTests {
 
     // MARK: - 每一段的条件
 
-    /// 每一段「怎么用某个工具」的话,只在那个工具真的挂出去时才发。对着一个没挂出去的工具发指令,
-    /// 模型只会调一次、失败一次,再自己想办法圆场。
+    /// 每一段「怎么用某个工具」的话,只在那个工具真的挂出去时才发。
     @Test("each tool paragraph is only sent when its tool is mounted")
     func paragraphsFollowTheRegistry() {
         let stores = AssemblyFixtures.Stores()
@@ -169,13 +161,15 @@ struct AssemblyContractTests {
 
         typealias Disable = (inout AssemblyFixtures.Flags) -> Void
         let toggles: [(name: String, marker: String, disable: Disable)] = [
-            ("asksUser", "他的描述里缺一个", { $0.asksUser = false }),
+            ("background", "他的描述里缺一个", { $0.background = true }),
             ("webSearch", "遇到你的知识里没有", { $0.webSearch = false }),
-            ("allowsRecall", "默认不要去翻过往对话", { $0.allowsRecall = false }),
-            ("allowsMemoryWrites", "用户明确要求记住某件事", { $0.allowsMemoryWrites = false }),
-            ("memoryEnabled", "用户明确要求记住某件事", { $0.memoryEnabled = false }),
-            ("allowsMedicationWrites", "用户说出他和某样药或补剂的关系时", { $0.allowsMedicationWrites = false }),
-            ("medicationsEnabled", "用户说出他和某样药或补剂的关系时", { $0.medicationsEnabled = false })
+            ("recall", "默认不要去翻过往对话", { $0.recall = false }),
+            ("isPrivate", "用户明确要求记住某件事", { $0.isPrivate = true }),
+            ("memoryOn", "用户明确要求记住某件事", { $0.memoryOn = false }),
+            ("isPrivate", "用户说出他和某样药或补剂的关系时", { $0.isPrivate = true }),
+            ("medicationsOn", "用户说出他和某样药或补剂的关系时", { $0.medicationsOn = false }),
+            ("owner", "他的 Apple 健康数据", { $0.owner = false }),
+            ("health", "处理健康相关的话题", { $0.health = false })
         ]
 
         let baseline = AssemblyFixtures.systemText(AssemblyFixtures.everything, stores: stores)
@@ -185,10 +179,7 @@ struct AssemblyContractTests {
             var scenario = AssemblyFixtures.everything
             toggle.disable(&scenario.flags)
             let text = AssemblyFixtures.systemText(scenario, stores: stores)
-            #expect(
-                !text.contains(toggle.marker),
-                "关掉 \(toggle.name) 之后不该还有「\(toggle.marker)」"
-            )
+            #expect(!text.contains(toggle.marker), "改了 \(toggle.name) 之后不该还有「\(toggle.marker)」")
         }
     }
 
@@ -198,26 +189,10 @@ struct AssemblyContractTests {
         defer { stores.remove() }
 
         var scenario = AssemblyFixtures.everything
-        #expect(AssemblyFixtures.systemText(scenario, stores: stores).contains("用户可能在你还在查数据"))
+        #expect(AssemblyFixtures.systemText(scenario, stores: stores).contains("用户可能在你还在查资料"))
 
-        // 后台派生的那几轮没有用户在场,那段话对它们只是白占 token。
         scenario.acceptsInterjections = false
-        #expect(!AssemblyFixtures.systemText(scenario, stores: stores).contains("用户可能在你还在查数据"))
-    }
-
-    /// 目标线那一段里「需要就用 search_sessions 往前翻」只在召回挂着时才说。
-    @Test("the goal paragraph only points at search_sessions when recall is mounted")
-    func goalParagraphFollowsRecall() {
-        let stores = AssemblyFixtures.Stores()
-        defer { stores.remove() }
-
-        var scenario = AssemblyFixtures.Scenario(name: "goal", goal: "减脂")
-
-        scenario.flags.allowsRecall = true
-        #expect(AssemblyFixtures.systemText(scenario, stores: stores).contains("search_sessions"))
-
-        scenario.flags.allowsRecall = false
-        #expect(!AssemblyFixtures.systemText(scenario, stores: stores).contains("search_sessions"))
+        #expect(!AssemblyFixtures.systemText(scenario, stores: stores).contains("用户可能在你还在查资料"))
     }
 
     /// `remember` 那段里让路给用药表的那一句,只在用药写入工具挂着时才说。
@@ -227,15 +202,99 @@ struct AssemblyContractTests {
         defer { stores.remove() }
 
         var scenario = AssemblyFixtures.Scenario(name: "remember")
-
         let withMeds = AssemblyFixtures.systemText(scenario, stores: stores)
         #expect(withMeds.contains("用户明确要求记住某件事"))
+        #expect(withMeds.contains("用药与补剂已经有专门的存放处"))
         #expect(withMeds.contains("药和补剂不要用 remember 记"))
 
-        scenario.flags.medicationsEnabled = false
+        scenario.flags.medicationsOn = false
         let withoutMeds = AssemblyFixtures.systemText(scenario, stores: stores)
         #expect(withoutMeds.contains("用户明确要求记住某件事"))
+        #expect(!withoutMeds.contains("用药与补剂已经有专门的存放处"))
         #expect(!withoutMeds.contains("药和补剂不要用 remember 记"))
+    }
+
+    // MARK: - 健康关掉
+
+    /// 健康关掉之后,整段 system 加全部工具定义里**一个健康词都没有**——模型看到的是一个不认识
+    /// 药、化验单和症状清单的日常助手。检测器自己也要验:健康开着时它必须命中一大把,
+    /// 否则这条测试是在空转。
+    private static let healthWords = [
+        "用药", "药品", "药盒", "补剂", "化验", "诊断", "剂量", "血压", "心率", "体重", "体检",
+        "症状", "不舒服", "病史", "健康", "就医", "医疗", "医生", "疾病", "过敏", "HealthKit",
+        "suggest_exercises", "log_medication", "list_medications", "daily_steps"
+    ]
+
+    private static func everythingTheModelReads(_ scenario: AssemblyFixtures.Scenario, stores: AssemblyFixtures.Stores) -> String {
+        let text = AssemblyFixtures.systemText(scenario, stores: stores)
+        let definitions = AssemblyFixtures.engine(scenario, stores: stores).capabilityRegistry.definitions
+        let encoder = JSONEncoder()
+        let tools = definitions.map { String(decoding: (try? encoder.encode($0)) ?? Data(), as: UTF8.self) }
+        return ([text] + tools).joined(separator: "\n")
+            // JSONEncoder 会把中文编成原样,但保险起见也看一眼描述本身。
+            + definitions.compactMap(\.description).joined(separator: "\n")
+    }
+
+    @Test("with health off, nothing the model reads mentions health")
+    func healthOffLeavesNoHealthWords() {
+        let stores = AssemblyFixtures.Stores()
+        defer { stores.remove() }
+
+        for background in [false, true] {
+            for isPrivate in [false, true] {
+                for persona in AssistantPersona.allCases {
+                    var scenario = AssemblyFixtures.everything
+                    scenario.flags.health = false
+                    scenario.flags.background = background
+                    scenario.flags.isPrivate = isPrivate
+                    scenario.persona = persona
+                    scenario.focusMedication = nil
+                    let corpus = Self.everythingTheModelReads(scenario, stores: stores)
+                        // 样本里的记忆和用药是**用户的数据**,不是提示词。用药名单在健康关掉之后
+                        // 本来就不进,记忆里那条「他觉得睡够 7 小时」不是健康词表里的词。
+                    let leaked = Self.healthWords.filter { corpus.contains($0) }
+                    #expect(leaked.isEmpty, "background=\(background) private=\(isPrivate) persona=\(persona) 里还有健康词：\(leaked)")
+                }
+            }
+        }
+    }
+
+    @Test("the health-word detector is not idle: with health on it hits plenty")
+    func healthWordDetectorIsNotIdle() {
+        let stores = AssemblyFixtures.Stores()
+        defer { stores.remove() }
+
+        let corpus = Self.everythingTheModelReads(AssemblyFixtures.everything, stores: stores)
+        let seen = Self.healthWords.filter { corpus.contains($0) }
+        #expect(seen.count >= 15, "健康开着时应当命中大量健康词，实际只有：\(seen)")
+    }
+
+    @Test("with health off the safety floor is still there")
+    func healthOffKeepsTheSafetyFloor() {
+        let stores = AssemblyFixtures.Stores()
+        defer { stores.remove() }
+
+        var scenario = AssemblyFixtures.Scenario(name: "off")
+        scenario.flags.health = false
+        let text = AssemblyFixtures.systemText(scenario, stores: stores)
+        #expect(text.contains("你是 Vana，用户的日常助手"))
+        #expect(text.contains("拨打当地急救电话"))
+        #expect(text.contains("想伤害自己或不想活了"))
+        #expect(!text.contains("急症优先于一切"))
+    }
+
+    /// 健康关掉之后,健康拥有的那类记忆(已有解释)不进对话。数据还在盘上。
+    @Test("memory kinds owned by health stay out of the prompt when health is off")
+    func healthOwnedMemoryIsHidden() {
+        let stores = AssemblyFixtures.Stores()
+        defer { stores.remove() }
+
+        var scenario = AssemblyFixtures.Scenario(name: "memory", memory: AssemblyFixtures.sampleMemory)
+        #expect(AssemblyFixtures.systemText(scenario, stores: stores).contains("他觉得睡够 7 小时才算好"))
+        scenario.flags.health = false
+        let text = AssemblyFixtures.systemText(scenario, stores: stores)
+        #expect(!text.contains("他觉得睡够 7 小时才算好"))
+        #expect(text.contains("他上夜班，作息不固定"))
     }
 
     // MARK: - 工具

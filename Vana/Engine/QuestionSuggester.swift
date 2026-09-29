@@ -17,7 +17,7 @@ struct QuestionSuggester: Sendable {
     /// 一条正常的英文问题都过不了,三条凑不齐就整体退回本地那几条——表现正是英文界面上
     /// chip 永远是本地拼的那几句。提示词里的数字和校验必须是同一个。
     static var maxLineCharacters: Int {
-        HealthAssistantInstructions.replyLanguage == "English" ? 42 : 14
+        CoreInstructions.replyLanguage == "English" ? 42 : 14
     }
 
     /// 语言跟着界面走,和聊天回答同一个判据。不是 `let`:语言要在跑的那一刻读。
@@ -28,7 +28,7 @@ struct QuestionSuggester: Sendable {
 
     要求：
     - 只输出三行，每行一个问题，不要编号、不要引号、不要任何解释。
-    - 用\(HealthAssistantInstructions.replyLanguage)写——无论给出的数据用什么语言。\
+    - 用\(CoreInstructions.replyLanguage)写——无论给出的数据用什么语言。\
     口语，每行不超过 \(maxLineCharacters) 个字符，必须是用户会对自己健康数据提的问题。
     - 必须能用步数、睡眠、静息心率与 HRV、锻炼、体重体脂这几类数据回答。
     - 「从数据里读到的情况」按重要性排好了，第一条最该被问到；三个问题不要都问同一件事。

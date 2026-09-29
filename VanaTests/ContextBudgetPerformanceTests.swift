@@ -164,11 +164,11 @@ struct ContextBudgetPerformanceTests {
         let history = longConversation(turns: turns)
 
         let planner = ConversationHistoryPlanner(
-            systemInstruction: HealthAssistantInstructions.text(),
+            systemInstruction: CoreInstructions.text(),
             profile: Self.profile,
             reservedOutputTokens: AgentLoop.reservedOutputTokens(for: Self.profile),
-            compactor: .healthChat,
-            policy: .healthChat,
+            compactor: .vana,
+            policy: .vana,
             estimateMessageTokens: estimator.estimateMessages,
             estimateTokens: estimator.estimate
         )

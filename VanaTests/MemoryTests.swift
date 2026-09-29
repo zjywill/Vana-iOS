@@ -154,19 +154,19 @@ struct MemoryTests {
 
     @Test("the snapshot handed to the engine lands in the system prompt")
     func engineInjectsMemory() {
-        let engine = AIKitEngine(memory: MemorySnapshot(items: [
+        let engine = TestAssembly.engine(TestAssembly.environment(memory: MemorySnapshot(items: [
             MemoryItem(kind: .profile, text: "他上夜班")
-        ]))
+        ])))
         let instructions = engine.systemInstruction()
 
         #expect(instructions.contains("[长期情况] 他上夜班"))
-        // 记忆排在人格前面,而且不能把原本那份提示挤掉。
-        #expect(instructions.contains("你是 Vana 的健康助手。"))
+        // 记忆排在易变区,而且不能把原本那份提示挤掉。
+        #expect(instructions.contains("你是 Vana，用户的日常助手。"))
     }
 
     @Test("no memory leaves the system prompt exactly as it was")
     func engineWithoutMemoryIsUnchanged() {
-        #expect(!AIKitEngine().systemInstruction().contains("关于这位用户"))
+        #expect(!TestAssembly.engine().systemInstruction().contains("关于这位用户"))
     }
 
     @Test("no memory means no memory section in the system prompt")
@@ -386,7 +386,7 @@ struct MemoryTests {
             ChatMessage(role: .assistant, text: "已停止回复", textIsPlaceholder: true)
         ])
 
-        let transcript = MemoryExtractor.transcript(of: session)
+        let transcript = MemoryExtractor.transcript(of: session.messages)
         #expect(transcript.contains("我这周上夜班"))
         #expect(transcript.contains("平均 6 小时。"))
         // 「不要记数字」不能只靠提示词——工具结果压根不给它看,它就无从记起。
@@ -446,16 +446,13 @@ struct MemoryTests {
     /// 用户亲口说的那种事。两条都堵上,「这条对话不会被保存」才不是一句空话。
     @Test("a private session is not even offered the remember tool")
     func privateSessionsCannotWriteMemory() {
-        let session = ChatSession(isPrivate: true)
-        let engine = AIKitEngine(
-            capabilityRegistry: .healthChat(allowsMemoryWrites: !session.isPrivate)
-        )
+        let (stores, root) = TestAssembly.freshStores()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let engine = TestAssembly.engine(TestAssembly.environment(stores: stores), isPrivate: true)
         #expect(!engine.systemInstruction().contains(MemoryTools.rememberToolName))
 
         // 普通会话不受影响——把工具连带那段提示词一起关掉,是隐私会话独有的代价。
-        let normal = AIKitEngine(
-            capabilityRegistry: .healthChat(allowsMemoryWrites: !ChatSession().isPrivate)
-        )
+        let normal = TestAssembly.engine(TestAssembly.environment(stores: stores))
         #expect(
             normal.systemInstruction().contains(MemoryTools.rememberToolName)
                 == EngineSettings.memoryEnabled

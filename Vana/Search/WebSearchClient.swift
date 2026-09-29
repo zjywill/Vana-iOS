@@ -66,7 +66,7 @@ extension WebSearchClient {
     /// serper.dev,Google 搜索的一层薄封装。一次查询一个 credit。
     ///
     /// - Parameter apiKey: 只从 Keychain 来。没有 key 时**这个工具根本不挂出去**
-    ///   (见 `CapabilityRegistry.healthChat`),所以这里不处理空 key 的情况。
+    ///   (见 `WebSearchPlugin`),所以这里不处理空 key 的情况。
     static func serper(
         apiKey: String,
         session: URLSession = .shared,

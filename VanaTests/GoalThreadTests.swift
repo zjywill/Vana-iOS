@@ -179,24 +179,12 @@ struct GoalThreadTests {
 
     @Test("the goal is named in the system prompt, with a nudge to look further back")
     func goalReachesTheSystemPrompt() {
-        let engine = AIKitEngine(
-            goal: "把作息掰回来",
-            // 「往前翻」那句只有工具真挂着才说得出口。召回是按会话挂的,不是常驻能力。
-            capabilityRegistry: .healthChat(allowsRecall: true)
-        )
-        let instructions = engine.systemInstruction()
+        let instructions = TestAssembly.engine(TestAssembly.environment(goals: ["把作息掰回来"])).systemInstruction()
 
         // 不说这一句,模型会把它当成今天临时想问的一件事,而不是已经聊了三个星期的那件事。
         #expect(instructions.contains("把作息掰回来"))
-        #expect(instructions.contains(SessionRecallTools.searchToolName))
-
-        // 工具没挂出去时,那句指令必须跟着消失——对着一个不存在的工具发指令,模型只会调一次、
-        // 失败一次,再自己想办法圆场。
-        let locked = AIKitEngine(goal: "把作息掰回来").systemInstruction()
-        #expect(locked.contains("把作息掰回来"))
-        #expect(!locked.contains(SessionRecallTools.searchToolName))
         // 普通会话里不该多这一段。
-        #expect(!AIKitEngine().systemInstruction().contains("一件长期在做的事"))
+        #expect(!TestAssembly.engine().systemInstruction().contains("几件长期的事"))
     }
 
     // MARK: - view model

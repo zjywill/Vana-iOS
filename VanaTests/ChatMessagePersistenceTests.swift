@@ -90,7 +90,7 @@ struct ChatMessagePersistenceTests {
         #expect(artifact.visibleSummary == "最近睡得还行。")
         // 回放给模型的那份多带一段工具轨迹——这正是两者要分开存的原因。
         #expect(artifact.replaySummary.text.contains("sleep_summary"))
-        #expect(artifact.replaySummary.text.contains("折叠了 1 次健康查询"))
+        #expect(artifact.replaySummary.text.contains("折叠了 1 次工具调用"))
         #expect(round.toolCalls.first?.output == "08-01 7 小时 12 分")
     }
 

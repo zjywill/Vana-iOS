@@ -13,6 +13,16 @@ struct MemoryView: View {
     @State private var draft: MemoryDraft?
     @State private var isShowingClearConfirmation = false
     @State private var errorMessage: String?
+    @State private var query = ""
+
+    /// 搜索框从这么多条起才出现。条数少的时候它只是一行多余的控件。
+    private static let searchThreshold = 8
+
+    private var visibleItems: [MemoryItem] {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return items }
+        return items.filter { $0.text.localizedCaseInsensitiveContains(trimmed) }
+    }
 
     var body: some View {
         Form {
@@ -20,8 +30,8 @@ struct MemoryView: View {
                 Toggle("记住我说过的事", isOn: $memoryEnabled)
             } footer: {
                 Text("""
-                    开着时，Vana 会在对话结束后记下你的长期情况和表达偏好，并在之后的提问里带上。\
-                    关掉只是先不用，已经记下的还在下面，要删有单独的按钮。
+                    开着时，Vana 会从对话里记下你的长期情况、表达偏好和最近的事，并在之后的提问里带上。\
+                    关掉只是先不用，已经记下的还在下面，可以逐条删，也可以全部忘掉。
                     """)
             }
 
@@ -39,14 +49,14 @@ struct MemoryView: View {
                     ContentUnavailableView {
                         Label("还没有记住什么", systemImage: "brain")
                     } description: {
-                        Text("多聊几次之后，你的作息、身体限制和看重的指标会记在这里。也可以现在就自己加一条。")
+                        Text("多聊几次之后，你的作息、偏好和最近在忙的事会记在这里。也可以现在就自己加一条。")
                     }
                     .listRowBackground(Color.clear)
                 }
             }
 
             ForEach(MemoryKind.allCases) { kind in
-                let matching = items.filter { $0.kind == kind }
+                let matching = visibleItems.filter { $0.kind == kind }
                 if !matching.isEmpty {
                     Section {
                         ForEach(matching) { item in
@@ -63,7 +73,14 @@ struct MemoryView: View {
                     } header: {
                         Text(kind.title)
                     } footer: {
-                        Text(kind.hint)
+                        // 它的主人(健康插件)关着:数据还在,只是暂时不带进对话。不说的话,
+                        // 他会以为这几条还在起作用。
+                        if let owner = PluginRegistry.memoryOwner(kind),
+                           !EngineSettings.isPluginEnabled(owner.manifest.id) {
+                            Text("「\(owner.manifest.name)」关着，这一类暂不使用。重新打开就回来。")
+                        } else {
+                            Text(kind.hint)
+                        }
                     }
                 }
             }
@@ -78,12 +95,13 @@ struct MemoryView: View {
             } footer: {
                 Text("""
                     已记 \(items.count)/\(MemoryStore.maxItems) 条。\
-                    这里只记查不到的事——作息、限制、你的偏好；\
-                    步数、睡眠、心率这些每次都会重新查，不会记进来。\
+                    这里只记查不到的事——作息、限制、你的偏好、最近的事；\
+                    具体的数字每次都会重新查，不会记进来。\
                     \n对话时这些内容会随问题一起发给你选的模型 provider。
                     """)
             }
         }
+        .modifier(MemorySearch(query: $query, isShown: items.count >= Self.searchThreshold))
         .navigationTitle("Vana 记住的事")
         // 记忆也跟着当前成员走(`MemoryStore.shared`)。同用药表:看不见名字,用户会以为
         // 自己在改的是"Vana 对我的印象"。
@@ -110,7 +128,7 @@ struct MemoryView: View {
             Button("忘掉全部", role: .destructive) { removeAll() }
             Button("取消", role: .cancel) {}
         } message: {
-            Text("包括你自己添加的那些，无法撤销。健康数据本身不受影响。")
+            Text("包括你自己添加的那些，无法撤销。对话记录和其他数据不受影响。")
         }
         .task {
             guard !hasLoaded else { return }
@@ -135,24 +153,21 @@ struct MemoryView: View {
     /// 每条都要能回答「这句哪来的」。分不清是自己写的、自己让记的,还是模型自己记的,
     /// 用户就没法判断该不该信它。
     private func subtitle(_ item: MemoryItem) -> String {
-        var parts: [String]
-        switch item.origin {
-        case .manual: parts = [String(localized: "你写的")]
-        case .asked: parts = [String(localized: "你让我记的")]
-        case .extracted: parts = [String(localized: "从对话中记下")]
-        }
+        var parts = [item.originLabel]
         parts.append(item.updatedAt.formatted(.relative(presentation: .named)))
-        if let dueAt = item.dueAt {
+        if let dueAt = item.dueAt, item.kind.expires {
             let days = Calendar.current.dateComponents([.day], from: Date(), to: dueAt).day ?? 0
-            parts.append(days <= 0 ? String(localized: "该回头看了") : String(localized: "\(days) 天后回头看"))
+            if item.kind == .episode {
+                parts.append(days <= 0 ? String(localized: "今天淡出") : String(localized: "\(days) 天后淡出"))
+            } else {
+                parts.append(days <= 0 ? String(localized: "该回头看了") : String(localized: "\(days) 天后回头看"))
+            }
         }
         return parts.joined(separator: " · ")
     }
 
     private func save(_ draft: MemoryDraft) {
-        let dueAt = draft.kind == .followUp
-            ? Date().addingTimeInterval(Double(draft.days) * 86_400)
-            : nil
+        let dueAt = MemoryItem.dueDate(kind: draft.kind, days: draft.days, now: Date())
         perform {
             if let id = draft.editing {
                 return try await MemoryStore.shared.update(
@@ -197,6 +212,20 @@ struct MemoryView: View {
     }
 }
 
+/// 条数够多才出现的搜索框。
+private struct MemorySearch: ViewModifier {
+    @Binding var query: String
+    let isShown: Bool
+
+    func body(content: Content) -> some View {
+        if isShown {
+            content.searchable(text: $query, prompt: "搜索记忆")
+        } else {
+            content
+        }
+    }
+}
+
 /// 正在编辑(或新建)的一条。`editing` 为 nil 就是新建。
 struct MemoryDraft: Identifiable {
     let id = UUID()
@@ -233,7 +262,7 @@ private struct MemoryEditor: View {
                         .focused($isTextFocused)
                 } footer: {
                     Text("""
-                        一句话说清就行。不要写具体数字——步数、睡眠时长这些每次都会重新查，\
+                        一句话说清就行。不要写具体数字——那些每次都会重新查，\
                         写死在这里明天就是错的。
                         """)
                 }
@@ -245,8 +274,8 @@ private struct MemoryEditor: View {
                         }
                     }
 
-                    if draft.kind == .followUp {
-                        Picker("多久后回头看", selection: $draft.days) {
+                    if draft.kind.expires {
+                        Picker(draft.kind == .episode ? "多久后淡出" : "多久后回头看", selection: $draft.days) {
                             ForEach([3, 7, 14, 30, 60, 90], id: \.self) { days in
                                 Text("\(days) 天").tag(days)
                             }

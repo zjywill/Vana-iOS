@@ -1118,12 +1118,14 @@ final class ChatViewModel {
         // 用此刻盘上的记忆,不是这条会话开始时那份快照——中间可能已经抽过别的会话了,
         // 拿旧的会把同一件事再记一遍。
         let snapshot = await memoryStore.snapshot()
+        let environment = pluginEnvironment()
         let extractor = MemoryExtractor(
             providerId: settings.provider,
             model: settings.model,
-            snapshot: snapshot
+            snapshot: PluginRegistry.visibleMemory(snapshot, isEnabled: environment.isEnabled),
+            policy: PluginRegistry.memoryPolicy(environment)
         )
-        guard let operations = try? await extractor.operations(from: harvested) else { return }
+        guard let operations = try? await extractor.operations(from: harvested.messages) else { return }
         _ = try? await memoryStore.apply(operations, sessionId: harvested.id)
         try? await sessionStore.markMemoryHarvested(
             id: harvested.id,
@@ -1411,45 +1413,46 @@ final class ChatViewModel {
             return try engineFactory(session.topic)
         }
         let settings = try cloudSettings()
+        let environment = pluginEnvironment()
         return AIKitEngine(
             providerId: settings.provider,
             model: settings.model,
-            topic: session.topic,
-            // 家人成员在这儿多一块 system 段(「这不是用户本人,而且你读不到他的健康数据」),
-            // 而健康工具在下面一个都不挂。两处必须一起变:只挡工具不说话,模型会为了有话说
-            // 而猜一个数字;只说话不挡工具,它会去查,查回来的是机主的数字。
+            environment: environment,
+            // 写的那一头由 `PluginContext.isPrivate` 统一堵死:`remember`、用药表的两个写工具
+            // 在这条会话里根本不挂出去。
+            isPrivate: session.isPrivate,
+            // 他自己提起过去,才有「过去」可翻。没提就连工具都不挂——留着的话模型每轮都要
+            // 判一次要不要翻,而对话句句连着上一句,那个判断天然偏向"要"。
+            unlocked: SessionRecallTrigger.unlocksRecall(in: session.messages) ? [RecallPlugin.unlockTrigger] : [],
+            hooks: followUpHooks(settings)
+        )
+    }
+
+    /// 装配要用的全部输入。聊天和抽记忆都从这里取——抽取器要遵守的「哪些话题别记」
+    /// 得和聊天时实际挂出去的插件是同一份,不然两边各说各话。
+    private func pluginEnvironment() -> PluginEnvironment {
+        PluginEnvironment(
             tenant: tenant,
-            goal: session.thread?.isGoal == true ? session.threadTitle : nil,
+            recall: SessionRecallTools.registry(store: sessionStore, currentSessionId: session.id),
+            memoryStore: memoryStore,
             // 隐私会话照样**读**记忆:承诺的是不往盘上写,不是失忆。真要把已经知道的也关掉,
             // 用户恰恰是在想问点私密事的时候拿到一个不认识他的助手,那这个开关只会没人用。
             memory: memory,
+            // **每轮现取**:人会走动,而这块东西存在的理由正是「他此刻在哪」。没授权就是
+            // `.unknown`,那一段 system 段不发。
+            location: LocationProvider.shared.snapshot,
+            webSearch: .storedKey(),
+            exerciseLibrary: .shared,
+            // 这台设备的 HealthKit 只有机主一个人的数据。给家人挂上健康工具,模型会去查,
+            // 而查回来的是**机主的**数字——`HealthDataPlugin` 的 `dataScope` 兜着这一条。
+            includesHealthData: true,
+            medicationStore: medicationStore,
             // 用药表同理:隐私会话照样**读**——「他不能吃什么」这一条在想问点私密事的时候
             // 尤其不能关掉。承诺的是不留痕迹,不是不管他死活。
             medications: medications,
             focusMedication: focusMedication,
-            // **每轮现取**,不像上面几份绑在会话上:人会走动,而这块东西存在的理由正是
-            // 「他此刻在哪」。没授权就是 `.unknown`,那一段 system 段不发。
-            //
-            // 隐私会话照样带。它不往盘上写任何东西(承诺的是不留本机痕迹),而问题终究要发给
-            // 云端模型才有人回答——同记忆、同用药表。
-            location: LocationProvider.shared.snapshot,
-            // 写的那一头堵死:`remember` 在这条会话里根本不挂出去。
-            capabilityRegistry: .healthChat(
-                // 这台设备的 HealthKit 只有机主一个人的数据。给家人挂上健康工具,模型会去查,
-                // 而查回来的是**机主的**数字——它会一本正经地拿爸爸的静息心率解释妈妈的化验单,
-                // 并且不报错。
-                includesHealthTools: tenant.isOwner,
-                allowsMemoryWrites: !session.isPrivate,
-                // 他自己提起过去,才有「过去」可翻。没提就连工具都不挂——留着的话模型每轮都要
-                // 判一次要不要翻,而健康对话句句连着上一句,那个判断天然偏向"要"。
-                allowsRecall: SessionRecallTrigger.unlocksRecall(in: session.messages),
-                allowsMedicationWrites: !session.isPrivate,
-                memoryStore: memoryStore,
-                sessionStore: sessionStore,
-                medicationStore: medicationStore,
-                currentSessionId: session.id
-            ),
-            hooks: followUpHooks(settings)
+            topic: session.topic,
+            goals: session.thread?.isGoal == true ? [session.threadTitle].compactMap { $0 } : []
         )
     }
 

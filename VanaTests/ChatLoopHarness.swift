@@ -151,12 +151,12 @@ struct LoopEngine: AgentEngine {
                         client: client,
                         capabilities: capabilities,
                         systemInstruction: systemInstruction,
-                        compactor: .healthChat,
+                        compactor: .vana,
                         summarizer: summarizer,
-                        policy: .healthChat,
+                        policy: .vana,
                         retryPolicy: retryPolicy,
                         pendingInput: pendingInput,
-                        truncatedToolCallNotice: healthChatTruncatedToolCallNotice,
+                        truncatedToolCallNotice: truncatedToolCallNotice,
                         hooks: hooks
                     )
                     for try await event in loop.run(history: history.map(\.agentDTO)) {

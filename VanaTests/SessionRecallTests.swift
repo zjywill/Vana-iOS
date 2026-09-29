@@ -309,11 +309,14 @@ struct SessionRecallTests {
 
     @Test("a locked conversation carries no recall tools at all")
     func lockedRegistryHasNoRecallTools() {
-        let locked = CapabilityRegistry.healthChat(allowsRecall: false)
+        let (stores, root) = TestAssembly.freshStores()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let environment = TestAssembly.environment(stores: stores, recall: true)
+        let locked = TestAssembly.engine(environment, unlocked: []).capabilityRegistry
         #expect(locked.definition(named: SessionRecallTools.searchToolName) == nil)
         #expect(locked.definition(named: SessionRecallTools.readToolName) == nil)
 
-        let unlocked = CapabilityRegistry.healthChat(allowsRecall: true)
+        let unlocked = TestAssembly.engine(environment).capabilityRegistry
         // 记忆开关仍然管着它:关掉记忆的人不会指望 Vana 还在引用他上个月说过的话。
         #expect(unlocked.definition(named: SessionRecallTools.searchToolName) != nil
             || !EngineSettings.memoryEnabled)

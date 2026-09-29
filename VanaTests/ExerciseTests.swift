@@ -316,24 +316,22 @@ struct ExerciseTests {
     /// 不落盘、不联网,而那正是这个 app 里少有的、在家人身上完整成立的健康建议。
     @Test("家人成员那条路上照样挂得出去")
     func availableWithoutHealthTools() {
-        let registry = CapabilityRegistry.healthChat(includesHealthTools: false)
+        let mom = Tenant(name: "妈妈", kind: .managed)
+        let registry = TestAssembly.engine(TestAssembly.environment(tenant: mom)).capabilityRegistry
         #expect(registry.definitions.contains { $0.name == ExerciseTools.suggestToolName })
     }
 
     /// 隐私会话承诺的是不留本机痕迹,而这个工具一个字都不往盘上写。
     @Test("隐私会话照挂")
     func availableInPrivateSessions() {
-        let registry = CapabilityRegistry.healthChat(
-            allowsMemoryWrites: false,
-            allowsMedicationWrites: false
-        )
+        let registry = TestAssembly.engine(isPrivate: true).capabilityRegistry
         #expect(registry.definitions.contains { $0.name == ExerciseTools.suggestToolName })
     }
 
     /// 只挂工具不说话,模型不会想到去调;说了话不挂工具,它会调一个不存在的东西。
     @Test("系统提示里那几句都在")
     func instructionsMentionTheTool() {
-        let text = HealthAssistantInstructions.text()
+        let text = TestAssembly.engine().systemInstruction()
         #expect(text.contains(ExerciseTools.suggestToolName))
         #expect(text.contains("只推荐它返回的动作"))
         #expect(text.contains("excludeJoint"))

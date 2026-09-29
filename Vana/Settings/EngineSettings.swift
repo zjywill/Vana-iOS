@@ -107,6 +107,42 @@ enum EngineSettings {
         UserDefaults.standard.object(forKey: medicationsEnabledKey) as? Bool ?? true
     }
 
+    /// 健康插件的总开关。默认开。关掉之后 system 段和全部工具定义里一个健康词都没有
+    /// (`PromptAssemblyTests` 盯着),只留核心那两条不分话题的安全底线;用药表、家人档案这些
+    /// 数据一条不动,重新打开就回来。
+    static let healthEnabledKey = "plugin.health"
+    static let notesEnabledKey = "plugin.notes"
+
+    /// 插件开关。**一处定义**:装配、抽取器、插件页读的都是它。子开关(用药表)和记忆沿用各自
+    /// 原来的键——那两个早就存在于已装设备上,换键名等于替用户把开关拨回默认。
+    @Sendable
+    static func isPluginEnabled(_ id: String) -> Bool {
+        isPluginEnabled(id, defaults: .standard)
+    }
+
+    static func isPluginEnabled(_ id: String, defaults: UserDefaults) -> Bool {
+        switch id {
+        case PluginIds.core: true
+        case PluginIds.memory: defaults.object(forKey: memoryEnabledKey) as? Bool ?? true
+        case PluginIds.healthMedications: defaults.object(forKey: medicationsEnabledKey) as? Bool ?? true
+        case PluginIds.health: defaults.object(forKey: healthEnabledKey) as? Bool ?? true
+        case PluginIds.notes: defaults.object(forKey: notesEnabledKey) as? Bool ?? true
+        default: false
+        }
+    }
+
+    static func key(forPlugin id: String) -> String? {
+        switch id {
+        case PluginIds.memory: memoryEnabledKey
+        case PluginIds.healthMedications: medicationsEnabledKey
+        case PluginIds.health: healthEnabledKey
+        case PluginIds.notes: notesEnabledKey
+        default: nil
+        }
+    }
+
+    static var healthEnabled: Bool { isPluginEnabled(PluginIds.health) }
+
     /// 照片原图默认发不发。**只是默认**——每一张在核对面板里都还能单独翻。
     ///
     /// 做成设置项而不是写死在「认不出字才发」上,是因为那条规则替用户做完了两个决定:

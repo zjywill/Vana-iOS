@@ -146,7 +146,7 @@ struct WebSearchTests {
         // 健康结论说不出处,和编的没区别。
         #expect(text.contains("出处"))
         // 和记忆块、用药块末尾那句同源:搜回来的是别人的一般说法,不是他的数据。
-        #expect(text.contains("以本次健康工具返回的为准"))
+        #expect(text.contains("以他自己说的和本次工具返回的为准"))
         #expect(outcome.isError == false)
     }
 
@@ -195,16 +195,16 @@ struct WebSearchTests {
     func noKeyNoTool() {
         // 给一个只会报错的工具,模型得先调一次才知道不行,用户白等一个往返。key 的有无
         // 本身就是这个功能的开关,不另做一个。
-        let without = CapabilityRegistry.healthChat(webSearch: nil)
+        let without = TestAssembly.engine().capabilityRegistry
         #expect(without.definition(named: WebSearchTools.searchToolName) == nil)
 
-        let with = CapabilityRegistry.healthChat(webSearch: Self.client(WebSearchResults(query: "")))
+        let with = TestAssembly.engine(TestAssembly.environment(webSearch: Self.client(WebSearchResults(query: "")))).capabilityRegistry
         #expect(with.definition(named: WebSearchTools.searchToolName) != nil)
     }
 
     @Test("the tool description tells the model when not to search")
     func descriptionNarrowsUse() throws {
-        let registry = CapabilityRegistry.healthChat(webSearch: Self.client(WebSearchResults(query: "")))
+        let registry = TestAssembly.engine(TestAssembly.environment(webSearch: Self.client(WebSearchResults(query: "")))).capabilityRegistry
         let description = try #require(registry.definition(named: WebSearchTools.searchToolName)?.description)
 
         // 判据是「能不能返回模型没有的东西」,不是「让答案显得更权威」。写成「不确定时就搜」
@@ -217,18 +217,10 @@ struct WebSearchTests {
     @Test("the system prompt only mentions searching when the tool is mounted")
     func promptFollowsTheRegistry() {
         // 对着一个没挂出去的工具发指令,模型只会调一次、失败一次,再自己想办法圆场。
-        let silent = AIKitEngine(
-            providerId: "anthropic",
-            model: "claude-sonnet-5",
-            capabilityRegistry: .healthChat(webSearch: nil)
-        )
+        let silent = TestAssembly.engine()
         #expect(!silent.systemInstruction().contains(WebSearchTools.searchToolName))
 
-        let loud = AIKitEngine(
-            providerId: "anthropic",
-            model: "claude-sonnet-5",
-            capabilityRegistry: .healthChat(webSearch: Self.client(WebSearchResults(query: "")))
-        )
+        let loud = TestAssembly.engine(TestAssembly.environment(webSearch: Self.client(WebSearchResults(query: ""))))
         #expect(loud.systemInstruction().contains(WebSearchTools.searchToolName))
     }
 }

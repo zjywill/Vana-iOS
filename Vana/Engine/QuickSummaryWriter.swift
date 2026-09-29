@@ -33,10 +33,10 @@ struct QuickSummaryWriter: Sendable {
     /// 一直没换掉"(8-27 记的「首屏那段状态摘要仍是中文」,一半根子就在这:提示词写死了
     /// 中文)。提示词里的数字和这里必须是同一个。
     static var maxCharacters: Int {
-        HealthAssistantInstructions.replyLanguage == "English" ? 360 : 160
+        CoreInstructions.replyLanguage == "English" ? 360 : 160
     }
 
-    /// 语言跟着界面走(`HealthAssistantInstructions.replyLanguage`,和聊天回答同一个判据)。
+    /// 语言跟着界面走(`CoreInstructions.replyLanguage`,和聊天回答同一个判据)。
     /// 不是 `let`:语言要在跑的那一刻读。
     private static var instructions: String {
         """
@@ -45,7 +45,7 @@ struct QuickSummaryWriter: Sendable {
 
     要求：
     - 先说清楚**他现在是什么状况**，把给出的关键数值说出来；然后才说要不要在意。
-    - 用\(HealthAssistantInstructions.replyLanguage)写——无论下面给出的事实用什么语言。\
+    - 用\(CoreInstructions.replyLanguage)写——无论下面给出的事实用什么语言。\
     两到四句，写成一段，不要换行，总共不超过 \(maxCharacters) 个字符。
     - 只能用下面给出的事实。**不许出现事实里没有的数字**，也不要把给出的数字换算成别的说法。
     - 数据平稳就照实说平稳，不要为了有话说把常态写成异常；也不要反过来宣布「一切正常」——\

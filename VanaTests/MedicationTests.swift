@@ -239,7 +239,9 @@ struct MedicationTests {
         defaults.set(false, forKey: EngineSettings.medicationsEnabledKey)
         defer { defaults.removeObject(forKey: EngineSettings.medicationsEnabledKey) }
 
-        let registry = CapabilityRegistry.healthChat(medicationStore: Self.freshStore())
+        let (stores, root) = TestAssembly.freshStores()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let registry = TestAssembly.engine(TestAssembly.environment(stores: stores)).capabilityRegistry
         #expect(registry.definition(named: MedicationTools.listToolName) == nil)
         #expect(registry.definition(named: MedicationTools.logToolName) == nil)
         #expect(registry.definition(named: MedicationTools.updateToolName) == nil)
@@ -247,13 +249,14 @@ struct MedicationTests {
 
     @Test("清单真的进了 system 段，写工具的指令也跟着挂上")
     func snapshotReachesTheSystemPrompt() {
-        let registry = CapabilityRegistry.healthChat(medicationStore: Self.freshStore())
-        let engine = AIKitEngine(
+        let (stores, root) = TestAssembly.freshStores()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let engine = TestAssembly.engine(TestAssembly.environment(
+            stores: stores,
             medications: MedicationSnapshot(items: [
                 MedicationItem(name: "青霉素", status: .cannotTake, reason: "过敏")
-            ]),
-            capabilityRegistry: registry
-        )
+            ])
+        ))
         let instruction = engine.systemInstruction()
         #expect(instruction.contains("青霉素"))
         #expect(instruction.contains("绝对不要提"))
@@ -263,15 +266,14 @@ struct MedicationTests {
 
     @Test("以某一条为话题时，focus 进 system 段且不带剂量建议")
     func focusMedicationReachesTheSystemPrompt() {
-        let engine = AIKitEngine(
+        let engine = TestAssembly.engine(TestAssembly.environment(
             focusMedication: MedicationItem(
                 name: "褪黑素",
                 status: .tried,
                 reason: "睡不着",
                 outcome: "试了两周没感觉"
-            ),
-            capabilityRegistry: .empty
-        )
+            )
+        ))
         let instruction = engine.systemInstruction()
         #expect(instruction.contains("这条对话围绕他记下的「褪黑素」"))
         #expect(instruction.contains("试了两周没感觉"))
@@ -332,8 +334,20 @@ struct MedicationTests {
     @Test("抽取器被告知用药不归它管")
     func extractorIsToldToStayOut() {
         // 两条写入路径落到同一件事上,就是两份会各自被改的记录,而对不上的那次可能是禁忌。
-        #expect(MemoryExtractor.instructions.contains("他在吃什么药或补剂"))
-        #expect(MemoryExtractor.instructions.contains("有专门的地方存"))
+        // 这句话是用药插件在它**真的存着**的时候带来的,核心不认识它。
+        let (stores, root) = TestAssembly.freshStores()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let policy = PluginRegistry.memoryPolicy(TestAssembly.environment(stores: stores))
+        let instructions = MemoryExtractor.instructions(policy: policy)
+        #expect(instructions.contains("用药与补剂"))
+        #expect(instructions.contains("有专门的地方存"))
+
+        // 用药表关了,「我不能吃布洛芬」就该老老实实进记忆。
+        let off = PluginRegistry.memoryPolicy(TestAssembly.environment(
+            stores: stores,
+            isEnabled: { $0 != PluginIds.healthMedications }
+        ))
+        #expect(!MemoryExtractor.instructions(policy: off).contains("用药与补剂"))
     }
 
     // MARK: - 一般说明

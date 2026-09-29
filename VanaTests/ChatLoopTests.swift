@@ -259,7 +259,7 @@ struct ChatLoopTests {
         #expect(!client.lastPromptContains(oldOutput))
         #expect(client.lastPromptContains(newOutput))
         #expect(client.lastPromptText.contains("上个月平均一天 9,100 步。"))
-        #expect(client.lastPromptText.contains("折叠了 1 次健康查询"))
+        #expect(client.lastPromptText.contains("折叠了 1 次工具调用"))
         #expect(client.lastPromptText.contains("那这周呢"))
 
         let context = try #require(viewModel.messages.last?.context)

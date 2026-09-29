@@ -297,11 +297,12 @@ struct ComplianceTests {
 
     // MARK: - 急症规则
 
-    /// 这三条是 system 段里唯一「先别答」的规则,而且**对家人成员一样发**——他那边健康工具
+    /// 急症那条是 system 段里唯一「先别答」的规则,而且**对家人成员一样发**——他那边 Apple 健康
     /// 整组不挂,但描述胸痛的可能正是他。
     @Test("急症规则两种成员都发", arguments: [true, false])
-    func emergencyRuleIsAlwaysSent(hasHealthData: Bool) {
-        let text = HealthAssistantInstructions.text(hasHealthData: hasHealthData)
+    func emergencyRuleIsAlwaysSent(isOwner: Bool) {
+        let tenant: Tenant = isOwner ? .owner() : Tenant(name: "妈妈", kind: .managed)
+        let text = TestAssembly.engine(TestAssembly.environment(tenant: tenant)).systemInstruction()
         #expect(text.contains("急症优先于一切"))
         #expect(text.contains("急救电话"))
         #expect(text.contains("胸痛"))
@@ -311,20 +312,36 @@ struct ComplianceTests {
         #expect(text.contains("方法性"))
     }
 
+    /// 核心那两条安全底线不分话题:健康关掉之后照样在。
+    @Test("安全底线不跟着健康插件走")
+    func safetyFloorIsCore() {
+        let text = CoreInstructions.text()
+        #expect(text.contains("拨打当地急救电话"))
+        #expect(text.contains("伤害自己"))
+        #expect(text.contains("危机热线"))
+        #expect(!text.contains("胸痛"))
+    }
+
     /// 少了这一条,助手会把每一次疲劳都升级成急诊建议——那等于没有前面两条。
     @Test("急症规则自带一条别滥用")
     func emergencyRuleIsBounded() {
-        let text = HealthAssistantInstructions.text()
-        #expect(text.contains("不要滥用"))
-        #expect(text.contains("疲劳"))
+        #expect(CoreInstructions.text().contains("不要滥用"))
+        let health = HealthInstructions.rules()
+        #expect(health.contains("不要滥用"))
+        #expect(health.contains("疲劳"))
     }
 
-    /// 排在所有规则最前面。排到第十条和没写没有区别。
+    /// 安全底线排在核心规则最前面,急症那条排在健康规则最前面。排到第十条和没写没有区别。
     @Test("急症规则排在第一条")
     func emergencyRuleComesFirst() throws {
-        let text = HealthAssistantInstructions.text()
+        let core = CoreInstructions.text()
+        let floor = try #require(core.range(of: "人身安全优先于一切"))
+        let quoting = try #require(core.range(of: "只引用用户提供或工具实际返回的数字"))
+        #expect(floor.lowerBound < quoting.lowerBound)
+
+        let text = TestAssembly.engine().systemInstruction()
         let emergency = try #require(text.range(of: "急症优先于一切"))
-        for later in ["先调用合适的健康工具", "只引用工具实际返回的数字", "不要做医疗诊断"] {
+        for later in ["先调用合适的健康工具", "不要做医疗诊断"] {
             let range = try #require(text.range(of: later), "\(later) 不在提示词里了")
             #expect(emergency.lowerBound < range.lowerBound, "急症那条掉到「\(later)」后面去了")
         }

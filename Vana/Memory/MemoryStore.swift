@@ -1,4 +1,5 @@
 import Foundation
+import AgentRuntime
 
 /// 记忆持久化:`Documents/memory.json`,一个文件装下全部。
 ///
@@ -21,14 +22,19 @@ actor MemoryStore {
     static let followUpGrace: TimeInterval = 3 * 86_400
 
     private let fileURL: URL
+    private let backupURL: URL
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
-    /// 读盘结果留在 actor 里。每开一条会话都去解一次 JSON 没必要,而所有写入都从这里过,
+    /// 读盘结果留在 actor 里。每轮都去解一次 JSON 没必要,而所有写入都从这里过,
     /// 缓存不会和文件漂移。
     private var cached: [MemoryItem]?
+    /// 本版本认不得的条目(更新版本写下的新种类、损坏的一条)。原样留着,下次写盘时一并写回去——
+    /// 读不懂不是删掉它的理由。
+    private var foreign: [RuntimeJSONValue] = []
 
     init(directory: URL = URL.documentsDirectory) {
         fileURL = directory.appending(path: "memory.json", directoryHint: .notDirectory)
+        backupURL = directory.appending(path: "memory.json.bak", directoryHint: .notDirectory)
         decoder.dateDecodingStrategy = .iso8601
         encoder.dateEncodingStrategy = .iso8601
     }
@@ -42,7 +48,7 @@ actor MemoryStore {
     /// 早就过了宽限期的在读的时候滤掉,但不为此单独写一次盘——下一次真正的写入会把它
     /// 带走。为了删一条旧记忆去动文件,是拿一次 I/O 换一件没人看得见的事。
     func items(now: Date = Date()) -> [MemoryItem] {
-        loaded().filter { !$0.hasExpired(at: now, grace: Self.followUpGrace) }
+        loaded().filter { !$0.hasExpired(at: now) }
     }
 
     // MARK: - 用户手改 / 对话里明确要求
@@ -65,9 +71,52 @@ actor MemoryStore {
             text: trimmed,
             origin: origin,
             sourceSessionId: sourceSessionId,
-            dueAt: kind == .followUp ? dueAt : nil
+            dueAt: kind.expires ? dueAt : nil
         ))
         return try persist(all)
+    }
+
+    /// 对话里当场记一条(`remember`)。返回真的落下的那一条;容量满了被挤掉就是 nil,
+    /// 那种情况下不能回「已记住」。
+    func remember(
+        kind: MemoryKind,
+        text: String,
+        days: Int? = nil,
+        now: Date = Date()
+    ) throws -> MemoryItem? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let item = MemoryItem(
+            kind: kind,
+            text: trimmed,
+            createdAt: now,
+            updatedAt: now,
+            origin: .asked,
+            dueAt: MemoryItem.dueDate(kind: kind, days: days, now: now)
+        )
+        var all = loaded()
+        all.append(item)
+        return try persist(all, now: now).first { $0.id == item.id }
+    }
+
+    /// 用户在对话里纠正了一条(`revise_memory`)。后台抽出来的条目被他当面改过,就成了他说的话:
+    /// 从此受保护,不再被抽取器改回去。
+    @discardableResult
+    func revise(id: UUID, text: String, now: Date = Date()) throws -> MemoryItem? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        var all = loaded()
+        guard let index = all.firstIndex(where: { $0.id == id }) else { return nil }
+        all[index].text = trimmed
+        all[index].updatedAt = now
+        if all[index].origin == .extracted { all[index].origin = .asked }
+        let revised = all[index]
+        _ = try persist(all, now: now)
+        return revised
+    }
+
+    func item(id: UUID) -> MemoryItem? {
+        loaded().first { $0.id == id }
     }
 
     /// 改过的一律算手写:用户校对过的说法,比抽取器下次的判断可信。
@@ -81,8 +130,8 @@ actor MemoryStore {
         all[index].text = trimmed
         all[index].updatedAt = Date()
         all[index].origin = .manual
-        // 改成别的类别就没有「回头看」这回事了,留着一个看不见的到期时间,记忆会莫名其妙地消失。
-        all[index].dueAt = kind == .followUp ? (dueAt ?? all[index].dueAt) : nil
+        // 改成别的类别就没有「到期」这回事了,留着一个看不见的到期时间,记忆会莫名其妙地消失。
+        all[index].dueAt = kind.expires ? (dueAt ?? all[index].dueAt) : nil
         return try persist(all)
     }
 
@@ -91,9 +140,11 @@ actor MemoryStore {
         try persist(loaded().filter { $0.id != id })
     }
 
+    /// 「忘掉全部」。连本版本读不懂的条目一起清:用户点的是忘掉,不是「忘掉我看得见的那部分」。
     @discardableResult
     func removeAll() throws -> [MemoryItem] {
-        try persist([])
+        foreign = []
+        return try persist([])
     }
 
     // MARK: - 抽取器写
@@ -116,8 +167,10 @@ actor MemoryStore {
             case .add(let kind, let text, let expiresInDays):
                 let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { break }
-                // 一模一样的一条别再加。模型偶尔会把上一轮记过的话重说一遍,那不是新事实。
-                guard !all.contains(where: { $0.text == trimmed && $0.kind == kind }) else { break }
+                // 同一句别再加。模型偶尔会把上一轮记过的话重说一遍,那不是新事实——去掉空白和
+                // 标点再比:「不吃香菜。」和「不吃 香菜」以前会各记一条。
+                let key = MemoryItem.normalized(trimmed)
+                guard !all.contains(where: { $0.kind == kind && MemoryItem.normalized($0.text) == key }) else { break }
                 all.append(MemoryItem(
                     kind: kind,
                     text: trimmed,
@@ -125,9 +178,7 @@ actor MemoryStore {
                     updatedAt: now,
                     origin: .extracted,
                     sourceSessionId: sessionId,
-                    dueAt: kind == .followUp
-                        ? expiresInDays.map { now.addingTimeInterval(Double($0) * 86_400) }
-                        : nil
+                    dueAt: MemoryItem.dueDate(kind: kind, days: expiresInDays, now: now)
                 ))
             case .update(let id, let text):
                 let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -150,17 +201,40 @@ actor MemoryStore {
 
     // MARK: - 存
 
+    /// 逐条解码:本版本认不得的条目不会拖垮整份文件,也不会在下一次保存时被悄悄丢掉。
+    /// 整份文件读不出来时先备份成 `memory.json.bak` 再往下走——以前是 `try? decode` 失败就当空的,
+    /// 下一次保存就把一份读不出来的文件覆盖成空的。
     private func loaded() -> [MemoryItem] {
         if let cached { return cached }
-        guard let data = try? Data(contentsOf: fileURL),
-              let items = try? decoder.decode([MemoryItem].self, from: data)
-        else {
+        guard let data = try? Data(contentsOf: fileURL) else {
             cached = []
             return []
+        }
+        guard let elements = try? decoder.decode([RuntimeJSONValue].self, from: data) else {
+            backUpUnreadable()
+            cached = []
+            return []
+        }
+        var items: [MemoryItem] = []
+        foreign = []
+        for element in elements {
+            if let encoded = try? JSONEncoder().encode(element),
+               let item = try? decoder.decode(MemoryItem.self, from: encoded) {
+                items.append(item)
+            } else {
+                foreign.append(element)
+            }
         }
         let normalized = Self.sorted(items)
         cached = normalized
         return normalized
+    }
+
+    /// 只留第一份:之后再坏的文件不该盖掉当初还读得出来的那份。
+    private func backUpUnreadable() {
+        let manager = FileManager.default
+        guard !manager.fileExists(atPath: backupURL.path(percentEncoded: false)) else { return }
+        try? manager.copyItem(at: fileURL, to: backupURL)
     }
 
     @discardableResult
@@ -171,7 +245,12 @@ actor MemoryStore {
             at: fileURL.deletingLastPathComponent(),
             withIntermediateDirectories: true
         )
-        try encoder.encode(kept).write(to: fileURL, options: .atomic)
+        var elements: [RuntimeJSONValue] = []
+        for item in kept {
+            let data = try encoder.encode(item)
+            elements.append(try JSONDecoder().decode(RuntimeJSONValue.self, from: data))
+        }
+        try encoder.encode(elements + foreign).write(to: fileURL, options: .atomic)
         return kept
     }
 
@@ -189,24 +268,35 @@ actor MemoryStore {
         }
     }
 
-    /// 淘汰顺序:先扔过期的,再从最久没更新的自动记忆里扔。
+    /// 淘汰顺序:先扔过期的,近况超过自己的上限先淡掉最旧的,再从最久没更新的自动记忆里扔。
     ///
     /// `pinned` 的永远不扔。全满了又全是用户手写的,就停止接收新的自动记忆——宁可学不到
     /// 新东西,也不能把用户自己写的挤掉。设置页里能看到条数,满了让他自己删。
     private static func evicting(_ items: [MemoryItem], now: Date) -> [MemoryItem] {
-        var kept = items.filter { !$0.hasExpired(at: now, grace: followUpGrace) }
+        var kept = items.filter { !$0.hasExpired(at: now) }
+
+        /// 淘汰 `candidates` 里最旧的一条**不受保护的**;都受保护就不动,返回 false。
+        func evictOldest(where candidates: (MemoryItem) -> Bool) -> Bool {
+            guard let victim = kept
+                .filter({ candidates($0) && !$0.pinned })
+                .min(by: { $0.updatedAt < $1.updatedAt }),
+                let index = kept.firstIndex(where: { $0.id == victim.id })
+            else { return false }
+            kept.remove(at: index)
+            return true
+        }
+
+        // 近况先按自己的上限淡掉:它是「最近的事」,攒到十条以上就不是近况了。
+        while kept.count(where: { $0.kind == .episode }) > MemoryItem.maxEpisodes {
+            guard evictOldest(where: { $0.kind == .episode }) else { break }
+        }
 
         func isOverCapacity() -> Bool {
             kept.count > maxItems || kept.reduce(0) { $0 + $1.text.count } > maxCharacters
         }
 
         while isOverCapacity() {
-            guard let victim = kept
-                .filter({ !$0.pinned })
-                .min(by: { $0.updatedAt < $1.updatedAt }),
-                let index = kept.firstIndex(where: { $0.id == victim.id })
-            else { break }
-            kept.remove(at: index)
+            guard evictOldest(where: { _ in true }) else { break }
         }
 
         return kept

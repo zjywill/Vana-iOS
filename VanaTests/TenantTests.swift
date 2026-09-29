@@ -167,14 +167,8 @@ struct TenantTests {
     func managedTenantGetsNoHealthTools() async throws {
         let parent = Self.freshParent()
         let stores = TenantStores(root: parent)
-        let registry = CapabilityRegistry.healthChat(
-            includesHealthTools: false,
-            allowsMemoryWrites: false,
-            memoryStore: stores.memory,
-            sessionStore: stores.sessions,
-            medicationStore: stores.medications,
-            webSearch: nil
-        )
+        let mom = Tenant(name: "妈妈", kind: .managed)
+        let registry = TestAssembly.engine(TestAssembly.environment(tenant: mom, stores: stores)).capabilityRegistry
         let names = Set(registry.definitions.map(\.name))
         for tool in HealthTools.all {
             #expect(!names.contains(tool.name), "家人身上不该挂 \(tool.name)")
@@ -187,14 +181,7 @@ struct TenantTests {
     func ownerKeepsHealthTools() async throws {
         let parent = Self.freshParent()
         let stores = TenantStores(root: parent)
-        let registry = CapabilityRegistry.healthChat(
-            includesHealthTools: true,
-            allowsMemoryWrites: false,
-            memoryStore: stores.memory,
-            sessionStore: stores.sessions,
-            medicationStore: stores.medications,
-            webSearch: nil
-        )
+        let registry = TestAssembly.engine(TestAssembly.environment(stores: stores)).capabilityRegistry
         let names = Set(registry.definitions.map(\.name))
         for tool in HealthTools.all {
             #expect(names.contains(tool.name))
@@ -205,13 +192,13 @@ struct TenantTests {
 
     @Test("机主不带身份块——不为一件已经成立的事花 token")
     func ownerHasNoIdentityBlock() {
-        #expect(Tenant.owner().instructionBlock == nil)
+        #expect(HealthInstructions.familyBlock(Tenant.owner()) == nil)
     }
 
     @Test("家人的身份块说清三件事：不是本人、读不到他的数据、要数值就让他拍一张")
     func managedTenantIdentityBlockCarriesTheThreeRules() throws {
         let mom = Tenant(name: "妈妈", kind: .managed, ageBand: .senior)
-        let block = try #require(mom.instructionBlock)
+        let block = try #require(HealthInstructions.familyBlock(mom))
         #expect(block.contains("妈妈"))
         #expect(block.contains("不是用户本人"))
         #expect(block.contains("读不到"))
@@ -224,17 +211,7 @@ struct TenantTests {
         let parent = Self.freshParent()
         let stores = TenantStores(root: parent)
         let mom = Tenant(name: "妈妈", kind: .managed)
-        let engine = AIKitEngine(
-            tenant: mom,
-            capabilityRegistry: .healthChat(
-                includesHealthTools: false,
-                allowsMemoryWrites: false,
-                memoryStore: stores.memory,
-                sessionStore: stores.sessions,
-                medicationStore: stores.medications,
-                webSearch: nil
-            )
-        )
+        let engine = TestAssembly.engine(TestAssembly.environment(tenant: mom, stores: stores))
         let instruction = engine.systemInstruction()
         #expect(instruction.contains("不是用户本人"))
         // 对着一个没挂出去的工具发指令,模型只会调一次、失败一次,再自己想办法圆场。
@@ -246,16 +223,7 @@ struct TenantTests {
     func ownerSystemInstructionKeepsHealthToolRules() async throws {
         let parent = Self.freshParent()
         let stores = TenantStores(root: parent)
-        let engine = AIKitEngine(
-            tenant: .owner(),
-            capabilityRegistry: .healthChat(
-                allowsMemoryWrites: false,
-                memoryStore: stores.memory,
-                sessionStore: stores.sessions,
-                medicationStore: stores.medications,
-                webSearch: nil
-            )
-        )
+        let engine = TestAssembly.engine(TestAssembly.environment(stores: stores))
         let instruction = engine.systemInstruction()
         #expect(instruction.contains("先调用合适的健康工具"))
         #expect(!instruction.contains("不是用户本人"))

@@ -5,54 +5,65 @@ import AgentRuntime
 
 /// 「这一轮到底给了模型什么」的测试夹具:同一批场景,喂给装配契约测试和黄金测试。
 ///
-/// **往插件系统重构时,这个文件是唯一要改的地方。** `Flags` 到 `healthChat(...)` 参数的映射在
-/// `makeRegistry(_:stores:)` 里,系统提示的拼装在 `systemText(_:stores:)` 里;两套测试只认
-/// `Flags` 和 `Scenario`,不认装配函数的签名。装配换了形状,这里改一处映射,断言一条不用动——
-/// 这就是它存在的意义。
+/// **装配换了形状,这个文件是唯一要改的地方。** `Flags` 到装配环境的映射在 `engine(_:stores:)`
+/// 里;两套测试只认 `Flags` 和 `Scenario`,不认装配函数的签名。
 enum AssemblyFixtures {
 
     // MARK: - 输入
 
-    /// 影响「挂哪些工具、发哪几段话」的全部输入。前六项是 `healthChat(...)` 的参数,后两项是
-    /// `EngineSettings` 里的全局开关(存在 UserDefaults,装配时现读)。
+    /// 影响「挂哪些工具、发哪几段话」的全部开关。插件开关直接交给装配环境的 `isEnabled`,
+    /// 不去改 UserDefaults——那是别的测试也在读的全局状态。
     struct Flags: Equatable, Sendable, CustomStringConvertible {
-        var includesHealthTools = true
-        var allowsMemoryWrites = true
-        var allowsRecall = false
-        var allowsMedicationWrites = true
-        var asksUser = true
+        var health = true
+        var memoryOn = true
+        var medicationsOn = true
         var webSearch = false
-        var memoryEnabled = true
-        var medicationsEnabled = true
+        /// 有看不见的历史可翻(召回挂出去的前提)。
+        var recall = false
+        var isPrivate = false
+        var background = false
+        var owner = true
 
         /// 什么都挂上。
-        static let allOn = Flags(allowsRecall: true, webSearch: true)
+        static let allOn = Flags(webSearch: true, recall: true)
 
         var description: String {
             [
-                "health=\(includesHealthTools.bit)",
-                "memoryWrites=\(allowsMemoryWrites.bit)",
-                "recall=\(allowsRecall.bit)",
-                "medWrites=\(allowsMedicationWrites.bit)",
-                "asks=\(asksUser.bit)",
+                "health=\(health.bit)",
+                "memory=\(memoryOn.bit)",
+                "meds=\(medicationsOn.bit)",
                 "web=\(webSearch.bit)",
-                "memoryOn=\(memoryEnabled.bit)",
-                "medsOn=\(medicationsEnabled.bit)"
+                "recall=\(recall.bit)",
+                "private=\(isPrivate.bit)",
+                "background=\(background.bit)",
+                "owner=\(owner.bit)"
             ].joined(separator: " ")
+        }
+
+        var isEnabled: @Sendable (String) -> Bool {
+            let flags = self
+            return { id in
+                switch id {
+                case PluginIds.core: true
+                case PluginIds.health: flags.health
+                case PluginIds.memory: flags.memoryOn
+                case PluginIds.healthMedications: flags.medicationsOn
+                default: true
+                }
+            }
         }
     }
 
-    /// 一次完整的装配输入:谁在聊、快照里有什么、聊什么。
+    /// 一次完整的装配输入:谁在聊、快照里有什么。
     struct Scenario {
         var name: String
-        var tenant: Tenant = .owner()
+        var tenant: Tenant?
         var flags = Flags()
         var memory: MemorySnapshot = .empty
         var medications: MedicationSnapshot = .empty
         var focusMedication: MedicationItem?
         var location: LocationSnapshot = .unknown
-        var topic: ChatTopic?
-        var goal: String?
+        var goals: [String] = []
         var acceptsInterjections = true
         var persona: AssistantPersona?
     }
@@ -62,16 +73,12 @@ enum AssemblyFixtures {
     /// 测试用的一套临时 store。**不许用 `.shared`**:app host 里那就是模拟器上真的 memory.json。
     struct Stores {
         let directory: URL
-        let memory: MemoryStore
-        let sessions: SessionStore
-        let medications: MedicationStore
+        let bundle: TenantStores
 
         init() {
             directory = FileManager.default.temporaryDirectory
                 .appending(path: "vana-assembly-\(UUID().uuidString)", directoryHint: .isDirectory)
-            memory = MemoryStore(directory: directory)
-            sessions = SessionStore(parent: directory)
-            medications = MedicationStore(directory: directory)
+            bundle = TenantStores(root: directory)
         }
 
         func remove() {
@@ -84,79 +91,52 @@ enum AssemblyFixtures {
     /// 网页搜索的替身。只要「挂没挂」,不要真的发请求。
     private static let searchStub = WebSearchClient { _ in WebSearchResults(query: "") }
 
-    /// 只造 registry。全局开关由调用方用 `withSettings` 包住。
-    ///
-    /// **这是重构时要改的映射之一。**
-    private static func makeRegistry(_ flags: Flags, stores: Stores) -> CapabilityRegistry {
-        CapabilityRegistry.healthChat(
-            includesHealthTools: flags.includesHealthTools,
-            allowsMemoryWrites: flags.allowsMemoryWrites,
-            allowsRecall: flags.allowsRecall,
-            allowsMedicationWrites: flags.allowsMedicationWrites,
-            asksUser: flags.asksUser,
-            memoryStore: stores.memory,
-            sessionStore: stores.sessions,
-            medicationStore: stores.medications,
-            webSearch: flags.webSearch ? searchStub : nil
+    static let managedMember = Tenant(name: "妈妈", kind: .managed, ageBand: .senior)
+
+    /// **这是重构时要改的映射。**
+    static func engine(_ scenario: Scenario, stores: Stores) -> AIKitEngine {
+        let flags = scenario.flags
+        let tenant = scenario.tenant ?? (flags.owner ? .owner() : managedMember)
+        let environment = TestAssembly.environment(
+            tenant: tenant,
+            stores: stores.bundle,
+            memory: scenario.memory,
+            medications: scenario.medications,
+            focusMedication: scenario.focusMedication,
+            location: scenario.location,
+            webSearch: flags.webSearch ? searchStub : nil,
+            recall: flags.recall,
+            goals: scenario.goals,
+            isEnabled: flags.isEnabled
+        )
+        return TestAssembly.engine(
+            environment,
+            route: flags.background ? .background : .foreground,
+            isPrivate: flags.isPrivate
         )
     }
 
     /// 这一组开关下挂出去的工具。
     static func registry(_ flags: Flags, stores: Stores) -> CapabilityRegistry {
-        withSettings(for: flags, persona: nil) {
-            makeRegistry(flags, stores: stores)
-        }
+        engine(Scenario(name: "", flags: flags), stores: stores).capabilityRegistry
     }
 
-    /// 这一个场景下给模型的 system 段,日期已经抹成占位符。
-    ///
-    /// **这是重构时要改的映射之二。**
+    /// 这一个场景下给模型的 system 段,日期已经抹成占位符。人格从 UserDefaults 现读,
+    /// 设完照原样还回去。
     static func systemText(_ scenario: Scenario, stores: Stores) -> String {
-        withSettings(for: scenario.flags, persona: scenario.persona) {
-            let engine = AIKitEngine(
-                topic: scenario.topic,
-                tenant: scenario.tenant,
-                goal: scenario.goal,
-                memory: scenario.memory,
-                medications: scenario.medications,
-                focusMedication: scenario.focusMedication,
-                location: scenario.location,
-                capabilityRegistry: makeRegistry(scenario.flags, stores: stores)
-            )
-            return normalize(engine.systemInstruction(acceptsInterjections: scenario.acceptsInterjections))
+        withPersona(scenario.persona) {
+            normalize(engine(scenario, stores: stores).systemInstruction(acceptsInterjections: scenario.acceptsInterjections))
         }
     }
 
-    /// 装配时现读的全局设置。设完照原样还回去(原来没设过的就删掉):别的测试读到的应该还是
-    /// 它们自己的值。
-    ///
     /// 人格不指定就是默认那一档,不是「保持原样」——别的测试可能改过它。
-    static func withSettings<T>(
-        for flags: Flags,
-        persona: AssistantPersona?,
-        _ body: () throws -> T
-    ) rethrows -> T {
-        let overrides: [String: Any] = [
-            EngineSettings.memoryEnabledKey: flags.memoryEnabled,
-            EngineSettings.medicationsEnabledKey: flags.medicationsEnabled,
-            EngineSettings.personaKey: (persona ?? .balanced).rawValue
-        ]
+    static func withPersona<T>(_ persona: AssistantPersona?, _ body: () throws -> T) rethrows -> T {
         let defaults = UserDefaults.standard
-        var previous: [String: Any] = [:]
-        for key in overrides.keys {
-            if let value = defaults.object(forKey: key) { previous[key] = value }
-        }
-        for (key, value) in overrides {
-            defaults.set(value, forKey: key)
-        }
+        let key = EngineSettings.personaKey
+        let previous = defaults.object(forKey: key)
+        defaults.set((persona ?? .balanced).rawValue, forKey: key)
         defer {
-            for key in overrides.keys {
-                if let value = previous[key] {
-                    defaults.set(value, forKey: key)
-                } else {
-                    defaults.removeObject(forKey: key)
-                }
-            }
+            if let previous { defaults.set(previous, forKey: key) } else { defaults.removeObject(forKey: key) }
         }
         return try body()
     }
@@ -170,15 +150,14 @@ enum AssemblyFixtures {
         return pattern.stringByReplacingMatches(in: text, range: range, withTemplate: "今天是 <DATE>。")
     }
 
-    /// 黄金文本是按简体中文界面录的。别的语言下 `replyLanguage` 和一批 `String(localized:)` 都会变,
-    /// 那时候对不上不是回归。测试 scheme 已经钉在 zh-Hans(`project.yml`),这里只是把原因说清楚。
+    /// 黄金文本是按简体中文界面录的。测试 scheme 已经钉在 zh-Hans(`project.yml`)。
     static var isRecordedLanguage: Bool {
-        HealthAssistantInstructions.replyLanguage == "简体中文"
+        CoreInstructions.replyLanguage == "简体中文"
     }
 
     // MARK: - 样本数据
 
-    /// 四种记忆都有,其中那条待跟进的到期时间在 1970 年:到点了的那句提示是确定的。
+    /// 几种记忆都有,其中那条待跟进的到期时间在 1970 年:到点了的那句提示是确定的。
     static var sampleMemory: MemorySnapshot {
         MemorySnapshot(items: [
             MemoryItem(kind: .profile, text: "他上夜班，作息不固定", origin: .manual),
@@ -208,7 +187,7 @@ enum AssemblyFixtures {
 
     // MARK: - 场景
 
-    /// 什么都有:所有快照、话题、目标、用药话题、人格,所有工具都挂上。
+    /// 什么都有:所有快照、目标、用药焦点、人格,所有工具都挂上。
     static var everything: Scenario {
         Scenario(
             name: "owner-everything",
@@ -217,55 +196,49 @@ enum AssemblyFixtures {
             medications: sampleMedications,
             focusMedication: sampleFocusMedication,
             location: sampleLocation,
-            topic: ChatTopics.topic(id: "sleep"),
-            goal: "减脂",
+            goals: ["减脂"],
             acceptsInterjections: true,
             persona: .coach
         )
     }
 
-    /// 家人成员:不是本人,没有健康工具。
+    /// 家人成员:不是本人,没有 Apple 健康工具。
     static var managedSenior: Scenario {
         Scenario(
             name: "managed-senior",
-            tenant: Tenant(name: "妈妈", kind: .managed, ageBand: .senior),
-            flags: Flags(includesHealthTools: false, webSearch: true),
+            flags: Flags(webSearch: true, owner: false),
             medications: sampleMedications
         )
     }
 
-    /// 录成黄金文本的那几种。挑的是线上真会出现的几条路:普通、隐私、后台派生、家人、
-    /// 目标线、两个设置项关掉、挂着搜索又知道城市。
+    /// 录成黄金文本的那几种。挑的是线上真会出现的几条路:普通、隐私、后台、家人、
+    /// 有历史可翻、两个设置项关掉、挂着搜索又知道城市、健康整个关掉。
     static var goldenScenarios: [Scenario] {
         [
             Scenario(name: "owner-minimal"),
             everything,
             Scenario(
                 name: "owner-private",
-                flags: Flags(allowsMemoryWrites: false, allowsMedicationWrites: false),
+                flags: Flags(isPrivate: true),
                 memory: sampleMemory,
                 medications: sampleMedications,
                 location: sampleLocation
             ),
             Scenario(
                 name: "owner-background",
-                flags: Flags(allowsMemoryWrites: false, asksUser: false),
+                flags: Flags(background: true),
                 memory: sampleMemory,
                 acceptsInterjections: false
             ),
             managedSenior,
+            Scenario(name: "owner-goal-recall", flags: Flags(recall: true), goals: ["减脂"]),
+            Scenario(name: "owner-settings-off", flags: Flags(memoryOn: false, medicationsOn: false)),
+            Scenario(name: "owner-web-location", flags: Flags(webSearch: true), location: sampleLocation),
             Scenario(
-                name: "owner-goal-recall",
-                flags: Flags(allowsRecall: true),
-                goal: "减脂"
-            ),
-            Scenario(
-                name: "owner-settings-off",
-                flags: Flags(memoryEnabled: false, medicationsEnabled: false)
-            ),
-            Scenario(
-                name: "owner-web-location",
-                flags: Flags(webSearch: true),
+                name: "owner-health-off",
+                flags: Flags(health: false, webSearch: true, recall: true),
+                memory: sampleMemory,
+                medications: sampleMedications,
                 location: sampleLocation
             )
         ]

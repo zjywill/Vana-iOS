@@ -43,22 +43,23 @@ enum DerivedTurn {
         let engine = AIKitEngine(
             providerId: settings.provider,
             model: settings.model,
-            goal: thread.isGoal ? threadTitle : nil,
-            memory: await memoryStore.snapshot(now: now),
-            // 读记忆照旧——不认识用户的话,这一轮回答的质量还不如不跑。写的那头堵死。
-            capabilityRegistry: .healthChat(
-                allowsMemoryWrites: false,
+            environment: PluginEnvironment(
+                tenant: TenantScope.owner,
                 // 和用户那条走同一把尺子:问的是「这段时间有没有进展」(`GoalDigest.question`)
                 // 才挂召回,问「昨晚睡得怎么样」不挂。这一轮没人在等,但多翻一次同样是多花的钱,
                 // 而且翻回来的旧数字一样会污染那条通知里的结论。
-                allowsRecall: SessionRecallTrigger.mentionsPast(question),
-                // 没有人在看这一轮。挂着 `ask_user` 的话它会摆出一张永远等不到人点的卡,
-                // 然后自己替他挑一个答案接着往下写——而那份结论会原样进早上那条通知。
-                asksUser: false,
+                recall: SessionRecallTrigger.mentionsPast(question)
+                    ? SessionRecallTools.registry(store: sessionStore, currentSessionId: session.id)
+                    : nil,
                 memoryStore: memoryStore,
-                sessionStore: sessionStore,
-                currentSessionId: session.id
-            )
+                // 读记忆照旧——不认识用户的话,这一轮回答的质量还不如不跑。写的那头由
+                // `PluginContext.isBackground` 堵死,`ask_user` 也一样(没有人在看这一轮)。
+                memory: await memoryStore.snapshot(now: now),
+                includesHealthData: true,
+                goals: thread.isGoal ? [threadTitle].compactMap { $0 } : []
+            ),
+            route: .background,
+            unlocked: [RecallPlugin.unlockTrigger]
         )
 
         do {

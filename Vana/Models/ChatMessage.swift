@@ -525,7 +525,7 @@ extension ChatMessage {
             return storedTurn
         }
         var normalized = storedTurn
-        normalized.compaction = TranscriptCompactor.healthChat.artifact(for: rawDTO)
+        normalized.compaction = TranscriptCompactor.vana.artifact(for: rawDTO)
         return normalized
     }
 }
