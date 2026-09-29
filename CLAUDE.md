@@ -1601,7 +1601,8 @@ Health Records,它按地区开放,设备和账号状态也算数——SDK 头文
   健康那页依次是 Apple 健康读取授权(`AppleHealthSection` / `HealthAuthorizationModel`,从设置页原样搬来,
   注释里是两次审核的教训)、用药与补剂(子开关 + 打开)、每日 check-in(`CheckInSection`)、家人档案。
 - **check-in 归健康**:正文是 `HealthSituation.detect()` 写的,健康关着就无话可说——`CheckInScheduler.reschedule`
-  在健康关掉时不排,拨健康开关时重排一次。
+  在健康关掉时不排,拨健康开关时重排一次。**Android 那边 check-in 留在设置**:它的正文是待跟进和当天的提醒,
+  不读设备健康数据——同一条判据,不同的答案。
 - 插件只声明 surface 的 id 和文案,**长什么样、去哪儿由 app 层按 id 决定**(`PluginDetailView.section(for:)`)。
   新插件要自己的设置,就加一个 surface id,不要往设置页里再塞一节。
 
