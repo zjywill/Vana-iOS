@@ -48,6 +48,18 @@ xcodebuild -project Vana.xcodeproj -scheme Vana \
 `VanaTests` 是 app 侧的 loop 集成测试:脚本化的假模型 + 假能力,但 `ChatViewModel`、
 事件归约、预算、压缩、换模型迁移都是线上那一套。改 agent 循环相关的东西先看这里。
 
+**装配有两套测试专门盯着**(`AssemblyContractTests` / `AssemblyGoldenTests`,输入都在
+`AssemblyFixtures`):给模型的那一轮是什么样的——挂哪些工具、按什么顺序、system 段发哪几块。
+改 `healthChat(...)`、`AIKitEngine.systemInstruction()` 或者往里加一个能力之前先看它们。
+
+- **契约测试**只认结构(256 种开关组合下的工具表和顺序、system 段各块的先后和出现条件),断言是
+  手写的规则,不依赖录下来的文本。
+- **黄金测试**逐字比对 system 段和工具定义,只在「纯搬家」的改动上有意义。**有意改措辞就重录**,
+  并在 PR 里逐段看 diff:
+  `TEST_RUNNER_VANA_RECORD_GOLDEN=1 xcodebuild ... test -only-testing:VanaTests/AssemblyGoldenTests`。
+  录制那一遍会故意报失败(防止把开关留在 CI 里),去掉环境变量再跑一遍应该全绿。
+- 装配换了形状,只改 `AssemblyFixtures` 里那两处映射,断言不用动。
+
 ## 运行
 
 模拟器安装运行用 iOS Simulator MCP 的 build/launch(bundle id `com.pinapia.vana.ios`),先 attach 让用户看到面板。
