@@ -174,7 +174,7 @@ private struct NoteEditor: View {
                 }
             }
         }
-        .alert("删除这条\(note.kind == .list ? String(localized: "清单") : String(localized: "笔记"))？", isPresented: $confirmDelete) {
+        .alert(note.kind == .list ? "删除这条清单？" : "删除这条笔记？", isPresented: $confirmDelete) {
             Button("删除", role: .destructive) {
                 deleted = true
                 Task { await store.delete(note.id) }

@@ -90,7 +90,7 @@ struct PluginsView: View {
                 NotesView()
             } label: {
                 VStack(alignment: .leading, spacing: 2) {
-                    Label(surface.title, systemImage: surface.icon)
+                    Label("打开\(surface.title)", systemImage: surface.icon)
                     Text(surface.subtitle).font(.caption).foregroundStyle(.secondary)
                 }
             }

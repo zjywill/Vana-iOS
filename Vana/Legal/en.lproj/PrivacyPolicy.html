@@ -90,7 +90,7 @@
 <main>
 
 <h1>Vana Privacy Policy</h1>
-<p class="meta">Effective date: August 30, 2026</p>
+<p class="meta">Effective date: September 29, 2026</p>
 
 <div class="lede">
   <p><strong>Vana has no server and no accounts.</strong> We (the developer) cannot see any of your data — it never passes through a machine of ours.</p>
@@ -100,26 +100,32 @@
 <h2>Where data is stored</h2>
 <p>All of the following is stored in Vana's sandbox on this device. Nothing is uploaded or synced:</p>
 <ul>
-  <li>Conversations (including the health data read in each turn)</li>
-  <li>Long-term memories (the few dozen short notes “about you”)</li>
+  <li>Conversations (including the health data read in each turn) — there is now a single ongoing conversation, kept on this device until you clear it (see “How you can delete data” below)</li>
+  <li>Long-term memories (short notes about facts, recent events and follow-ups about you)</li>
+  <li>Reminders, goals, and the background tasks you approved together with their results</li>
+  <li>Notes and lists</li>
   <li>The medications &amp; supplements list</li>
-  <li>Lab reports, medical reports, medicine-box photos and files you take or choose</li>
+  <li>Receipts, reports, lab reports, medicine boxes and other photos and files you take or choose</li>
 </ul>
 <p>Photos, lab reports and the medication list are encrypted with iOS complete file protection (<code>completeFileProtection</code>) — while the device is locked, they cannot be read off disk. Your API key lives in the system keychain, not in any of those files.</p>
-<p><strong>None of this goes into backups.</strong> It is explicitly excluded from iCloud and computer backups — health data should not leave this device, and a backup is no exception. Please note the cost: <em>when you move to a new phone, these conversations, memories, medications and photos do not come with you</em>; you start fresh on the new device.</p>
+<p><strong>None of this goes into backups.</strong> It is explicitly excluded from iCloud and computer backups — health data should not leave this device, and a backup is no exception. Please note the cost: <em>when you move to a new phone, these conversations, memories, notes, reminders, medications and photos do not come with you</em>; you start fresh on the new device.</p>
 
 <h2>What leaves this device</h2>
 <p>For anyone to answer your question, the question itself has to be sent. <strong>To whom: a third-party model service that you choose.</strong> In Settings you pick one from a built-in catalog (DeepSeek is pre-selected by default; you can switch to any other provider in the catalog) and enter your own API key. Vana sends requests from this device directly to that provider’s API — nothing passes through any other server in between.</p>
 <p><strong>Nothing is sent without your explicit consent.</strong> The first-launch notice lists everything below, and you enter the app only by tapping “Agree and continue”. In addition, the first time Vana is actually about to send to a given service, it names that service and asks for your permission once more — if you decline, nothing is sent and your text stays in the input box. Switching to a different service asks again. What goes out includes:</p>
 <ul>
-  <li>What you type, and the earlier back-and-forth in this conversation</li>
+  <li>What you type, and the recent part of the conversation. Older conversation text is not sent with every question; relevant excerpts are retrieved only when a recall is needed</li>
   <li><strong>Aggregated values</strong> read from Apple Health (per day or per night, e.g. “6.2 h of sleep on Aug 6”) — never raw samples</li>
-  <li>The <strong>text</strong> recognized on this device from lab reports, medical reports and medicine boxes, and the text inside documents you choose</li>
+  <li>The <strong>text</strong> recognized on this device from receipts, reports, manuals, medicine boxes, lab reports and other material you photograph, and the text inside documents you choose</li>
   <li><strong>The original photo itself</strong> — not by default; only the ones you agree to. With the default setting, Vana asks only when this device recognized <strong>no text at all</strong> (a meal, a rash — things whose information isn't text to begin with), and nothing is sent until you tap. Photos with recognized text (lab reports, medicine boxes, nutrition labels) are never asked about, because the recognized text already answers the question. You can change this default under Settings › Photos to “never ask” or “always send originals”; whatever the setting, you can open any photo before sending and decide for that one.</li>
   <li>The <strong>city</strong> you are in (only if you allowed location)</li>
-  <li>Content from long-term memory and the medication list (only if you have not turned those features off)</li>
+  <li>Content from long-term memory and the medication list (only if you have not turned the corresponding feature off; with the Health plugin off, the medication list is no longer sent)</li>
+  <li>The names and progress of active goals; the content of a note or list you ask Vana to read (notes are not part of every request — they are sent only the time they are read)</li>
+  <li><strong>To remember things that stay true</strong>: after you leave the app, Vana sends not-yet-processed parts of the conversation to the same model service to extract what is worth remembering long-term (only when Memory is on, and under the same consent as above)</li>
 </ul>
-<p>If you enter a serper.dev search key, Vana sends the <strong>search terms</strong> to that service when it needs outside material. Search terms never contain your health data or personal situation — this is stated both in the tool description and in the system prompt.</p>
+<p><strong>Background tasks.</strong> Vana can run a self-contained job that takes a few minutes (researching, comparing options) in the background. By default each one first shows you a confirmation card and runs only after you tap “Start”; once started, it sends <strong>the task brief, the memories and past-conversation excerpts it uses, and the web content it searches or reads</strong> to the same model service, under the same consent. Background tasks are read-only: they never change your memories, reminders, goals or medication list — any change they want is listed as a suggestion for you to confirm one by one.</p>
+<p><strong>Reading web pages.</strong> When you send a link, or a search result is worth reading in full, this device visits the page directly (no relay server), so <em>the website can see your IP address and the URL requested</em>; the text read is sent to the model service as material for the answer. Only public http/https pages are read; localhost, private-network addresses and URLs carrying a username or password are always refused.</p>
+<p>If you enter a serper.dev search key, Vana sends the <strong>search terms</strong> to that service when it needs outside material. Search terms never contain your personal situation or private data (including health data) — this is stated both in the tool description and in the system prompt.</p>
 <p>The model service and the search service are third parties. How they handle what they receive is governed by <strong>their own privacy policies</strong> (for example, DeepSeek’s privacy policy is available on its website) and is outside Vana’s control — we cannot make promises on their behalf. Which provider to use, and whether to add a search key at all, is your choice; if you are not comfortable with how one of them handles data, switch to another or don’t use it. Everything listed above is used solely to answer the question you just asked; Vana uses it for no other purpose and never sells it.</p>
 
 <h2>What never leaves this device</h2>
@@ -129,7 +135,7 @@
   <li><strong>Precise location.</strong> Vana requests “approximate location” only, and puts only the city name into a request; coordinates are never sent and never stored on this device.</li>
   <li><strong>Your API key.</strong> It stays in the keychain and is used only to make requests to the service you chose.</li>
   <li><strong>Raw Apple Health samples.</strong> Individual heart-rate and step samples are used on-device for charts and aggregation only; they never enter an outgoing request.</li>
-  <li><strong>The conversations, memories and medication list themselves.</strong> They are assembled into a request only as needed to answer the question at hand. No cloud copy exists.</li>
+  <li><strong>The conversations, memories, notes, reminders, goals and medication list themselves.</strong> They are assembled into a request only as needed to answer the question at hand. No cloud copy exists.</li>
 </ul>
 
 <h2>Apple Health data</h2>
@@ -148,19 +154,23 @@
 <p>The microphone is used only for the few seconds you hold the talk button. Recognition is done by an on-device iOS speech model (the system downloads the model on first use) and never touches the network; the recording is neither saved nor sent. When you let go, only the recognized text remains, in the input box, waiting for you to confirm — it is never sent automatically. To get medication and metric names right, Vana passes the names in your medication list and a set of metric names to the <strong>on-device</strong> recognizer as hints; those hints do not leave this device either.</p>
 
 <h2>Camera and photos</h2>
-<p>Camera and photo-library access is used only for a capture or selection you start yourself. Recognition happens on this device; photos are stored in the app sandbox and are deleted together with the conversation they belong to. The original photo is sent to the model service only if you agree — the default is “ask when no text is found”, which you can change in Settings and override for any single photo; see the two sections above.</p>
+<p>Camera and photo-library access is used only for a capture or selection you start yourself. Recognition happens on this device; photos are stored in the app sandbox and are deleted together with the messages they belong to or when you clear the conversation. The original photo is sent to the model service only if you agree — the default is “ask when no text is found”, which you can change in Settings and override for any single photo; see the two sections above.</p>
 
-<h2>Notifications</h2>
-<p>The morning and evening check-ins are local notifications scheduled on this device; they do not go through any push server. The notification text is written at scheduling time and stored locally.</p>
+<h2>Plugins</h2>
+<p>Capabilities that can be switched on or off as a whole are called plugins; currently “Notes and lists” and “Health” (Apple Health data, medications and supplements, the exercise library and the rules for reading lab reports). The switches are in the menu at the top right of the chat › Plugins. When a plugin is off, its data is no longer put into requests to the model and its tools are no longer offered; what it already stored stays on this device, is back when you turn it on again, and can be deleted item by item.</p>
 
-<h2>“Conversations that aren't saved”</h2>
-<p>With this switch on, that conversation is not written to disk, does not appear in the conversation list, takes no part in memory extraction, and its photos stay in memory only. To be clear about the limit: <strong>the question itself still goes to the model service you configured</strong> — no switch can change that.</p>
+<h2>Notifications and reminders</h2>
+<p>The morning and evening check-ins, the reminders you set and the “background task finished” notices are all local notifications scheduled on this device; they do not go through any push server. <strong>When a reminder is due, Vana only posts a notification — it uses neither the network nor a model.</strong></p>
+
+<h2>Off-the-record chat</h2>
+<p>An “Off-the-record chat” opened from the menu lives only in memory: it is not written to disk, does not join the ongoing conversation, takes no part in memory extraction, never sets reminders, creates goals or starts background tasks, and its photos stay in memory only; close it and it is gone. To be clear about the limit: <strong>the question itself still goes to the model service you configured</strong> — off-the-record cannot change that.</p>
 
 <h2>How you can delete data</h2>
 <ul>
-  <li>A single conversation: swipe to delete it in the conversation list (its photos go with it).</li>
-  <li>All conversations: Settings &gt; Conversation &gt; Clear conversation.</li>
-  <li>Memories: delete them one by one in Settings &gt; memory.</li>
+  <li>The conversation: there is now a single ongoing conversation. Long-press a reply and choose “Delete this exchange” to delete that question and answer (with its photos); in Settings &gt; Conversation history you can clear messages older than 30 days, or clear the whole conversation (photos included).</li>
+  <li>Memories: delete them one by one on the memory page.</li>
+  <li>Reminders, goals, background tasks: delete them one by one on the Tasks page.</li>
+  <li>Notes and lists: delete them one by one in Notes and lists.</li>
   <li>Medications &amp; supplements: delete them one by one in the list.</li>
   <li>Everything for one family member: delete that member in the member list; their entire directory is deleted with them.</li>
   <li>Everything: delete the app. All of it lives in the app sandbox and goes with it.</li>

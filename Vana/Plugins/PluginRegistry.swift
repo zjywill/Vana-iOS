@@ -94,11 +94,9 @@ enum PluginRegistry {
     static func welcomeBody(isEnabled: (String) -> Bool) -> String {
         let blurbs = all.filter { isEnabled($0.manifest.id) }.compactMap(\.welcomeBlurb)
         guard let first = blurbs.first else { return String(localized: "日常的事都可以交给我。") }
-        let rest = blurbs.dropFirst()
-        var text = String(localized: "日常的事都可以交给我：\(first)。")
-        if !rest.isEmpty {
-            text += String(localized: "也能\(rest.joined(separator: "、"))。")
-        }
-        return text
+        let rest = Array(blurbs.dropFirst())
+        guard !rest.isEmpty else { return String(localized: "日常的事都可以交给我：\(first)。") }
+        // 整句一条:两段拼起来的话,英文那边句子之间少一个空格。列举按语言走(「、」「和」/ ", and")。
+        return String(localized: "日常的事都可以交给我：\(first)。也能\(rest.formatted(.list(type: .and)))。")
     }
 }

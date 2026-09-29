@@ -42,12 +42,26 @@ enum DataUseNotice {
         tint: .orange,
         points: [
             String(localized: "对方是一家由你选定的第三方模型服务——默认预选的是 DeepSeek（深度求索），可以在设置里换成目录里的其他家。第一次真的要发给某一家之前，Vana 还会点名问你一次"),
-            String(localized: "你打的字，以及这条对话里的往来"),
+            String(localized: "你打的字，以及最近一段对话里的往来（更早的原文只在需要回顾时才按需取出相关片段）"),
             String(localized: "从 Apple 健康读到的聚合数值，例如「8 月 6 日睡眠 6.2 小时」"),
-            String(localized: "化验单、报告、药盒在本机识别出来的文字"),
+            String(localized: "票据、报告、说明书、药盒、化验单等在本机识别出来的文字"),
             String(localized: "照片原图——默认不发；本机认不出文字的那些会问你一句，你点了才发"),
             String(localized: "你所在的城市（授权了位置的话）"),
-            String(localized: "长期记忆和用药表里的内容（没关掉的话）")
+            String(localized: "长期记忆和用药表里的内容（没关掉的话）"),
+            String(localized: "目标的名称和进展；你让 Vana 去读的笔记的内容（笔记不常驻，读的那一次才发出）"),
+            String(localized: "为了记住长期成立的事，离开 app 之后，还没处理过的对话片段（开着记忆才做）"),
+            String(localized: "你点了「开始」的后台任务：任务说明、它用到的记忆和过往对话片段、它搜索或读取到的网页内容。后台任务只读，不会改动你的数据")
+        ]
+    )
+
+    /// 不经过模型服务、由这台手机自己去连的。和「会发给模型服务」分开写:收件人不一样。
+    static let direct = Group(
+        icon: "globe",
+        title: String(localized: "由这台设备直接访问"),
+        tint: .blue,
+        points: [
+            String(localized: "你发来的链接、或搜索结果里值得细看的网页——由这台设备直接访问该网站，不经过中转；对方网站能看到你的 IP 地址和请求的网址。本机和内网地址一律不读"),
+            String(localized: "网页搜索（填了搜索 key 才有）——搜索词发给 serper.dev，不含你的个人情况")
         ]
     )
 
@@ -60,7 +74,8 @@ enum DataUseNotice {
             String(localized: "按住说话的录音——识别在本机做，录音不保存，只留识别出来的文字"),
             String(localized: "经纬度坐标——只发城市名，坐标一个字都不发"),
             String(localized: "你的 API key——只在系统钥匙串里"),
-            String(localized: "对话记录、记忆、用药表——存在本机，没有云端副本，也不进 iCloud 备份")
+            String(localized: "对话记录、记忆、笔记、提醒、目标、用药表——存在本机，没有云端副本，也不进 iCloud 备份"),
+            String(localized: "你设的提醒——到点只发一条本地通知，不联网，也不调用模型")
         ]
     )
 
@@ -75,7 +90,7 @@ enum DataUseNotice {
         ]
     )
 
-    static let groups: [Group] = [leaves, stays, noServer]
+    static let groups: [Group] = [leaves, direct, stays, noServer]
 
     /// 按钮上方那句:点下去到底同意了什么。**单独一个常量而不是散在视图里**,
     /// `ComplianceTests` 要能盯住它——这一句掉了,那颗按钮就退化回「开始使用」。

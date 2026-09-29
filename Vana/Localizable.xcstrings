@@ -3,6 +3,7 @@
   "strings" : {
     "" : {},
     " · %lld 段" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -52,6 +53,16 @@
         }
       }
     },
+    "「%@」关着，这一类暂不使用。重新打开就回来。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” is off, so this category isn't used for now. Turn it back on to bring it back."
+          }
+        }
+      }
+    },
     "「一般说明」原本由 Vana 自动写，改过之后就不会再被自动覆盖。" : {
       "localizations" : {
         "en" : {
@@ -89,6 +100,7 @@
       }
     },
     "%@ · %@起" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -121,6 +133,7 @@
       }
     },
     "%@ · %lld 条消息" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -311,6 +324,7 @@
       }
     },
     "%@试下来有感觉吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -326,6 +340,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld"
+          }
+        }
+      }
+    },
+    "%lld 件其他" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld other item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld other items"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld 件等你确认" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld waiting for your confirmation"
           }
         }
       }
@@ -382,6 +428,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "check back in %lld days"
+          }
+        }
+      }
+    },
+    "%lld 天后淡出" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Fades out in %lld day"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Fades out in %lld days"
+                }
+              }
+            }
           }
         }
       }
@@ -448,6 +516,28 @@
         }
       }
     },
+    "%lld 条提醒" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld reminder"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld reminders"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld 次/分" : {
       "localizations" : {
         "en" : {
@@ -498,6 +588,16 @@
         }
       }
     },
+    "1 小时后" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In 1 hour"
+          }
+        }
+      }
+    },
     "API key" : {
       "localizations" : {
         "en" : {
@@ -539,6 +639,7 @@
       }
     },
     "HRV 最近怎么样？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -559,6 +660,7 @@
       }
     },
     "HRV 有变化吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -638,6 +740,26 @@
         }
       }
     },
+    "Vana 可以把一件要花几分钟的事（查资料、比较方案）交给后台助手去做。默认每一件都先给你一张确认卡，你点了「开始」才跑。打开这一项之后，它派出去的任务直接开始。后台助手只读——想设提醒、记目标都只能先提议，你点了才执行；任务的说明和它查到的资料会发给你配置的模型服务。一次只跑一件，每天最多 %lld 件，每件最多 5 分钟。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vana can hand off something that takes a few minutes (researching, comparing options) to a background assistant. By default, each one first shows you a confirmation card and runs only after you tap “Start”. With this on, tasks it sends out start right away. The background assistant is read-only—setting reminders or recording goals can only be proposed, and happens only after you tap; the task's instructions and the material it finds are sent to the model service you configured. One runs at a time, up to %lld per day, each for at most 5 minutes."
+          }
+        }
+      }
+    },
+    "Vana 来问一句" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A question from Vana"
+          }
+        }
+      }
+    },
     "Vana 自己没有服务器" : {
       "localizations" : {
         "en" : {
@@ -679,11 +801,22 @@
       }
     },
     "一句话说清就行。不要写具体数字——步数、睡眠时长这些每次都会重新查，写死在这里明天就是错的。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "One sentence is enough. Don't write specific numbers — steps, sleep and the like are read fresh every time, and a number pinned here is wrong tomorrow."
+          }
+        }
+      }
+    },
+    "一句话说清就行。不要写具体数字——那些每次都会重新查，写死在这里明天就是错的。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One sentence is enough. Don't include specific numbers—those are looked up fresh every time; written here, they'd be wrong tomorrow."
           }
         }
       }
@@ -704,6 +837,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "How was last week overall?"
+          }
+        }
+      }
+    },
+    "上次说的「%@」，现在怎么样了？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How is “%@” going now?"
           }
         }
       }
@@ -734,6 +877,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Never leaves this device"
+          }
+        }
+      }
+    },
+    "不做了" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drop it"
           }
         }
       }
@@ -778,12 +931,42 @@
         }
       }
     },
+    "不留痕 · 关掉就没了" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off the record · gone when you close it"
+          }
+        }
+      }
+    },
+    "不留痕聊天" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off-the-record chat"
+          }
+        }
+      }
+    },
     "不能吃" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can't take"
+          }
+        }
+      }
+    },
+    "不认识这种提议" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrecognized suggestion"
           }
         }
       }
@@ -799,6 +982,7 @@
       }
     },
     "不进会话列表，不写进记忆，也不影响之后给你的建议。关掉就没了。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -808,7 +992,28 @@
         }
       }
     },
+    "不进你和 Vana 的那条对话，不写进记忆，也不影响之后给你的建议。关掉就没了。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not added to your conversation with Vana, not saved to memory, and won't affect future suggestions. Gone when you close it."
+          }
+        }
+      }
+    },
+    "不重复" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Never"
+          }
+        }
+      }
+    },
     "不限" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -819,6 +1024,7 @@
       }
     },
     "不限话题" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -834,6 +1040,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Two or three sentences, no preamble"
+          }
+        }
+      }
+    },
+    "中途被系统打断了，可以再试一次。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interrupted by the system. You can try again."
+          }
+        }
+      }
+    },
+    "为了记住长期成立的事，离开 app 之后，还没处理过的对话片段（开着记忆才做）" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To remember things that stay true over time: after you leave the app, conversation segments not yet processed (only when Memory is on)"
           }
         }
       }
@@ -868,12 +1094,32 @@
         }
       }
     },
+    "为什么想做（可选）" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Why you want to do it (optional)"
+          }
+        }
+      }
+    },
     "为什么我会对它有反应？" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Why do I react to it?"
+          }
+        }
+      }
+    },
+    "为家人分别记录用药和对话，数据互相隔离" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep separate medication records and conversations for family members, with each person's data kept apart"
           }
         }
       }
@@ -894,6 +1140,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cloud model"
+          }
+        }
+      }
+    },
+    "交给它的说明" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instructions for it"
           }
         }
       }
@@ -944,6 +1200,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Today"
+          }
+        }
+      }
+    },
+    "今天 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today %@"
+          }
+        }
+      }
+    },
+    "今天：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today: %@"
           }
         }
       }
@@ -1009,11 +1285,22 @@
       }
     },
     "今天活动量够吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Have I moved enough today?"
+          }
+        }
+      }
+    },
+    "今天淡出" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fades out today"
           }
         }
       }
@@ -1049,6 +1336,7 @@
       }
     },
     "今天走了多少？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1099,6 +1387,7 @@
       }
     },
     "今天还能练吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1109,6 +1398,7 @@
       }
     },
     "今天适合再练吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1124,6 +1414,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Is today a good day to train?"
+          }
+        }
+      }
+    },
+    "今晚 8 点" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tonight at 8 PM"
           }
         }
       }
@@ -1149,6 +1449,7 @@
       }
     },
     "从你的健康数据开始" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1198,12 +1499,42 @@
         }
       }
     },
+    "以上由 AI 生成，可能有误，重要信息请自行核对。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The above is AI-generated and may contain errors. Please verify important information yourself."
+          }
+        }
+      }
+    },
     "以上由 AI 生成，可能有误。不构成诊断或用药建议，关键数值请对照原始记录核对。" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Written by AI and may be wrong. Not a diagnosis or medication advice — check key numbers against the original records."
+          }
+        }
+      }
+    },
+    "任务" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tasks"
+          }
+        }
+      }
+    },
+    "任务，%lld 件需要你看" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tasks, %lld need your attention"
           }
         }
       }
@@ -1229,6 +1560,7 @@
       }
     },
     "会话" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1239,11 +1571,22 @@
       }
     },
     "会话列表" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conversations"
+          }
+        }
+      }
+    },
+    "估算用量" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estimated usage"
           }
         }
       }
@@ -1259,6 +1602,7 @@
       }
     },
     "体脂有变化吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1325,6 +1669,7 @@
       }
     },
     "体重趋势怎么样？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1345,11 +1690,22 @@
       }
     },
     "作息、工作、伤病限制、正在进行的目标" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Routine, work, injuries and limits, goals in progress"
+          }
+        }
+      }
+    },
+    "作息、工作或学习、身体上的限制、家人，还有正在进行的目标" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your routine, work or study, physical limitations, family, and goals in progress"
           }
         }
       }
@@ -1364,7 +1720,18 @@
         }
       }
     },
+    "你发来的链接、或搜索结果里值得细看的网页——由这台设备直接访问该网站，不经过中转；对方网站能看到你的 IP 地址和请求的网址。本机和内网地址一律不读" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Links you send, or web pages in search results worth a closer look—this device visits the site directly, with no intermediary; the website can see your IP address and the URL requested. Local and private-network addresses are never read"
+          }
+        }
+      }
+    },
     "你可以直接询问步数、睡眠、心率、锻炼、体重体脂，以及血压、血氧这类有记录才有的数据。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1394,6 +1761,16 @@
         }
       }
     },
+    "你好，我是 Vana" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi, I'm Vana"
+          }
+        }
+      }
+    },
     "你所在的城市（授权了位置的话）" : {
       "localizations" : {
         "en" : {
@@ -1404,12 +1781,33 @@
         }
       }
     },
+    "你打的字，以及最近一段对话里的往来（更早的原文只在需要回顾时才按需取出相关片段）" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What you type, plus the recent back-and-forth of the conversation (older messages are only pulled in as relevant excerpts when needed to look back)"
+          }
+        }
+      }
+    },
     "你打的字，以及这条对话里的往来" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "What you type, and the back-and-forth in this conversation"
+          }
+        }
+      }
+    },
+    "你点了「开始」的后台任务：任务说明、它用到的记忆和过往对话片段、它搜索或读取到的网页内容。后台任务只读，不会改动你的数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background tasks you tapped “Start” on: the task instructions, the memories and past conversation excerpts it uses, and the web content it searches or reads. Background tasks are read-only and won't change your data"
           }
         }
       }
@@ -1464,6 +1862,16 @@
         }
       }
     },
+    "你设的提醒——到点只发一条本地通知，不联网，也不调用模型" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminders you set—when due, only a local notification is sent, with no network access and no model call"
+          }
+        }
+      }
+    },
     "你设的是「%@」，但当前模型看不了图——这一档暂时不生效。" : {
       "localizations" : {
         "en" : {
@@ -1514,6 +1922,16 @@
         }
       }
     },
+    "停止" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop"
+          }
+        }
+      }
+    },
     "停止回复" : {
       "localizations" : {
         "en" : {
@@ -1535,6 +1953,7 @@
       }
     },
     "健康分析仅供参考，不能替代专业医疗建议。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1635,6 +2054,7 @@
       }
     },
     "入睡时间在变晚吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1694,12 +2114,42 @@
         }
       }
     },
+    "关闭" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "内容" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Content"
+          }
+        }
+      }
+    },
     "内置目录" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Built-in catalog"
+          }
+        }
+      }
+    },
+    "再试一次" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again"
           }
         }
       }
@@ -1725,6 +2175,7 @@
       }
     },
     "最近 7 天" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1774,12 +2225,32 @@
         }
       }
     },
+    "最近发生、还没完的事，过一阵子会自己淡出" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent things that aren't finished yet; they fade out on their own after a while"
+          }
+        }
+      }
+    },
     "最近基线 %lld" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "recent baseline %lld"
+          }
+        }
+      }
+    },
+    "最近完成" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recently completed"
           }
         }
       }
@@ -1804,7 +2275,18 @@
         }
       }
     },
+    "最近活动量够吗？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Have I been active enough lately?"
+          }
+        }
+      }
+    },
     "最近游得够多吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1835,6 +2317,7 @@
       }
     },
     "最近练得规律吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1845,6 +2328,7 @@
       }
     },
     "最近血压怎么样？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1855,6 +2339,7 @@
       }
     },
     "最近走得够吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1865,6 +2350,7 @@
       }
     },
     "最近跑量合适吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1875,11 +2361,52 @@
       }
     },
     "最近骑行强度如何？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "How hard have my rides been?"
+          }
+        }
+      }
+    },
+    "最远只能约到一年以内" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can only be scheduled up to one year ahead"
+          }
+        }
+      }
+    },
+    "写一下目标是什么" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Describe the goal"
+          }
+        }
+      }
+    },
+    "写一下要提醒什么" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Describe what to be reminded of"
+          }
+        }
+      }
+    },
+    "写点什么…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write something…"
           }
         }
       }
@@ -1964,12 +2491,62 @@
         }
       }
     },
+    "删除这一问一答" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this exchange"
+          }
+        }
+      }
+    },
+    "删除这条" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this"
+          }
+        }
+      }
+    },
+    "删除这条清单？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this list?"
+          }
+        }
+      }
+    },
+    "删除这条笔记？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this note?"
+          }
+        }
+      }
+    },
     "到时候 Vana 会在早上那条消息里问你一句有没有用。" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "When the time comes, Vana asks in the morning message whether it helped."
+          }
+        }
+      }
+    },
+    "到点只发一条通知，不调用模型。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only sends a notification when due; no model call."
           }
         }
       }
@@ -1984,12 +2561,42 @@
         }
       }
     },
+    "加一个步骤" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a step"
+          }
+        }
+      }
+    },
+    "加一个目标" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a goal"
+          }
+        }
+      }
+    },
     "加一条" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add one"
+          }
+        }
+      }
+    },
+    "加一条提醒" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a reminder"
           }
         }
       }
@@ -2004,12 +2611,33 @@
         }
       }
     },
+    "勾选" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check"
+          }
+        }
+      }
+    },
     "包括你自己添加的那些，无法撤销。健康数据本身不受影响。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Including the ones you added yourself. This can't be undone. Your health data itself is untouched."
+          }
+        }
+      }
+    },
+    "包括你自己添加的那些，无法撤销。对话记录和其他数据不受影响。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Including the ones you added yourself. This can't be undone. Conversations and other data aren't affected."
           }
         }
       }
@@ -2025,6 +2653,7 @@
       }
     },
     "化验单、报告、药盒在本机识别出来的文字" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2040,6 +2669,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Which lines on the lab report matter most"
+          }
+        }
+      }
+    },
+    "占用空间" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Storage used"
+          }
+        }
+      }
+    },
+    "占用空间、清掉很早以前的，或者全部清空。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Storage used, clear old conversations, or clear everything."
           }
         }
       }
@@ -2134,6 +2783,16 @@
         }
       }
     },
+    "取消勾选" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uncheck"
+          }
+        }
+      }
+    },
     "只写称呼就行。Vana 不需要真实姓名、生日或证件信息，也不要填进来。" : {
       "localizations" : {
         "en" : {
@@ -2214,6 +2873,16 @@
         }
       }
     },
+    "只读任务自动开始" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start read-only tasks automatically"
+          }
+        }
+      }
+    },
     "可以在 github.com/zjywill/Vana-iOS 上看到同一份内容。" : {
       "localizations" : {
         "en" : {
@@ -2274,6 +2943,16 @@
         }
       }
     },
+    "同意并开始" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agree and start"
+          }
+        }
+      }
+    },
     "同意并继续" : {
       "localizations" : {
         "en" : {
@@ -2294,6 +2973,56 @@
         }
       }
     },
+    "名称太长了，短一点" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name is too long; make it shorter"
+          }
+        }
+      }
+    },
+    "后台任务" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background tasks"
+          }
+        }
+      }
+    },
+    "后台任务的结果" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background task result"
+          }
+        }
+      }
+    },
+    "后台助手在做…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background assistant is working…"
+          }
+        }
+      }
+    },
+    "后台助手自己什么都不会写下。你点了「照做」才会真的设提醒、记目标或记住。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The background assistant doesn't write anything down on its own. Reminders, goals, and memories are only created after you tap “Do it”."
+          }
+        }
+      }
+    },
     "周一早上，适合回顾上一周" : {
       "localizations" : {
         "en" : {
@@ -2305,6 +3034,7 @@
       }
     },
     "呼吸频率稳定吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2351,6 +3081,7 @@
       }
     },
     "和睡眠有关系吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2361,6 +3092,7 @@
       }
     },
     "和运动有关系吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2371,6 +3103,7 @@
       }
     },
     "和运动量有关吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2381,6 +3114,7 @@
       }
     },
     "哪天动得最少？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2396,6 +3130,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Back to the latest message"
+          }
+        }
+      }
+    },
+    "回头看看：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Look back: %@"
           }
         }
       }
@@ -2470,6 +3214,36 @@
         }
       }
     },
+    "在吃的、不能吃的、试过没用的，分开记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track what you take, what you can't take, and what you've tried that didn't work, separately"
+          }
+        }
+      }
+    },
+    "在对话里说「帮我记一个购物清单：牛奶、鸡蛋」，Vana 会存在这里；也可以点右上角的加号自己写。这些内容只在需要时才会被读进对话。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Say “Make me a shopping list: milk, eggs” in the chat and Vana will save it here; or tap the plus button in the top right to write one yourself. These are only read into the conversation when needed."
+          }
+        }
+      }
+    },
+    "在对话里说「明天早上八点提醒我带伞」，或者点右上角自己加一条。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Say “Remind me to bring an umbrella at 8 tomorrow morning” in the chat, or tap the top right to add one yourself."
+          }
+        }
+      }
+    },
     "在开始之前" : {
       "localizations" : {
         "en" : {
@@ -2481,6 +3255,7 @@
       }
     },
     "在新对话里分支" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2506,6 +3281,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Balanced"
+          }
+        }
+      }
+    },
+    "基础能力" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basics"
           }
         }
       }
@@ -2580,7 +3365,28 @@
         }
       }
     },
+    "多久后淡出" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fade out after"
+          }
+        }
+      }
+    },
+    "多聊几次之后，你的作息、偏好和最近在忙的事会记在这里。也可以现在就自己加一条。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After a few chats, your routine, preferences, and what you've been busy with lately will be kept here. You can also add one yourself now."
+          }
+        }
+      }
+    },
     "多聊几次之后，你的作息、身体限制和看重的指标会记在这里。也可以现在就自己加一条。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2600,6 +3406,16 @@
         }
       }
     },
+    "失败了" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed"
+          }
+        }
+      }
+    },
     "好" : {
       "localizations" : {
         "en" : {
@@ -2610,12 +3426,42 @@
         }
       }
     },
+    "存了一条笔记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved a note"
+          }
+        }
+      }
+    },
+    "它做了什么" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What it did"
+          }
+        }
+      }
+    },
     "它和我最近的数据有关系吗？" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Does it relate to my recent data?"
+          }
+        }
+      }
+    },
+    "它建议你做的" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What it suggests you do"
           }
         }
       }
@@ -2650,6 +3496,16 @@
         }
       }
     },
+    "家人档案" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Family profiles"
+          }
+        }
+      }
+    },
     "家庭成员" : {
       "localizations" : {
         "en" : {
@@ -2661,6 +3517,7 @@
       }
     },
     "对你而言某个指标的正常范围，或某段异常的原因" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2681,6 +3538,7 @@
       }
     },
     "对睡眠有帮助吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2700,12 +3558,43 @@
         }
       }
     },
+    "对话历史" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversation history"
+          }
+        }
+      }
+    },
+    "对话只存在这台设备上，不进 iCloud 备份，换新手机时不会跟着走。单条消息可以在对话里长按删除；删掉的消息连同它带的照片一起从本机清掉。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversations are stored only on this device, aren't included in iCloud Backup, and won't move over to a new phone. You can delete a single message by long-pressing it in the conversation; deleted messages are removed from this device along with any photos they carry."
+          }
+        }
+      }
+    },
     "对话记录、记忆、用药表——存在本机，没有云端副本，也不进 iCloud 备份" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conversations, memories and the medication list — kept on this device, with no cloud copy and no iCloud backup"
+          }
+        }
+      }
+    },
+    "对话记录、记忆、笔记、提醒、目标、用药表——存在本机，没有云端副本，也不进 iCloud 备份" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversations, memory, notes, reminders, goals, and medication list—stored on this device, with no cloud copy, and not included in iCloud Backup"
           }
         }
       }
@@ -2776,6 +3665,16 @@
         }
       }
     },
+    "已取消" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canceled"
+          }
+        }
+      }
+    },
     "已回答" : {
       "localizations" : {
         "en" : {
@@ -2792,6 +3691,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copied"
+          }
+        }
+      }
+    },
+    "已完成" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completed"
           }
         }
       }
@@ -2853,6 +3762,36 @@
         }
       }
     },
+    "已清空。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cleared."
+          }
+        }
+      }
+    },
+    "已照做" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "已略过" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skipped"
+          }
+        }
+      }
+    },
     "已经 %lld 天没有锻炼记录" : {
       "localizations" : {
         "en" : {
@@ -2863,7 +3802,44 @@
         }
       }
     },
+    "已经有同名的目标了" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A goal with this name already exists"
+          }
+        }
+      }
+    },
+    "已经讨论清楚的结论，比如某个指标对你而言的正常范围" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conclusions you've already worked through, such as what the normal range of a metric is for you"
+          }
+        }
+      }
+    },
+    "已记 %lld/%lld 条。这里只记查不到的事——作息、限制、你的偏好、最近的事；具体的数字每次都会重新查，不会记进来。\n对话时这些内容会随问题一起发给你选的模型 provider。" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "已记 %1$lld/%2$lld 条。这里只记查不到的事——作息、限制、你的偏好、最近的事；具体的数字每次都会重新查，不会记进来。\n对话时这些内容会随问题一起发给你选的模型 provider。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/%lld saved. Only things that can't be looked up go here—your routine, limitations, preferences, recent events; specific numbers are looked up fresh each time and aren't saved.\nDuring conversations, these are sent along with your questions to the model provider you chose."
+          }
+        }
+      }
+    },
     "已记 %lld/%lld 条。这里只记查不到的事——作息、限制、你的偏好；步数、睡眠、心率这些每次都会重新查，不会记进来。\n对话时这些内容会随问题一起发给你选的模型 provider。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2910,6 +3886,16 @@
         }
       }
     },
+    "已过点 · " : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overdue · "
+          }
+        }
+      }
+    },
     "已重新读取健康数据。" : {
       "localizations" : {
         "en" : {
@@ -2930,12 +3916,53 @@
         }
       }
     },
+    "希望 Vana 怎么说话、怎么做事，自己看重什么" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How you want Vana to talk and work, and what matters to you"
+          }
+        }
+      }
+    },
     "希望 Vana 怎么说话、自己看重哪个指标" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "How you want Vana to speak, and which metrics you care about"
+          }
+        }
+      }
+    },
+    "帮我想想周末去哪儿玩" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help me think of somewhere to go this weekend"
+          }
+        }
+      }
+    },
+    "帮我整理一下今天要做的事" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help me sort out what I need to do today"
+          }
+        }
+      }
+    },
+    "帮我看看这张化验单" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help me look at this lab report"
           }
         }
       }
@@ -2956,6 +3983,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The developer can't see your data — it never passes through any machine of ours"
+          }
+        }
+      }
+    },
+    "开始" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
           }
         }
       }
@@ -2991,7 +4028,18 @@
         }
       }
     },
+    "开着时，Vana 会从对话里记下你的长期情况、表达偏好和最近的事，并在之后的提问里带上。关掉只是先不用，已经记下的还在下面，可以逐条删，也可以全部忘掉。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When on, Vana notes your long-term circumstances, communication preferences, and recent events from conversations, and brings them into later questions. Turning it off just pauses it—what's already saved stays below; you can delete items one by one or forget everything."
+          }
+        }
+      }
+    },
     "开着时，Vana 会在对话结束后记下你的长期情况和表达偏好，并在之后的提问里带上。关掉只是先不用，已经记下的还在下面，要删有单独的按钮。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3052,6 +4100,7 @@
       }
     },
     "心率与 HRV" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3067,6 +4116,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Required"
+          }
+        }
+      }
+    },
+    "忘掉了一条记忆" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forgot a memory"
           }
         }
       }
@@ -3142,6 +4201,7 @@
       }
     },
     "恢复跟得上吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3152,6 +4212,7 @@
       }
     },
     "想聊什么" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3192,6 +4253,7 @@
       }
     },
     "我最近状态如何？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3218,6 +4280,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Open the Health app"
+          }
+        }
+      }
+    },
+    "打开%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open %@"
+          }
+        }
+      }
+    },
+    "打开之后，每隔七天 Vana 会在后台请模型看一眼这个目标的进展，写几句回顾放进对话里。目标的内容、步骤和进展会发给你配置的模型服务。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When on, every seven days Vana asks the model in the background to check on this goal's progress and writes a short review into the conversation. The goal's content, steps, and progress are sent to the model service you configured."
           }
         }
       }
@@ -3273,6 +4355,7 @@
       }
     },
     "拍一张%@的化验单、报告或药盒，Vana 在本机识别成文字再帮你看。%@的步数、睡眠、心率这些读不到——Apple 健康数据只有本人有。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3299,6 +4382,7 @@
       }
     },
     "指标" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3338,12 +4422,42 @@
         }
       }
     },
+    "按字符估算，实际计费以模型服务那边为准。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estimated by character count; actual billing is determined by the model service."
+          }
+        }
+      }
+    },
     "挑了 %lld 个动作" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Picked %lld exercises"
+          }
+        }
+      }
+    },
+    "排队中" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queued"
+          }
+        }
+      }
+    },
+    "排队中…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queued…"
           }
         }
       }
@@ -3358,12 +4472,52 @@
         }
       }
     },
+    "提醒到点只发一条通知，不调用模型，也不花钱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminders only send a notification when due—no model call, no cost."
+          }
+        }
+      }
+    },
+    "提醒我…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remind me to…"
+          }
+        }
+      }
+    },
     "提问：%@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ask: %@"
+          }
+        }
+      }
+    },
+    "插件" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plugins"
+          }
+        }
+      }
+    },
+    "插件是可以整个开关的能力。关掉之后，Vana 不再带上它的规则、工具和数据；数据本身留在本机，重新打开就回来。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plugins are capabilities you can turn on or off as a whole. When one is off, Vana stops bringing along its rules, tools, and data; the data itself stays on this device and comes back when you turn it on again."
           }
         }
       }
@@ -3384,6 +4538,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search models"
+          }
+        }
+      }
+    },
+    "搜索记忆" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search memory"
           }
         }
       }
@@ -3419,6 +4583,7 @@
       }
     },
     "改个名字" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3428,12 +4593,33 @@
         }
       }
     },
+    "改了一条记忆" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changed a memory"
+          }
+        }
+      }
+    },
     "改名" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rename"
+          }
+        }
+      }
+    },
+    "改成了「%@」" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changed to “%@”"
           }
         }
       }
@@ -3454,6 +4640,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Whatever you edit here is exactly what gets sent. Delete any parts you don't need."
+          }
+        }
+      }
+    },
+    "放弃这个目标" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abandon this goal"
           }
         }
       }
@@ -3519,6 +4715,7 @@
       }
     },
     "整体状态" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3569,6 +4766,7 @@
       }
     },
     "新对话" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3579,6 +4777,7 @@
       }
     },
     "新建" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3588,12 +4787,33 @@
         }
       }
     },
+    "新清单" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New list"
+          }
+        }
+      }
+    },
     "新目标" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "New goal"
+          }
+        }
+      }
+    },
+    "新笔记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New note"
           }
         }
       }
@@ -3619,11 +4839,48 @@
       }
     },
     "日常活动量" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Daily activity"
+          }
+        }
+      }
+    },
+    "日常的事都可以交给我：%@。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave everyday things to me. I can %@."
+          }
+        }
+      }
+    },
+    "日常的事都可以交给我：%@。也能%@。" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "日常的事都可以交给我：%1$@。也能%2$@。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave everyday things to me. I can %@. I can also %@."
+          }
+        }
+      }
+    },
+    "日常的事都可以交给我。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave everyday things to me."
           }
         }
       }
@@ -3648,6 +4905,16 @@
         }
       }
     },
+    "早上好。昨晚的睡眠数据已经同步好了，要看看吗？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Good morning. Last night's sleep data has synced. Want to take a look?"
+          }
+        }
+      }
+    },
     "早上说昨晚的睡眠，晚上说今天的活动量，都基于本机算出来的数据；点开通知会直接带着对应话题开一条新对话。文案在每次打开 app 时刷新。" : {
       "localizations" : {
         "en" : {
@@ -3658,12 +4925,62 @@
         }
       }
     },
+    "时间" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time"
+          }
+        }
+      }
+    },
+    "明天 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow %@"
+          }
+        }
+      }
+    },
+    "明天早上八点提醒我带伞" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remind me to bring an umbrella at 8 tomorrow morning"
+          }
+        }
+      }
+    },
+    "明早 9 点" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow at 9 AM"
+          }
+        }
+      }
+    },
     "昨天" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Yesterday"
+          }
+        }
+      }
+    },
+    "昨天 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yesterday %@"
           }
         }
       }
@@ -3804,6 +5121,16 @@
         }
       }
     },
+    "更多" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More"
+          }
+        }
+      }
+    },
     "更多操作" : {
       "localizations" : {
         "en" : {
@@ -3824,7 +5151,48 @@
         }
       }
     },
+    "更新了一个目标" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updated a goal"
+          }
+        }
+      }
+    },
+    "更新了一项任务" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updated a task"
+          }
+        }
+      }
+    },
+    "更新了用药表" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updated the medication list"
+          }
+        }
+      }
+    },
+    "更新了笔记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updated a note"
+          }
+        }
+      }
+    },
     "更早" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3840,6 +5208,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld of them have no text — let Vana look at the images?"
+          }
+        }
+      }
+    },
+    "有一条没能照做：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One couldn't be done: %@"
           }
         }
       }
@@ -3895,6 +5273,7 @@
       }
     },
     "有哪项需要注意？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3984,6 +5363,26 @@
         }
       }
     },
+    "条目" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items"
+          }
+        }
+      }
+    },
+    "来源" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source"
+          }
+        }
+      }
+    },
     "来自 %@，只读取，不修改" : {
       "localizations" : {
         "en" : {
@@ -4024,12 +5423,52 @@
         }
       }
     },
+    "查找了笔记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Searched notes"
+          }
+        }
+      }
+    },
+    "查看了任务清单" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checked the task list"
+          }
+        }
+      }
+    },
+    "查看了用药表" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checked the medication list"
+          }
+        }
+      }
+    },
     "查看现在的状况" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "See how you're doing"
+          }
+        }
+      }
+    },
+    "查看详情" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View details"
           }
         }
       }
@@ -4046,6 +5485,16 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "查询了最近 %1$lld 天%2$@"
+          }
+        }
+      }
+    },
+    "标题" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title"
           }
         }
       }
@@ -4230,12 +5679,33 @@
         }
       }
     },
+    "正在问：%@。点一下取消" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asking: %@. Tap to cancel"
+          }
+        }
+      }
+    },
     "此操作会删除本机保存的所有消息，无法撤销。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "This deletes every message stored on this device. It can't be undone."
+          }
+        }
+      }
+    },
+    "此操作会删除本机保存的消息和它们带的照片，无法撤销。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This deletes the messages saved on this device and the photos they carry. This can't be undone."
           }
         }
       }
@@ -4283,11 +5753,48 @@
       }
     },
     "步行徒步" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Walking & hiking"
+          }
+        }
+      }
+    },
+    "步骤" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steps"
+          }
+        }
+      }
+    },
+    "步骤 %lld/%lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "步骤 %1$lld/%2$lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %lld/%lld"
+          }
+        }
+      }
+    },
+    "每%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every %@"
           }
         }
       }
@@ -4298,6 +5805,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Each member's conversations, medication list, memories and photos are stored separately and can't see each other.\nApple Health data belongs to the device owner only: for a family member, steps, sleep and heart rate aren't available — what Vana knows comes from the medications you record, the reports you photograph, and what you've talked about."
+          }
+        }
+      }
+    },
+    "每周" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly"
+          }
+        }
+      }
+    },
+    "每周回顾" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly review"
+          }
+        }
+      }
+    },
+    "每天" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily"
           }
         }
       }
@@ -4385,11 +5922,22 @@
       }
     },
     "比如：减脂、备半马、把作息掰回来" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "e.g. lose fat, train for a half marathon, fix my sleep schedule"
+          }
+        }
+      }
+    },
+    "比如：备战半马" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "e.g., Train for a half marathon"
           }
         }
       }
@@ -4410,6 +5958,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No suitable exercises found"
+          }
+        }
+      }
+    },
+    "没有 30 天前的消息。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No messages older than 30 days."
           }
         }
       }
@@ -4454,6 +6012,26 @@
         }
       }
     },
+    "没能存下笔记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't save the note"
+          }
+        }
+      }
+    },
+    "没能忘掉那一条" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't forget that one"
+          }
+        }
+      }
+    },
     "没能把问题显示出来" : {
       "localizations" : {
         "en" : {
@@ -4474,6 +6052,46 @@
         }
       }
     },
+    "没能改那一条" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't change that one"
+          }
+        }
+      }
+    },
+    "没能更新用药表" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't update the medication list"
+          }
+        }
+      }
+    },
+    "没能更新笔记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't update the note"
+          }
+        }
+      }
+    },
+    "没能派出后台任务" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't send out the background task"
+          }
+        }
+      }
+    },
     "没能记下「%@」" : {
       "localizations" : {
         "en" : {
@@ -4484,12 +6102,52 @@
         }
       }
     },
+    "没能记成目标" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't save it as a goal"
+          }
+        }
+      }
+    },
+    "没能设好提醒" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't set the reminder"
+          }
+        }
+      }
+    },
+    "没能读这个网页" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't read this web page"
+          }
+        }
+      }
+    },
     "活动量" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Activity"
+          }
+        }
+      }
+    },
+    "派了一个后台任务" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sent out a background task"
           }
         }
       }
@@ -4510,6 +6168,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Message"
+          }
+        }
+      }
+    },
+    "添加" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
           }
         }
       }
@@ -4554,7 +6222,68 @@
         }
       }
     },
+    "清单" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "List"
+          }
+        }
+      }
+    },
+    "清掉" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear"
+          }
+        }
+      }
+    },
+    "清掉 30 天前的对话" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear conversations older than 30 days"
+          }
+        }
+      }
+    },
+    "清掉 30 天前的对话？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear conversations older than 30 days?"
+          }
+        }
+      }
+    },
+    "清掉了 %lld 条。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cleared %lld."
+          }
+        }
+      }
+    },
+    "清掉的无法恢复。Vana 记住的事和用药表不受影响，要清它们到各自的页面里。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cleared items can't be recovered. What Vana remembers and the medication list aren't affected—clear those on their own pages."
+          }
+        }
+      }
+    },
     "清空会删除本机保存的所有消息，无法撤销。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4564,7 +6293,38 @@
         }
       }
     },
+    "清空全部" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear all"
+          }
+        }
+      }
+    },
+    "清空全部对话" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear all conversations"
+          }
+        }
+      }
+    },
+    "清空全部对话？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear all conversations?"
+          }
+        }
+      }
+    },
     "清空对话" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4575,6 +6335,7 @@
       }
     },
     "清空当前对话？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4615,6 +6376,7 @@
       }
     },
     "游完消耗多少？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4640,6 +6402,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "By tapping “Agree and continue”, you confirm you have read the notice above and agree that, when you ask a question, Vana sends the items listed under “Sent to the model service you configure” to the model service you choose in order to generate the answer."
+          }
+        }
+      }
+    },
+    "照做" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do it"
           }
         }
       }
@@ -4734,6 +6506,26 @@
         }
       }
     },
+    "状态" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status"
+          }
+        }
+      }
+    },
+    "现在怎么样了？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How is it going now?"
+          }
+        }
+      }
+    },
     "现在是多少" : {
       "localizations" : {
         "en" : {
@@ -4765,11 +6557,22 @@
       }
     },
     "瑜伽拉伸" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Yoga & stretching"
+          }
+        }
+      }
+    },
+    "用了 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Used %@"
           }
         }
       }
@@ -4794,6 +6597,16 @@
         }
       }
     },
+    "由这台设备直接访问" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accessed directly from this device"
+          }
+        }
+      }
+    },
     "目标" : {
       "localizations" : {
         "en" : {
@@ -4805,6 +6618,7 @@
       }
     },
     "目标：%@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4815,11 +6629,22 @@
       }
     },
     "目标是一件要聊很久的事。之后每次回到它，都接着上次说。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "A goal is something you'll come back to for a while. Every time you return to it, the conversation continues."
+          }
+        }
+      }
+    },
+    "目标的名称和进展；你让 Vana 去读的笔记的内容（笔记不常驻，读的那一次才发出）" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goal names and progress; the content of notes you ask Vana to read (notes aren't always included—they're sent only when read)"
           }
         }
       }
@@ -4834,12 +6659,32 @@
         }
       }
     },
+    "看了一眼时间" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checked the time"
+          }
+        }
+      }
+    },
     "看图" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vision"
+          }
+        }
+      }
+    },
+    "看懂 Apple 健康里的数据、解读化验单、记用药" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "understand your Apple Health data, interpret lab reports, and track medications"
           }
         }
       }
@@ -4875,11 +6720,22 @@
       }
     },
     "睡眠体温有变化吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Has my sleeping temperature changed?"
+          }
+        }
+      }
+    },
+    "票据、报告、说明书、药盒、化验单等在本机识别出来的文字" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text recognized on this device from receipts, reports, instructions, medicine boxes, lab reports, and more"
           }
         }
       }
@@ -4920,6 +6776,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Remove this photo"
+          }
+        }
+      }
+    },
+    "笔记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note"
+          }
+        }
+      }
+    },
+    "笔记与清单" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notes and lists"
+          }
+        }
+      }
+    },
+    "等你确认" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for you to confirm"
+          }
+        }
+      }
+    },
+    "算了" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Never mind"
           }
         }
       }
@@ -5006,6 +6902,16 @@
         }
       }
     },
+    "结果" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Result"
+          }
+        }
+      }
+    },
     "给了之后 Vana 每次回答都知道你大概在哪个城市，季节气候、时差、当地饮食和就医方式才答得准。只取到城市，不取街道地址，也不会保存在本机；不给就完全不带位置，其余功能照常。" : {
       "localizations" : {
         "en" : {
@@ -5086,6 +6992,16 @@
         }
       }
     },
+    "网页搜索（填了搜索 key 才有）——搜索词发给 serper.dev，不含你的个人情况" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Web search (only with a search key)—search terms are sent to serper.dev and don't include your personal circumstances"
+          }
+        }
+      }
+    },
     "网页搜索结果" : {
       "localizations" : {
         "en" : {
@@ -5127,11 +7043,22 @@
       }
     },
     "能问的照样能问——健康数据还是照常查。只是问题本身仍然要发给你配置的模型才能回答，这一步隐私对话挡不住。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "You can still ask anything, and health data is still read as usual. The question itself still goes to the model you configured — a private conversation can't change that."
+          }
+        }
+      }
+    },
+    "能问的照样能问，Vana 也照样认得你。只是问题本身仍然要发给你配置的模型才能回答，这一步不留痕挡不住。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can ask anything you normally would, and Vana still knows you. But the question itself still has to be sent to the model you configured to get an answer—off the record can't prevent that step."
           }
         }
       }
@@ -5146,7 +7073,18 @@
         }
       }
     },
+    "自己记，或者让 Vana 帮你记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep track yourself, or have Vana do it for you"
+          }
+        }
+      }
+    },
     "药和补剂" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5187,6 +7125,7 @@
       }
     },
     "血压有波动吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5207,6 +7146,7 @@
       }
     },
     "血氧与呼吸" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5217,6 +7157,7 @@
       }
     },
     "血氧正常吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5326,12 +7267,42 @@
         }
       }
     },
+    "记一条进展" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log progress"
+          }
+        }
+      }
+    },
     "记下了一条" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Noted something"
+          }
+        }
+      }
+    },
+    "记事、查资料、整理想法、看懂拍下来的文字" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "take notes, look things up, organize your thoughts, and read text from photos"
+          }
+        }
+      }
+    },
+    "记住：我不吃香菜" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remember: I don't eat cilantro"
           }
         }
       }
@@ -5362,6 +7333,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add to medications & supplements"
+          }
+        }
+      }
+    },
+    "记忆、召回、反问、网页搜索与读网页、位置、提醒与目标、后台任务" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Memory, recall, follow-up questions, web search and reading web pages, location, reminders and goals, background tasks"
+          }
+        }
+      }
+    },
+    "记忆现在是关着的" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Memory is currently off"
+          }
+        }
+      }
+    },
+    "记成了一个目标" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved as a goal"
+          }
+        }
+      }
+    },
+    "记购物清单和想法" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "keep shopping lists and ideas"
+          }
+        }
+      }
+    },
+    "设了一个提醒" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set a reminder"
           }
         }
       }
@@ -5427,6 +7448,7 @@
       }
     },
     "话题" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5437,6 +7459,7 @@
       }
     },
     "话题：%@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5516,7 +7539,38 @@
         }
       }
     },
+    "说好今天回头看的：%@。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We agreed to look back on this today: %@."
+          }
+        }
+      }
+    },
+    "说好回头看：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agreed to look back: %@"
+          }
+        }
+      }
+    },
+    "说好回头看的" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agreed to look back on"
+          }
+        }
+      }
+    },
     "说好回头看的事" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5547,12 +7601,32 @@
         }
       }
     },
+    "说好回头问你一句：%@试下来怎么样？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I said I'd check back with you: how has %@ been working out?"
+          }
+        }
+      }
+    },
     "说好过一阵子再看的事，到点会在 check-in 里提醒你" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Something to revisit later; when it's due, it shows up in your check-in"
+          }
+        }
+      }
+    },
+    "说好这几天回头评价一下效果" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agreed to check back on how well it works in a few days"
           }
         }
       }
@@ -5609,12 +7683,62 @@
         }
       }
     },
+    "读 Apple 健康、用药与补剂、锻炼动作库、化验单解读" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reads Apple Health, medications & supplements, exercise library, lab report interpretation"
+          }
+        }
+      }
+    },
     "读不出来" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can't be read"
+          }
+        }
+      }
+    },
+    "读了一个网页" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read a web page"
+          }
+        }
+      }
+    },
+    "读了一条笔记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read a note"
+          }
+        }
+      }
+    },
+    "读回的网页" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Web pages read"
+          }
+        }
+      }
+    },
+    "购物单、想法、草稿，让 Vana 按需读写" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shopping lists, ideas, drafts—Vana reads and writes them as needed"
           }
         }
       }
@@ -5630,6 +7754,7 @@
       }
     },
     "跑完恢复得怎么样？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5645,6 +7770,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Running"
+          }
+        }
+      }
+    },
+    "跟 Vana 说点什么…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Say something to Vana…"
           }
         }
       }
@@ -5690,6 +7825,7 @@
       }
     },
     "运动" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5699,12 +7835,33 @@
         }
       }
     },
+    "近况" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent"
+          }
+        }
+      }
+    },
     "返回对话" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Back to the conversation"
+          }
+        }
+      }
+    },
+    "还没同意把数据发给当前的模型服务。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You haven't agreed to send data to the current model service yet."
           }
         }
       }
@@ -5720,11 +7877,42 @@
       }
     },
     "还没有会话" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No conversations yet"
+          }
+        }
+      }
+    },
+    "还没有步骤" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No steps yet"
+          }
+        }
+      }
+    },
+    "还没有笔记" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No notes yet"
+          }
+        }
+      }
+    },
+    "还没有要做的事" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing to do yet"
           }
         }
       }
@@ -5789,6 +7977,16 @@
         }
       }
     },
+    "还没配置云端模型，先到设置里填好。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No cloud model is set up yet. Set one up in Settings first."
+          }
+        }
+      }
+    },
     "还没配置云端模型，这段话是本机按下面的读数拼的。" : {
       "localizations" : {
         "en" : {
@@ -5819,12 +8017,42 @@
         }
       }
     },
+    "这一条已经不在了" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This one no longer exists"
+          }
+        }
+      }
+    },
+    "这一次要带的内容太多，装不下。把这条消息或附件缩短一点再试一次。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There's too much to include this time. Shorten this message or its attachments and try again."
+          }
+        }
+      }
+    },
     "这一段你自己改过，不会被自动覆盖。要恢复自动生成，把它清空再保存。" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "You edited this text, so it won't be overwritten. To go back to the generated version, clear it and save."
+          }
+        }
+      }
+    },
+    "这个时间已经过了，选一个之后的时间" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This time has already passed. Choose a later time"
           }
         }
       }
@@ -5845,6 +8073,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "All of these data types have already been asked about. To turn them on or off, use the Health app."
+          }
+        }
+      }
+    },
+    "这件事会交给后台助手去做，它看不到这段对话，只按上面的说明做。需要几分钟，做完结果会出现在对话里。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This will be handed off to the background assistant. It can't see this conversation and only follows the instructions above. It takes a few minutes, and the result will appear in the conversation when it's done."
+          }
+        }
+      }
+    },
+    "这件后台任务的说明，连同它需要查的资料和记忆，会发送给第三方模型服务来完成，由对方按它自己的隐私政策处理。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This background task's instructions, along with the material and memories it needs, will be sent to a third-party model service to complete it, and handled under that service's own privacy policy."
           }
         }
       }
@@ -5956,6 +8204,7 @@
       }
     },
     "这周几次高强度？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5966,6 +8215,7 @@
       }
     },
     "这周比上周多吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5976,6 +8226,7 @@
       }
     },
     "这周比上周好吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5986,6 +8237,7 @@
       }
     },
     "这周练了几次？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5996,6 +8248,7 @@
       }
     },
     "这周还能再跑吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6016,6 +8269,7 @@
       }
     },
     "这周骑够了吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6076,6 +8330,7 @@
       }
     },
     "这条对话不会被保存" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6086,11 +8341,22 @@
       }
     },
     "这条对话太长了，装不下。开一条新对话再问一次，刚才查到的数据都还在。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "This conversation is too long to fit. Start a new one and ask again — everything already looked up is still there."
+          }
+        }
+      }
+    },
+    "这条提醒没有时间" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This reminder has no time"
           }
         }
       }
@@ -6127,6 +8393,76 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "这里是%1$@的记录。拍一张%2$@的化验单或报告，或者先把%3$@在吃的药记下来。"
+          }
+        }
+      }
+    },
+    "这里说的话不会被保存" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What you say here won't be saved"
+          }
+        }
+      }
+    },
+    "进展" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Progress"
+          }
+        }
+      }
+    },
+    "进行中" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In progress"
+          }
+        }
+      }
+    },
+    "进行中的提醒已经有 %lld 条了，先清理一些" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You already have %lld active reminders. Clear some out first"
+          }
+        }
+      }
+    },
+    "进行中的目标会一直带在 Vana 的上下文里，回答时它会和这件事挂上钩。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active goals are always kept in Vana's context, and it connects its answers to them."
+          }
+        }
+      }
+    },
+    "进行中的目标最多 %lld 个。Vana 回答时会把它们记在心上。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Up to %lld active goals. Vana keeps them in mind when answering."
+          }
+        }
+      }
+    },
+    "进行中的目标已经有 %lld 个了，先完成或放弃一个" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You already have %lld active goals. Complete or abandon one first"
           }
         }
       }
@@ -6187,12 +8523,32 @@
         }
       }
     },
+    "通知没打开，提醒到点不会弹出来。到「设置 › Vana › 通知」里打开。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are off, so reminders won't pop up when due. Turn them on in “Settings › Vana › Notifications”."
+          }
+        }
+      }
+    },
     "都不是，我自己说" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "None of these — I'll say it myself"
+          }
+        }
+      }
+    },
+    "重复" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat"
           }
         }
       }
@@ -6213,6 +8569,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Answer again"
+          }
+        }
+      }
+    },
+    "重新开始" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start over"
           }
         }
       }
@@ -6288,6 +8654,7 @@
       }
     },
     "长期目标" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6318,6 +8685,7 @@
       }
     },
     "问一个健康问题，这里就会出现记录。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6348,6 +8716,7 @@
       }
     },
     "问问你的健康数据…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6368,6 +8737,7 @@
       }
     },
     "间隔够恢复吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6388,6 +8758,7 @@
       }
     },
     "隐私" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6398,6 +8769,7 @@
       }
     },
     "隐私对话 · 不保存" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6408,6 +8780,7 @@
       }
     },
     "隐私对话，不保存这条对话" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6418,6 +8791,7 @@
       }
     },
     "隐私对话（不保存）" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6443,6 +8817,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The privacy policy can't be opened right now"
+          }
+        }
+      }
+    },
+    "需要你" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needs you"
           }
         }
       }
@@ -6524,6 +8908,7 @@
       }
     },
     "静息心率正常吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6544,6 +8929,7 @@
       }
     },
     "频次合适吗？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6554,6 +8940,7 @@
       }
     },
     "骑完恢复得怎么样？" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6574,6 +8961,7 @@
       }
     },
     "高强度间歇" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

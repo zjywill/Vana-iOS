@@ -115,6 +115,49 @@ struct ComplianceTests {
         #expect(html.contains("急救"))
     }
 
+    /// 日常 agent 那一轮新加的几条出设备的路。每一条都是**行为**,告知里少一句就是一次没做到的告知。
+    @Test("隐私说明和告知屏写了读网页、后台任务、记忆抽取、提醒、不留痕")
+    func policyCoversDailyAgentFlows() throws {
+        let url = try #require(PrivacyPolicy.fileURL)
+        let html = try String(contentsOf: url, encoding: .utf8)
+        // 读网页由设备直连:对方看得到 IP。
+        #expect(html.contains("IP 地址"))
+        #expect(html.contains("内网"))
+        // 后台任务要先确认,而且只读。
+        #expect(html.contains("后台任务"))
+        #expect(html.contains("点了「开始」"))
+        // 抽记忆是一次单独的发送。
+        #expect(html.contains("抽取值得长期记住"))
+        // 提醒到点不调用模型。
+        #expect(html.contains("不调用模型"))
+        // 不留痕,以及它挡不住的那一步。
+        #expect(html.contains("不留痕"))
+        #expect(!html.contains("会话列表"), "会话列表已经没有了，删除路径要跟着改")
+        #expect(html.contains("笔记与清单"))
+
+        let leaving = DataUseNotice.leaves.points.joined()
+        #expect(leaving.contains("后台任务"))
+        #expect(leaving.contains("记住长期成立的事"))
+        #expect(DataUseNotice.direct.points.joined().contains("IP 地址"))
+        #expect(DataUseNotice.stays.points.joined().contains("不调用模型"))
+    }
+
+    @Test("英文隐私说明也写了读网页、后台任务和提醒")
+    func englishPolicyCoversDailyAgentFlows() throws {
+        let url = try #require(Bundle.main.url(
+            forResource: PrivacyPolicy.resourceName,
+            withExtension: "html",
+            subdirectory: nil,
+            localization: "en"
+        ))
+        let html = try String(contentsOf: url, encoding: .utf8)
+        #expect(html.contains("IP address"))
+        #expect(html.contains("Background tasks"))
+        #expect(html.contains("neither the network nor a model"))
+        #expect(html.contains("Off-the-record"))
+        #expect(!html.contains("conversation list"))
+    }
+
     // MARK: - 英文那一份
 
     /// 英文界面配一份中文隐私说明,和没有说明差不多——而这一条是静默的:中文开发者永远
@@ -275,9 +318,9 @@ struct ComplianceTests {
     }
 
     /// 「保护你的隐私」这类话不可验证,写了等于没写。这条盯的是那一屏没有退化成一句套话。
-    @Test("三组内容都不为空")
+    @Test("四组内容都不为空")
     func noticeGroupsAreComplete() {
-        #expect(DataUseNotice.groups.count == 3)
+        #expect(DataUseNotice.groups.count == 4)
         for group in DataUseNotice.groups {
             #expect(!group.points.isEmpty, "\(group.title) 是空的")
             #expect(!group.title.isEmpty)
