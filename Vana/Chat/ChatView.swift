@@ -71,6 +71,14 @@ struct ChatView: View {
                     // 代价可控:一段会话最多几十条(`SessionThreadPolicy` 攒够 40 条就
                     // 另起一段),全量布局一次远比每帧猜错一次便宜。
                     VStack(spacing: 16) {
+                        // 「今天」:本机数据拼的那几张卡,横着一排,是这一列里的第一项——跟着
+                        // 内容一起滚,**不悬浮**:浮在顶上的话对话从它底下穿过去,两层字叠在一起。
+                        // 左右各伸出 16 点贴到屏幕边,下一张卡才露得出来。不留痕那一层里不出。
+                        if !model.isEphemeral {
+                            TodayStrip(cards: model.todayCards, onAction: perform)
+                                .padding(.horizontal, -16)
+                        }
+
                         if model.isLoadingConversation {
                             ProgressView("正在载入对话")
                                 .padding(.top, 40)
@@ -106,7 +114,8 @@ struct ChatView: View {
                                     onOpenSetup: { isShowingCloudSetup = true }
                                 )
                             }
-                            .padding(.top, 24)
+                            // 上面有「今天」时收紧:那一排已经留过顶部的空。
+                            .padding(.top, model.isEphemeral || model.todayCards.isEmpty ? 24 : 0)
                             .id(Self.welcomeAnchor)
                         } else {
                             // 滑到顶就往前翻一页。放一行真的看得见的东西而不是只挂 onAppear:
@@ -259,12 +268,6 @@ struct ChatView: View {
                 // 也不做成输入区的 `overlay` 往上偏移:画得出来,但**点不着**——画到父视图
                 // 框外的那部分收不到触摸,表现是按钮好端端地摆在那儿,按下去什么都不发生
                 // (在 iPad 上试过一次)。挂在这一层,它整个落在自己的框里。
-                // 「今天」:本机数据拼的那几张卡,聊天顶上横着一排,可以收起。不留痕那一层里不出。
-                .safeAreaInset(edge: .top, spacing: 0) {
-                    if !model.isEphemeral {
-                        TodayStrip(cards: model.todayCards, onAction: perform)
-                    }
-                }
                 .overlay(alignment: .bottom) {
                     // 空会话时不出:那一屏本来就没有「底部」可回。
                     if isScrolledUp, !model.messages.isEmpty {
