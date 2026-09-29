@@ -6,7 +6,7 @@ iOS 26 SwiftUI 的**日常助手**:一条永远的对话,agent 通过工具使�
 
 **从「健康聊天」转向「日常 agent」的重构已做完(P0–P8)**,和 Android 那边同一份方案
 (`../Vana-Android/docs/architecture/daily-agent-plan.md`);iOS 这一侧的落地和偏差记在
-`docs/architecture/daily-agent.md`。动到对应的东西先看那份方案,别照着旧的「会话」「会话列表」
+`Docs/architecture/daily-agent.md`。动到对应的东西先看那份方案,别照着旧的「会话」「会话列表」
 「健康是核心」的思路加新的耦合:**核心不认识任何领域**,领域知识只能是插件贡献的。
 下面几节里凡是还提到"会话"的,指的是那条线程里的一段,不再是一个文件或列表里的一行。
 
