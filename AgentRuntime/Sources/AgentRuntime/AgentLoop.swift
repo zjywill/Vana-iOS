@@ -266,9 +266,13 @@ private extension AgentLoop {
 
                 // 上下文超限走压缩,不走重试:原样再发一次还是塞不下。
                 if ModelFailure.isContextOverflow(description) {
-                    // 压过一次还是超,那就是真的放不下了。报一个用户能照着做的错(开新对话),
-                    // 而不是把 provider 那句 "prompt is too long: 210000 tokens" 甩给他。
-                    guard !overflowRecoveryUsed else {
+                    // 压过一次还是超,那就是真的放不下了。把它交给上层,而不是把 provider 那句
+                    // "prompt is too long: 210000 tokens" 甩给用户——一条永远的对话里没有「开新对话」
+                    // 可劝,聊天层会把窗口砍到最近两轮再跑一次,砍不动才报出来。
+                    //
+                    // 不知道上下文多大时,这一层的恢复是空转:没有预算就没有水位线,规划器和摘要
+                    // 都无从压起,重发的是同一份 prompt——白花一次整轮的钱再撞一次墙。直接交给上层。
+                    guard !overflowRecoveryUsed, profile.contextWindow != nil else {
                         throw AgentLoopError.contextWindowExceeded
                     }
                     overflowRecoveryUsed = true

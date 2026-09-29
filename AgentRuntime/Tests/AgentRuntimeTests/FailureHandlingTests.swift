@@ -359,6 +359,27 @@ struct FailureHandlingTests {
         #expect(error as? AgentLoopError == .contextWindowExceeded)
     }
 
+    @Test("with an unknown context window an overflow goes straight to the app instead of resending the same prompt")
+    func overflowWithUnknownWindowIsNotRetriedInPlace() async {
+        let overflow = ScriptedModelClient.Turn(
+            finishReason: .init(unified: .error),
+            failureMessage: "prompt is too long: 210000 tokens > 200000 maximum"
+        )
+        let client = ScriptedModelClient(
+            profile: AgentModelProfile(providerId: "custom", modelId: "unknown", contextWindow: nil, maxOutputTokens: nil),
+            turns: Array(repeating: overflow, count: 3)
+        )
+
+        let (_, _, error) = await record(
+            loop(client, summarizer: RecordingSummarizer(visible: "看过了。", replay: "要点。")),
+            history: [.init(role: .user, text: "第 1 问")]
+        )
+
+        // 没有预算就没有水位线,原地恢复重发的是同一份 prompt。
+        #expect(client.requests.count == 1)
+        #expect(error as? AgentLoopError == .contextWindowExceeded)
+    }
+
     @Test("a summarizer failure is reported instead of vanishing")
     func compactionFailureIsObservable() async {
         let client = ScriptedModelClient(
