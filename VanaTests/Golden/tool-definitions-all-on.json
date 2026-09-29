@@ -1,0 +1,527 @@
+[
+  {
+    "description" : "当用户问及步数、活动量或久坐情况时调用。返回最近若干天的每日步数、步行跑步距离、爬楼层数和运动分钟。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "days" : {
+          "description" : "查询最近多少天，范围 1–90，默认 7",
+          "maximum" : 90,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "days"
+      ],
+      "type" : "object"
+    },
+    "name" : "daily_steps",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "当用户问及睡眠时长、入睡起床时间、睡眠分期（深睡/核心/REM）、夜间醒来、睡眠效率或睡眠期间心率时调用。返回最近若干晚的逐晚数据。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "days" : {
+          "description" : "查询最近多少天，范围 1–90，默认 7",
+          "maximum" : 90,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "days"
+      ],
+      "type" : "object"
+    },
+    "name" : "sleep_summary",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "当用户问及静息心率、HRV、全天心率高低、恢复或压力趋势时调用。返回最近若干天的静息心率、心率变异性,以及每天心率的最低/最高/平均。问「睡觉时心率多少」用 sleep_summary,那里有按每晚统计的睡眠期间心率。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "days" : {
+          "description" : "查询最近多少天，范围 1–90，默认 7",
+          "maximum" : 90,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "days"
+      ],
+      "type" : "object"
+    },
+    "name" : "heart_rate_summary",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "当用户问及锻炼、运动频率、运动时长、距离或活动消耗时调用。返回最近若干天的锻炼记录,含时长、距离、消耗和平均/最高心率。只关心某一种运动时传 activity（如“跑步”），筛选在数据层完成，比自己从全部记录里挑更可靠。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "activity" : {
+          "description" : "只看某一类锻炼时传，留空表示全部",
+          "enum" : [
+            "跑步",
+            "骑行",
+            "步行",
+            "力量训练",
+            "游泳",
+            "徒步",
+            "瑜伽",
+            "高强度间歇训练"
+          ],
+          "type" : "string"
+        },
+        "days" : {
+          "description" : "查询最近多少天，范围 1–90，默认 7",
+          "maximum" : 90,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "days"
+      ],
+      "type" : "object"
+    },
+    "name" : "workouts",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "当用户问及体重、体脂或身体指标变化时调用。返回最近若干天有记录的体重和体脂趋势。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "days" : {
+          "description" : "查询最近多少天，范围 1–90，默认 7",
+          "maximum" : 90,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "days"
+      ],
+      "type" : "object"
+    },
+    "name" : "body_metrics",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "当用户问及血压、收缩压或舒张压时调用。返回最近若干天有记录的每日血压均值。多数人没有这项数据（需要血压计或第三方 app 写入），没有记录时会明确说明。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "days" : {
+          "description" : "查询最近多少天，范围 1–90，默认 7",
+          "maximum" : 90,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "days"
+      ],
+      "type" : "object"
+    },
+    "name" : "blood_pressure",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "当用户问及血氧、呼吸频率或体温时调用。返回最近若干天有记录的每日均值。这些项需要支持的 Apple Watch 或体温计，多数人只有部分数据，没有记录时会明确说明。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "days" : {
+          "description" : "查询最近多少天，范围 1–90，默认 7",
+          "maximum" : 90,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "days"
+      ],
+      "type" : "object"
+    },
+    "name" : "vitals",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "当用户问「什么影响了我的睡眠/心率」「某件事有没有用」「有什么规律」时调用。把最近的数据按条件分成两组做对比（如锻炼当晚 vs 其他晚上的睡眠时长），返回每组天数和差值。days 建议传 60 以上，样本太少不会有结果。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "days" : {
+          "description" : "查询最近多少天，范围 1–90，默认 7",
+          "maximum" : 90,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "days"
+      ],
+      "type" : "object"
+    },
+    "name" : "correlations",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "当用户问及化验单、体检报告、血糖血脂等医院检查结果时调用。返回「健康」里来自医院或诊所的化验和体征记录。只有用户在「健康」App 里连过医疗机构才会有数据，没有时会明确说明。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "days" : {
+          "description" : "查询最近多少天，范围 1–90，默认 7",
+          "maximum" : 90,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "days"
+      ],
+      "type" : "object"
+    },
+    "name" : "health_records",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "在用户问「做点什么」「怎么拉伸」「有什么动作」，或者你打算建议他活动一下的时候调用。返回的动作会带图示显示在你这条回复下面，用户能照着做。**只能推荐这个工具返回的动作**：库以外的动作没有图，说了他也不知道怎么做。疼痛、受伤、术后、孕期不要调这个，先让他去看医生。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "advanced" : {
+          "description" : "他明确说了想练难一点的、或者说了自己一直在健身，才传 true。默认不给单腿深蹲、倒立俯卧撑这一类需要基础的动作",
+          "type" : "boolean"
+        },
+        "count" : {
+          "description" : "要几个，1–4，默认 3",
+          "maximum" : 4,
+          "minimum" : 1,
+          "type" : "integer"
+        },
+        "equipment" : {
+          "description" : "他手边有什么。**不确定就别传**——不传时只给徒手和家里现成的东西（墙、门框、毛巾、椅子）。他说了在健身房、或者说了有哑铃有弹力带，才把对应的几样列进来。列了他没有的，换回来的是一张他做不了的卡",
+          "items" : {
+            "enum" : [
+              "徒手",
+              "墙",
+              "门框",
+              "毛巾",
+              "椅子",
+              "长凳",
+              "箱子",
+              "哑铃",
+              "杠铃",
+              "杠铃片",
+              "壶铃",
+              "弹力带",
+              "绳索",
+              "器械",
+              "单杠",
+              "瑜伽球"
+            ],
+            "type" : "string"
+          },
+          "type" : "array"
+        },
+        "excludeJoint" : {
+          "description" : "用户说过不好、受过伤、做不了的关节。带这些关节的动作一个都不会返回。记忆或用药表里提到过的也要带上",
+          "items" : {
+            "enum" : [
+              "颈",
+              "肩",
+              "肘",
+              "腕",
+              "腰",
+              "髋",
+              "膝",
+              "踝"
+            ],
+            "type" : "string"
+          },
+          "type" : "array"
+        },
+        "noFloor" : {
+          "description" : "他不方便躺下或跪地时传 true，比如在办公室、在外面，或者他说了起身困难",
+          "type" : "boolean"
+        },
+        "part" : {
+          "description" : "练哪儿。他说「练胸」「练腿」时用这个，和 scene 至少给一个",
+          "enum" : [
+            "胸",
+            "背",
+            "肩",
+            "手臂",
+            "核心",
+            "腰背",
+            "臀",
+            "腿",
+            "小腿",
+            "髋",
+            "拉伸"
+          ],
+          "type" : "string"
+        },
+        "scene" : {
+          "description" : "什么场合，比如他在工位上、睡前、跑步之前。和 part 至少给一个；「跑完拉一下腿」这种两个都给",
+          "enum" : [
+            "颈肩",
+            "腰背",
+            "髋腿",
+            "核心",
+            "力量",
+            "睡前",
+            "跑前",
+            "跑后",
+            "办公室",
+            "平衡"
+          ],
+          "type" : "string"
+        }
+      },
+      "required" : [
+
+      ],
+      "type" : "object"
+    },
+    "name" : "suggest_exercises",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "反问用户一句，并把答案做成他点一下就能选的卡片。他的描述里**缺一个会改变你回答方向的条件、而它的取值只有有限几种**时就调用：是哪一种不舒服、什么时候开始的、想从哪儿入手，或者接下来能帮他的方向有好几个、该挑哪个得他说了算。**先问再答**，不要按最可能的那一种猜着答完。卡片显示在你这条回复下面，他也可以自己写一句或者跳过不答。健康数据里查得到的（睡了多久、走了多少步、心率多少）**不要问他**，去调健康工具。答案本身是开放的（他得讲一段经过）就直接用一句话问，别硬凑几个选项；一次只问一个问题。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "allowsMultiple" : {
+          "description" : "几条可以同时成立时传 true，比如问他有哪些症状。只能选一种就别传",
+          "type" : "boolean"
+        },
+        "options" : {
+          "description" : "2–5 个互不重叠的选项，覆盖常见的几种情况。「其他」和「不想说」不用写，卡片上本来就有",
+          "items" : {
+            "additionalProperties" : false,
+            "properties" : {
+              "detail" : {
+                "description" : "这条是什么意思，一句话，不超过 30 个字。标签本身已经说清楚就别写",
+                "type" : "string"
+              },
+              "label" : {
+                "description" : "按钮上的字，用他会说的说法，不超过 16 个字",
+                "type" : "string"
+              }
+            },
+            "required" : [
+              "label"
+            ],
+            "type" : "object"
+          },
+          "maxItems" : 5,
+          "minItems" : 2,
+          "type" : "array"
+        },
+        "question" : {
+          "description" : "要问他的那一句，一个问题，不超过 40 个字",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "question",
+        "options"
+      ],
+      "type" : "object"
+    },
+    "name" : "ask_user",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "上网搜索，返回若干条网页结果的标题、来源、日期和摘要。\n只在答案**不在你已有的知识里**时调用：近一两年才有的说法或指南、某个具体的品牌或产品、某样你没把握是否存在的东西、或者一件很可能已经变了的事（药品状态、推荐剂量的更新）。\n常识性的健康知识直接答，不要为了显得有出处而搜一遍。用户自己的健康数据一律走健康工具，不要拿去搜——网上没有他的数据。\n查询词写成一个通用的知识问题，**不要把用户的个人情况、身体数值或病史写进去**。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "query" : {
+          "description" : "搜索词，一个通用的知识问题，不含用户的个人信息",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "query"
+      ],
+      "type" : "object"
+    },
+    "name" : "web_search",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "读用户记下的全部用药与补剂。系统提示里已经有一份精简名单，只在需要名单上没有的细节时调用：他什么时候开始吃的、当初为什么吃、他自己写的效果评价全文，或者名单因为太长被裁掉的那几条。只是想知道他在吃什么，直接看系统提示里那份，不用调这个。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+
+      },
+      "type" : "object"
+    },
+    "name" : "list_medications",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "把一样药或补剂记进用户的清单。在他说出自己和某样东西的关系时调用：决定开始吃、已经在吃、需要时会吃、对某样东西过敏或不能吃。同名的会覆盖原来那条，不会重复。只是在讨论一样东西、他还没说要不要吃，不要记。剂量不要记进来。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "followUpDays" : {
+          "description" : "他是刚开始试这个东西时传：几天后回头问他有没有用，范围 3–180。补剂见效慢，给长一点。已经吃了很久的不用传",
+          "maximum" : 180,
+          "minimum" : 3,
+          "type" : "integer"
+        },
+        "name" : {
+          "description" : "药或补剂的名字，用他说的那个叫法，不超过 20 个字",
+          "type" : "string"
+        },
+        "reason" : {
+          "description" : "为什么吃，或者谁让他吃的。一句话，不超过 30 个字",
+          "type" : "string"
+        },
+        "status" : {
+          "description" : "cannotTake 过敏或不能吃、ongoing 长期在吃、asNeeded 需要时才吃、tried 试过之后的结论",
+          "enum" : [
+            "cannotTake",
+            "ongoing",
+            "asNeeded",
+            "tried"
+          ],
+          "type" : "string"
+        },
+        "when" : {
+          "description" : "什么情况下吃，如「头疼时」「每天早上」「冬天」。不知道就留空",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "name",
+        "status"
+      ],
+      "type" : "object"
+    },
+    "name" : "log_medication",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "更新清单里已有的一条：他说某样东西有用、没用、有不良反应，或者已经停了。按名字找。**他给出结果时一定要记**——「试过没用」这件事下次才拦得住你再推荐一遍。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "name" : {
+          "description" : "清单里那一条的名字",
+          "type" : "string"
+        },
+        "outcome" : {
+          "description" : "他自己说的效果，用他的说法写，一句话不超过 30 个字",
+          "type" : "string"
+        },
+        "status" : {
+          "description" : "关系变了才传：试过之后有结论就是 tried，开始长期吃是 ongoing",
+          "enum" : [
+            "cannotTake",
+            "ongoing",
+            "asNeeded",
+            "tried"
+          ],
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "name"
+      ],
+      "type" : "object"
+    },
+    "name" : "update_medication",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "在过往对话里找出相关的那几次，返回摘要列表（不含健康数据）。只在用户自己提起过去时调用：他说了「上次」「之前说过」「我们聊过」「你还记得」，或者直接问一件他以前交代过、这次没再说的事。健康数据本身不走这里——今天怎么样、最近的趋势、某项指标要不要担心，一律直接调健康工具现查。过往对话里只有当时的旧数字，翻出来既慢又不准。用户没提过去就不要试探性地找一次；一次对话里通常一次都不需要，更不该找第二次。找到相关的那条之后用 read_session 读它。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "query" : {
+          "description" : "要找的话题，用中文关键词，比如「睡眠 加班」「减脂计划」。只有用户问「我们之前都聊过什么」这类问题时才留空",
+          "type" : "string"
+        },
+        "since_days" : {
+          "description" : "只找最近多少天以内的对话，1–365。不传就不限时间",
+          "maximum" : 365,
+          "minimum" : 1,
+          "type" : "integer"
+        }
+      },
+      "required" : [
+        "query"
+      ],
+      "type" : "object"
+    },
+    "name" : "search_sessions",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "读回某一次过往对话里说过的话。id 用 search_sessions 给出的短编号，比如 S3。读到的每一段都标着日期，里面的具体数值都是当时查的，现在多半已经变了——要用数值就重新调健康工具，以本次返回的为准。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "id" : {
+          "description" : "search_sessions 给出的短编号，形如 S3",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "id"
+      ],
+      "type" : "object"
+    },
+    "name" : "read_session",
+    "strictPreferred" : false
+  },
+  {
+    "description" : "记住一条关于这位用户的长期事实，之后每次对话都会带上。只在两种情况下调用：用户明确要求记住某件事，或者他说出了一个长期成立的个人情况（作息、工作安排、伤病限制、正在进行的目标、他希望你怎么说话）。\n不要记具体的健康数值和某一天的数据——那些每次都会重新查，记下来第二天就是错的。不要记只在这次对话里成立的话题。不要记诊断结论。同一件事已经在系统提示的「关于这位用户」里出现过了，就不要再记一遍。",
+    "inputSchema" : {
+      "additionalProperties" : false,
+      "properties" : {
+        "days" : {
+          "description" : "只有 followUp 用：几天后回头看，范围 1–180",
+          "maximum" : 180,
+          "minimum" : 1,
+          "type" : "integer"
+        },
+        "kind" : {
+          "description" : "profile 长期情况、preference 表达偏好、interpretation 已有解释、followUp 说好过一阵子再看的事",
+          "enum" : [
+            "profile",
+            "preference",
+            "interpretation",
+            "followUp"
+          ],
+          "type" : "string"
+        },
+        "text" : {
+          "description" : "用中文第三人称写，一句话，不超过 40 个字",
+          "type" : "string"
+        }
+      },
+      "required" : [
+        "text",
+        "kind"
+      ],
+      "type" : "object"
+    },
+    "name" : "remember",
+    "strictPreferred" : false
+  }
+]
