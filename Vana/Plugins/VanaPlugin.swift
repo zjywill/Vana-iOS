@@ -115,7 +115,7 @@ protocol VanaPlugin: Sendable {
 
     func suggestions(_ context: SuggestionContext) -> SuggestionSet
 
-    /// 这个插件想放进「今天」的卡片。只读本机数据,不发模型请求;关掉的插件不会被问到。
+    /// 这个插件想放进「今天」页的那几行。只读本机数据,不发模型请求;关掉的插件不会被问到。
     func todayCards(_ context: TodayContext) -> [TodayCard]
 }
 

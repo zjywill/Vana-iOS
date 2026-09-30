@@ -44,14 +44,16 @@ enum PluginRegistry {
         snapshot.filtered { isMemoryVisible($0.kind, isEnabled: isEnabled) }
     }
 
-    /// 「今天」头上的卡片:各插件贡献的合起来,重要的在前,一次最多 `limit` 张。关掉的插件不出卡。
-    static func todayCards(_ context: TodayContext, limit: Int = 8) -> [TodayCard] {
-        Array(all.filter { context.isEnabled($0.manifest.id) }
+    /// 「今天」页上的那几行:各插件贡献的合起来,重要的在前。关掉的插件不出。
+    ///
+    /// 不设条数上限:以前它是对话里的一张卡,要给对话腾地方;现在是单独一页,今天到点的提醒少列
+    /// 一条,就是那一页在对他说谎。各插件自己限着回访那几类的条数。
+    static func todayCards(_ context: TodayContext) -> [TodayCard] {
+        all.filter { context.isEnabled($0.manifest.id) }
             .flatMap { $0.todayCards(context) }
             .enumerated()
             .sorted { $0.element.priority != $1.element.priority ? $0.element.priority > $1.element.priority : $0.offset < $1.offset }
             .map(\.element)
-            .prefix(limit))
     }
 
     /// 插件页里列出来的:用户能开关的那些。

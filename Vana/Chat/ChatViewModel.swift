@@ -60,7 +60,13 @@ final class ChatViewModel {
     /// 一样的观感——而这时候 app 其实知道发生了什么。
     private(set) var retryNotice: String?
     /// 首屏那句话:打开 app 先说发生了什么,不是先问他一个问题。
-    private(set) var quickSummary: String?
+    ///
+    /// 「今天」页「现在」那一行说的也是它,所以一变就跟着重拼一次——模型写的那段是在本地那句
+    /// 之后才到的,不跟的话那一行永远停在本地那句上。流式期间每个字都会走到这儿,`refreshTodaySoon`
+    /// 自己去抖。
+    private(set) var quickSummary: String? {
+        didSet { if quickSummary != oldValue { refreshTodaySoon() } }
+    }
     /// 本地判定出来的处境。首屏那张卡点开之后,详情页要按项列出「现在是多少」。
     ///
     /// 家人成员那条路上永远是 nil:`HealthSituation` 读的是机主的 HealthKit,整个不跑。
@@ -69,13 +75,9 @@ final class ChatViewModel {
     private(set) var isWritingSummary = false
     /// 接着刚才那段回答问的几条追问。空着不是错误状态,是常态的一半。
     private(set) var followUps: [String] = []
-    /// 「今天」头上的卡片。本机数据拼的,零模型调用;不留痕浮层里不出。
+    /// 「今天」页上的那几行。本机数据拼的,零模型调用;只在主对话上有(侧聊、不留痕里没有那颗按钮)。
     private(set) var todayCards: [TodayCard] = []
-    /// 「今天」那张卡排在哪条消息后面。**每次打开 app 时定一次**(`pinTodayToLatest`):那一刻它是
-    /// 最新的一条;之后说的话排在它下面,它不跟着往下挪。nil 表示打开时线程是空的——排在最前面。
-    /// 它只是屏幕上的一张卡,不进线程、不进上下文。
-    private(set) var todayAfterMessageId: UUID?
-    /// 顶栏「任务」上的角标:需要他看一眼的有几件。
+    /// 顶栏「今天」上的角标:需要他看一眼的有几件。
     var attentionCount: Int { TodaySummary.attention(todayCards) }
     /// 健康插件那一格建议:本地按处境挑的,模型写好了原地换掉。
     private var healthSuggestions: [SuggestedQuestion] = []
@@ -269,6 +271,7 @@ final class ChatViewModel {
     private var todayTask: Task<Void, Never>?
 
     private func refreshTodaySoon() {
+        guard persists, isMainThread else { return }
         todayTask?.cancel()
         todayTask = Task {
             try? await Task.sleep(for: .milliseconds(50))
@@ -277,7 +280,7 @@ final class ChatViewModel {
         }
     }
 
-    /// 「今天」那几张卡。**零模型调用**:本机的任务、到期的待跟进、用药回访、那句本地处境。
+    /// 「今天」页那几行。**零模型调用**:本机的任务、到期的待跟进、用药回访、那句处境。
     func refreshToday() async {
         guard persists, isMainThread else { return }
         let now = Date()
@@ -324,14 +327,6 @@ final class ChatViewModel {
         syncedIds = Set(loaded.map(\.id))
         // 读盘期间他要是已经发了话(极少),别把它盖掉。
         messages = loaded + messages
-        pinTodayToLatest()
-    }
-
-    /// 打开 app(冷启动读完线程、或者从后台回到前台)时调一次:把「今天」挪到最新那条消息下面。
-    /// 排队中的不算——那几条还没被 Vana 看到,「今天」排在它们上面才对得上时间。
-    func pinTodayToLatest() {
-        guard isMainThread else { return }
-        todayAfterMessageId = messages.last { !$0.isQueued }?.id
     }
 
     /// 滑到顶了,再往前读一页。

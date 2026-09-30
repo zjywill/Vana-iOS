@@ -259,23 +259,26 @@ struct TodayTests {
         ))
         #expect(cards.map(\.title).prefix(2) == ["已过点", "今天晚点"])
         #expect(!cards.contains { $0.title == "下周" })
-        #expect(cards.contains { $0.title == "目标" })
+        // 目标在「今天」页自己那一节里整张列出来,这里再出一行就是同一件事摆两遍。
+        #expect(!cards.contains { $0.title == "目标" })
         #expect(TodaySummary.attention(cards) == 2)
-        #expect(TodaySummary.line([]) == nil)
-        // 卡上那颗角标按类别上色:过点的和到点的不能是同一种颜色。
+        // 那颗图标按类别上色:过点的和到点的不能是同一种颜色。
         let kinds = Dictionary(uniqueKeysWithValues: cards.map { ($0.title, $0.kind) })
         #expect(kinds["已过点"] == .overdue)
         #expect(kinds["今天晚点"] == .reminder)
-        #expect(kinds["目标"] == .goal)
         #expect(cards.contains { $0.kind == .followUp })
+        // 「之后」那一节靠它把今天已经列过的提醒去掉。
+        #expect(cards.first { $0.title == "已过点" }?.taskId == overdue.id)
+        #expect(cards.first { $0.kind == .followUp }?.taskId == nil)
     }
 
-    /// 欢迎卡上方那张同内容的卡靠这个 id 让位。
+    /// 「今天」页按 `kind` 把它排进「现在」那一节,点开是状况详情。
     @Test func theHealthStatusCardIsFindable() {
         let cards = PluginRegistry.todayCards(TodayContext(
             now: Date(), tasks: [], dueFollowUps: [], healthSummary: "昨晚睡了 7 小时", isEnabled: { _ in true }
         ))
         #expect(cards.first { $0.id == TodayCard.healthStatusId }?.kind == .health)
+        #expect(cards.first { $0.id == TodayCard.healthStatusId }?.action == .openHealthStatus)
     }
 
     @Test func aSwitchedOffPluginContributesNoCards() {

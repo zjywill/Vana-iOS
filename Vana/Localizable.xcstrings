@@ -357,6 +357,7 @@
       }
     },
     "%lld 件其他" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -530,6 +531,7 @@
       }
     },
     "%lld 条提醒" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -1151,6 +1153,16 @@
         }
       }
     },
+    "之后" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Later"
+          }
+        }
+      }
+    },
     "云端 API key" : {
       "localizations" : {
         "en" : {
@@ -1242,6 +1254,16 @@
         }
       }
     },
+    "今天，%lld 件需要你看" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today, %lld need your attention"
+          }
+        }
+      }
+    },
     "今天：%@" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1313,6 +1335,16 @@
         }
       }
     },
+    "今天没有要做的事" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing to do today"
+          }
+        }
+      }
+    },
     "今天活动量够吗？" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1350,6 +1382,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Today's activity is all recorded — want to take a look?"
+          }
+        }
+      }
+    },
+    "今天要做" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To do today"
           }
         }
       }
@@ -1589,6 +1631,7 @@
       }
     },
     "任务，%lld 件需要你看" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3446,6 +3489,7 @@
       }
     },
     "在推进的目标" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4807,6 +4851,7 @@
       }
     },
     "提醒到点只发一条通知，不调用模型，也不花钱。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6917,6 +6962,16 @@
         }
       }
     },
+    "现在" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Now"
+          }
+        }
+      }
+    },
     "现在怎么样了？" : {
       "localizations" : {
         "en" : {
@@ -8292,6 +8347,7 @@
       }
     },
     "还有 %lld 件，去任务页看" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8374,6 +8430,7 @@
       }
     },
     "还没有要做的事" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8510,6 +8567,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "You edited this text, so it won't be overwritten. To go back to the generated version, clear it and save."
+          }
+        }
+      }
+    },
+    "这一页由本机数据拼出来，不调用模型。提醒到点只发一条通知，也不花钱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This page is put together from data on this device—no model call. Reminders only send a notification when due, at no cost."
           }
         }
       }

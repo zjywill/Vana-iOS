@@ -63,6 +63,7 @@
 		4C3B3FFB7E6BAFCF791E5D93 /* HealthPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589BF018D165AF6DD640AA5 /* HealthPlugin.swift */; };
 		4C965F8497DFDE59929C6FAE /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB79E596D6782A4BEB7758F5 /* TasksView.swift */; };
 		4E31039985291F7581718D2A /* NotesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC60C3526638A0D14D67599D /* NotesTests.swift */; };
+		4FC962897F92EB242CAFBFBD /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2573FB6E1891211099F9B610 /* TodayView.swift */; };
 		4FE9086B1A03C0A1041C572D /* ThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E12E6CC1074ECAC00475CB /* ThreadStore.swift */; };
 		56E36E07042EE2AC76A1F146 /* MedicationEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A1F7A4B686A7E32D818C08 /* MedicationEditView.swift */; };
 		5979AB4E34973B785E3FC922 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6806E64BE6CB76044D20AD3F /* ChatViewModel.swift */; };
@@ -241,6 +242,7 @@
 		21D12A09352778086AC19CC4 /* DebugSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSeeder.swift; sourceTree = "<group>"; };
 		239A40955F48FD4A3D4822D7 /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
 		2412C2E5C7C81F086F308EFF /* HealthStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStatusView.swift; sourceTree = "<group>"; };
+		2573FB6E1891211099F9B610 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		2616CA3D92CDF0533783CCEF /* LegacySessions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacySessions.swift; sourceTree = "<group>"; };
 		2635B49CA6C44DA241EB26C2 /* CloudPickerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudPickerViews.swift; sourceTree = "<group>"; };
 		2770F33E29477F4C1D731B24 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -550,6 +552,7 @@
 			isa = PBXGroup;
 			children = (
 				CACC1FC458320362E3522CA1 /* Today.swift */,
+				2573FB6E1891211099F9B610 /* TodayView.swift */,
 			);
 			path = Today;
 			sourceTree = "<group>";
@@ -1124,6 +1127,7 @@
 				4FE9086B1A03C0A1041C572D /* ThreadStore.swift in Sources */,
 				186E6723F8A5755594B0D52F /* ThreadWindow.swift in Sources */,
 				D319E494C004C1DC11D68BAD /* Today.swift in Sources */,
+				4FC962897F92EB242CAFBFBD /* TodayView.swift in Sources */,
 				950C62118D8FB14975E05D20 /* ToolResultPanel.swift in Sources */,
 				0E8875EE6855CE9557DBED86 /* VanaApp.swift in Sources */,
 				898F3F4C61AECD4BC556FD7C /* VanaIntents.swift in Sources */,

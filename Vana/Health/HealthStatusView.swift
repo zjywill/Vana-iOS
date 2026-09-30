@@ -1,6 +1,9 @@
 import SwiftUI
 
-/// 首屏那张卡点开之后的一页。
+/// 首屏那张卡、「今天」页「现在」那一行点开之后的一页。
+///
+/// 自己不带 `NavigationStack`:从「今天」页是推进去的,从首屏那张卡是一张 sheet(那边包一层、
+/// 补一颗「完成」)。
 ///
 /// 卡片上只露前几行——它排在欢迎卡前面,占满一屏就把下面的东西全推走了。可那段话被截断
 /// 之后,用户既读不全,也看不到它是**根据什么**说的。这一页补的就是这两件:整段话,以及
@@ -18,75 +21,69 @@ struct HealthStatusView: View {
     let canGenerate: Bool
     let onRefresh: () -> Void
 
-    @Environment(\.dismiss) private var dismiss
     /// 刚按过刷新。数据没变时那一下是完全无声的:句子一模一样,读数一模一样,按钮转一下
     /// 就停——用户只会当它坏了。所以按完先说一句"读过了",几秒后自己退回去。
     @State private var justRefreshed = false
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    Text(summary)
-                        .font(.callout)
-                        .fixedSize(horizontal: false, vertical: true)
-                        // 一片一片写出来,不是一段一段跳出来。
-                        .contentTransition(.opacity)
-                        .animation(.smooth(duration: 0.2), value: summary)
-                } footer: {
-                    Text(footnote)
-                        .animation(.smooth(duration: 0.2), value: footnote)
-                }
+        List {
+            Section {
+                Text(summary)
+                    .font(.callout)
+                    .fixedSize(horizontal: false, vertical: true)
+                    // 一片一片写出来,不是一段一段跳出来。
+                    .contentTransition(.opacity)
+                    .animation(.smooth(duration: 0.2), value: summary)
+            } footer: {
+                Text(footnote)
+                    .animation(.smooth(duration: 0.2), value: footnote)
+            }
 
-                if let vitals = situation?.vitals, !vitals.items.isEmpty {
-                    Section("现在是多少") {
-                        ForEach(vitals.items) { item in
-                            VitalRow(item: item)
-                        }
+            if let vitals = situation?.vitals, !vitals.items.isEmpty {
+                Section("现在是多少") {
+                    ForEach(vitals.items) { item in
+                        VitalRow(item: item)
                     }
                 }
+            }
 
-                if let triggers = situation?.notableTriggers, !triggers.isEmpty {
-                    Section("这几天变了什么") {
-                        ForEach(Array(triggers.enumerated()), id: \.offset) { _, trigger in
-                            Text(trigger.brief)
-                                .font(.callout)
-                                .foregroundStyle(.primary)
-                        }
+            if let triggers = situation?.notableTriggers, !triggers.isEmpty {
+                Section("这几天变了什么") {
+                    ForEach(Array(triggers.enumerated()), id: \.offset) { _, trigger in
+                        Text(trigger.brief)
+                            .font(.callout)
+                            .foregroundStyle(.primary)
                     }
                 }
+            }
 
-                Section {
-                } footer: {
-                    Text(HealthKitAttribution.statusFooter)
-                }
+            Section {
+            } footer: {
+                Text(HealthKitAttribution.statusFooter)
             }
-            .navigationTitle("现在的状况")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("完成") { dismiss() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        onRefresh()
-                        justRefreshed = true
-                    } label: {
-                        if isWriting {
-                            ProgressView()
-                        } else {
-                            Label("重新生成", systemImage: "arrow.clockwise")
-                        }
+        }
+        .navigationTitle("现在的状况")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    onRefresh()
+                    justRefreshed = true
+                } label: {
+                    if isWriting {
+                        ProgressView()
+                    } else {
+                        Label("重新生成", systemImage: "arrow.clockwise")
                     }
-                    .disabled(isWriting || situation == nil)
                 }
+                .disabled(isWriting || situation == nil)
             }
-            // 说完那一句就退回去。留着的话下次进来还挂在那儿,说的是一件几天前的事。
-            .task(id: justRefreshed) {
-                guard justRefreshed else { return }
-                try? await Task.sleep(for: .seconds(6))
-                justRefreshed = false
-            }
+        }
+        // 说完那一句就退回去。留着的话下次进来还挂在那儿,说的是一件几天前的事。
+        .task(id: justRefreshed) {
+            guard justRefreshed else { return }
+            try? await Task.sleep(for: .seconds(6))
+            justRefreshed = false
         }
     }
 
@@ -101,6 +98,21 @@ struct HealthStatusView: View {
         return justRefreshed
             ? String(localized: "已重新读取健康数据。")
             : String(localized: "根据下面这些读数写的。")
+    }
+}
+
+extension HealthStatusView {
+    /// 主对话手里那一份:话、处境、写没写完、能不能叫模型重写。两处入口读的是同一份。
+    init(model: ChatViewModel) {
+        self.init(
+            summary: model.quickSummary ?? HealthSituation.calmSummary,
+            situation: model.situation,
+            isWriting: model.isWritingSummary,
+            // 没配 key 时刷新只重读数据,不重写那段话——那一页得把这件事说清楚,
+            // 否则那颗按钮按下去像是坏的。
+            canGenerate: model.engineGuidance == nil,
+            onRefresh: model.regenerateQuickSummary
+        )
     }
 }
 

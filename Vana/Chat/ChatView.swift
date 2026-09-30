@@ -27,13 +27,13 @@ struct ChatView: View {
     @State private var isRenamingSideChat = false
     @State private var sideChatRenameText = ""
     @State private var isConfirmingSideChatDeletion = false
-    /// 「任务」页。
-    @State private var isShowingTasks = false
-    /// 从「今天」、确认卡、结果消息点进来的那一条任务。
-    @State private var openedTask: UUID?
-    /// 目标详情里点了「在侧聊里聊这个目标」。任务页是一张 sheet:等它退场之后再把侧聊那一层推上来
+    /// 「今天」那一页:现在的状况、今天要做的、之后的提醒、目标。
+    @State private var isShowingToday = false
+    /// 目标详情里点了「在侧聊里聊这个目标」。「今天」是一张 sheet:等它退场之后再把侧聊那一层推上来
     /// ——同一条 presentation 链上撞上一次还在进行的 dismiss,那次 present 会悄悄地不发生。
     @State private var pendingGoalChat: TaskItem?
+    /// 「今天」页里点了一行要回到对话来做的事(打开用药表、记忆页),同样等那一页退场之后再做。
+    @State private var pendingTodayAction: TodayAction?
     /// 首屏那张卡点开之后的那一页。和用药表一样走 sheet:它是一次离开对话的 detour,
     /// 看完就该回到刚才那一屏。
     @State private var isShowingStatus = false
@@ -96,12 +96,6 @@ struct ChatView: View {
                     // 代价可控:一段会话最多几十条(`SessionThreadPolicy` 攒够 40 条就
                     // 另起一段),全量布局一次远比每帧猜错一次便宜。
                     VStack(spacing: 16) {
-                        // 打开时线程是空的:「今天」排在最前面(那时候最前面就是最新的)。
-                        // 有消息之后它排在打开那一刻的最新一条下面,见 `todayStrip`。
-                        if model.isThreadEmpty || model.isLoadingConversation {
-                            todayStrip
-                        }
-
                         if model.isLoadingConversation {
                             ProgressView("正在载入对话")
                                 .padding(.top, 40)
@@ -120,9 +114,7 @@ struct ChatView: View {
                                 } else {
                                     // 排在欢迎卡**前面**:欢迎卡的开头是这个 app 是什么,
                                     // 而回头客要的是"我怎么样"。
-                                    // 「今天」里已经有那张状况卡时让位:同一句话摆两遍,像是出了两件事。
-                                    if let summary = model.quickSummary,
-                                       !model.todayCards.contains(where: { $0.id == TodayCard.healthStatusId }) {
+                                    if let summary = model.quickSummary {
                                         QuickSummaryCard(
                                             text: summary,
                                             // 家人那边没有处境可展开:那份数据属于机主。
@@ -143,8 +135,7 @@ struct ChatView: View {
                                     )
                                 }
                             }
-                            // 上面有「今天」时收紧:那一排已经留过顶部的空。
-                            .padding(.top, model.isEphemeral || model.todayCards.isEmpty ? 24 : 0)
+                            .padding(.top, 24)
                             .id(Self.welcomeAnchor)
                         } else {
                             // 滑到顶就往前翻一页。放一行真的看得见的东西而不是只挂 onAppear:
@@ -159,10 +150,6 @@ struct ChatView: View {
                             ForEach(Array(model.messages.enumerated()), id: \.element.id) { index, message in
                                 // 单线程里消息跨天:按天出一条分隔,不然「昨天说的」和「刚才说的」
                                 // 在屏幕上长得一样。
-                                // 打开时线程是空的,之后才说的话:「今天」在它们上面。
-                                if index == 0, model.todayAfterMessageId == nil, !model.isThreadEmpty {
-                                    todayStrip.id(Self.todayAnchor)
-                                }
                                 if let label = dayLabel(at: index) {
                                     DaySeparator(label: label)
                                 }
@@ -213,11 +200,6 @@ struct ChatView: View {
                                 if let folded = message.foldedSpan {
                                     CompactionDivider(artifact: folded)
                                 }
-
-                                // 打开 app 那一刻的最新一条下面。之后说的话排在它下面,它不跟着挪。
-                                if message.id == model.todayAfterMessageId {
-                                    todayStrip.id(Self.todayAnchor)
-                                }
                             }
 
 
@@ -262,10 +244,6 @@ struct ChatView: View {
                     // ——流式一秒几十次,每次再起一个 0.25 秒的动画,十几个叠在一起各自
                     // 朝一个已经过期的目标去,那就是抖动。
                     scroll(with: proxy, animated: new.messageCount != old.messageCount)
-                }
-                // 回到前台时「今天」挪到了最新那条下面:贴一次底,让他一打开就看见它。
-                .onChange(of: model.todayAfterMessageId) {
-                    scroll(with: proxy, animated: false)
                 }
                 // 往前翻了一页:新塞进顶部的内容会把他正看的那条顶下去,滚回刚才那条的顶上。
                 .onChange(of: model.olderPageToken) {
@@ -339,29 +317,18 @@ struct ChatView: View {
             .sheet(isPresented: $isShowingMedications) {
                 MedicationListView(model: model)
             }
-            .sheet(isPresented: $isShowingTasks, onDismiss: openPendingGoalChat) {
-                TasksView(board: model.taskBoard, onDiscussGoal: goalDiscussion)
+            .sheet(isPresented: $isShowingToday, onDismiss: todayDismissed) {
+                TodayView(model: model, onAction: leaveToday, onDiscussGoal: goalDiscussion)
             }
-            .sheet(item: $openedTask, onDismiss: openPendingGoalChat) { id in
+            .sheet(isPresented: $isShowingStatus) {
                 NavigationStack {
-                    TaskDetailView(board: model.taskBoard, taskId: id, onDiscussGoal: goalDiscussion)
+                    HealthStatusView(model: model)
                         .toolbar {
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("完成") { openedTask = nil }
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button("完成") { isShowingStatus = false }
                             }
                         }
                 }
-            }
-            .sheet(isPresented: $isShowingStatus) {
-                HealthStatusView(
-                    summary: model.quickSummary ?? HealthSituation.calmSummary,
-                    situation: model.situation,
-                    isWriting: model.isWritingSummary,
-                    // 没配 key 时刷新只重读数据,不重写那段话——那一页得把这件事说清楚,
-                    // 否则那颗按钮按下去像是坏的。
-                    canGenerate: model.engineGuidance == nil,
-                    onRefresh: model.regenerateQuickSummary
-                )
             }
             // 盖上来之前先把键盘收掉。挂在状态上而不是那几颗按钮的动作里:抽屉有四个
             // 出口、两张 sheet 也不止一处能开,漏掉任何一个就是那条路上键盘照旧悬着。
@@ -420,9 +387,9 @@ struct ChatView: View {
             }
             // 切到后台:趁这时候把水位线之后攒下的抽一遍记忆。
             .onChange(of: scenePhase) { _, phase in
-                // 回到前台就是又打开了一次:「今天」挪到最新那条下面,再贴一次底让他看见它。
-                if phase == .active, model.isMainThread, !model.isReplying {
-                    model.pinTodayToLatest()
+                // 回到前台:离开的这段时间里可能有提醒过了点,顶栏那颗角标要跟上。
+                if phase == .active, model.isMainThread {
+                    Task { await model.refreshToday() }
                 }
                 guard phase == .background else { return }
                 model.harvestMemoryInBackground()
@@ -509,14 +476,35 @@ struct ChatView: View {
         return { discussGoal($0) }
     }
 
-    /// 目标详情里点了「在侧聊里聊这个目标」:先把任务页收掉,退场之后再开侧聊。
+    /// 目标详情里点了「在侧聊里聊这个目标」:先把「今天」收掉,退场之后再开侧聊。
     private func discussGoal(_ goal: TaskItem) {
         pendingGoalChat = goal
-        isShowingTasks = false
-        openedTask = nil
+        isShowingToday = false
     }
 
-    /// 任务页退场了。有要聊的目标就开它那条侧聊,输入框里替他起个头(他看一眼再发,不自动发)。
+    /// 「今天」页里点了一行要回到对话来做的事。
+    ///
+    /// 替他问的那一句当场发:发送不是一次 present,不用等那一页退场,而他回到对话时回答已经在写了。
+    /// 打开用药表、推记忆页要等退场之后(`todayDismissed`)。
+    private func leaveToday(_ action: TodayAction) {
+        if case .ask = action {
+            perform(action)
+        } else {
+            pendingTodayAction = action
+        }
+        isShowingToday = false
+    }
+
+    /// 「今天」退场了:接着做在那一页里点下去的那件事。
+    private func todayDismissed() {
+        if let action = pendingTodayAction {
+            pendingTodayAction = nil
+            perform(action)
+        }
+        openPendingGoalChat()
+    }
+
+    /// 「今天」退场了。有要聊的目标就开它那条侧聊,输入框里替他起个头(他看一眼再发,不自动发)。
     private func openPendingGoalChat() {
         guard let goal = pendingGoalChat else { return }
         pendingGoalChat = nil
@@ -578,19 +566,18 @@ struct ChatView: View {
     /// 不在这份名单里,那一下输入框真的离开了层级,系统自己会收。
     private var isCoveringConversation: Bool {
         isShowingMedications || isShowingStatus || isShowingDataUseNotice || isShowingEphemeral
-            || isShowingTasks || openedTask != nil || openedSideChat != nil
+            || isShowingToday || openedSideChat != nil
     }
 
-    /// 点了一张「今天」卡片。
+    /// 「今天」页里那几件要回到对话来做的事。在那一页里往下推的两种(任务详情、状况详情)
+    /// 不会走到这儿,落到这儿就把那一页再打开。
     private func perform(_ action: TodayAction) {
         switch action {
-        case .openTasks: isShowingTasks = true
-        case .openTask(let id): openedTask = id
+        case .openTask, .openHealthStatus: isShowingToday = true
         case .openMemory: menuRoute = .memory
         case .ask(let prompt): model.send(prompt)
         case .openSurface(let id):
             if id == PluginSurface.medications { isShowingMedications = true } else { menuRoute = .plugins }
-        case .openHealthStatus: isShowingStatus = true
         }
     }
 
@@ -633,15 +620,16 @@ struct ChatView: View {
                 }
             }
         } else {
-            // 「任务」:提醒、目标、后台任务。角标是需要他看一眼的那几件。
+            // 「今天」:现在的状况、今天要做的、之后的提醒、目标。角标是需要他看一眼的那几件。
+            // 不放进对话那一列(见 `TodayView`),也不上 tab bar:只有两个地方时撑不起一条。
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    isShowingTasks = true
+                    isShowingToday = true
                 } label: {
-                    Image(systemName: "checklist")
+                    Image(systemName: "sun.max")
                 }
                 .badge(model.attentionCount)
-                .accessibilityLabel(model.attentionCount > 0 ? "任务，\(model.attentionCount) 件需要你看" : "任务")
+                .accessibilityLabel(model.attentionCount > 0 ? "今天，\(model.attentionCount) 件需要你看" : "今天")
             }
 
             // 一颗「⋯」收住所有「离开对话去看别的东西」:侧聊、记忆、插件、不留痕、设置。没有会话列表
@@ -706,24 +694,6 @@ struct ChatView: View {
     }
 
     private static let welcomeAnchor = "welcome"
-    private static let todayAnchor = "today"
-
-    /// 「今天」:本机数据拼的那张卡。**是对话这一列里的一项,不悬浮**——浮在顶上的话对话从它底下
-    /// 穿过去,两层字叠在一起。**每次打开 app 时它是最新的一条**(排在那一刻最后一条消息下面,
-    /// `ChatViewModel.todayAfterMessageId`),之后说的话排在它下面。只是屏幕上的一张卡,不进线程、
-    /// 不进给模型的上下文。不留痕那一层里不出。
-    @ViewBuilder
-    private var todayStrip: some View {
-        if model.isMainThread {
-            TodayStrip(cards: model.todayCards, onAction: perform)
-        }
-    }
-
-    /// 贴底时要贴到「今天」:它排在最后一条消息下面的时候。
-    private var isTodayLast: Bool {
-        model.isMainThread && !model.todayCards.isEmpty
-            && model.todayAfterMessageId != nil && model.todayAfterMessageId == model.messages.last?.id
-    }
 
     /// 离底多远才算"翻上去了"。半屏太迟(他已经翻过好几条了),几十点太早(流式期间
     /// 手指轻轻一顶就冒出来)。240 点大概是一条长回复的高度:少于这个距离,他自己往下
@@ -865,11 +835,8 @@ struct ChatView: View {
     }
 
     private func scroll(with proxy: ScrollViewProxy, animated: Bool) {
-        // 「今天」排在最后一条消息下面的时候,贴底要贴到它。
         let target: (id: AnyHashable, anchor: UnitPoint) = model.messages.last
-            .map { isTodayLast
-                ? (AnyHashable(Self.todayAnchor), UnitPoint.bottom)
-                : (AnyHashable($0.id), UnitPoint.bottom) }
+            .map { (AnyHashable($0.id), UnitPoint.bottom) }
             ?? (AnyHashable(Self.welcomeAnchor), UnitPoint.top)
 
         if animated, !reduceMotion {

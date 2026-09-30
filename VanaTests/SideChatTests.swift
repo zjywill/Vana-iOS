@@ -274,10 +274,9 @@ struct SideChatTests {
 
         await model.refreshToday()
         model.refreshSuggestionsIfNeeded()
-        model.pinTodayToLatest()
         #expect(model.todayCards.isEmpty)
+        #expect(model.attentionCount == 0)
         #expect(model.quickSummary == nil)
-        #expect(model.todayAfterMessageId == nil)
     }
 
     /// 离开侧聊时正在写的回复停下(等于按了停止),已经写出来的留在侧聊的线程里。

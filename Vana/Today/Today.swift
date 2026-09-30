@@ -1,8 +1,7 @@
 import Foundation
 
-/// 点一张「今天」卡片该去哪儿/做什么。
+/// 点「今天」页上的一行该去哪儿/做什么。前两种在那一页里往下推,其余的要回到对话那一屏去做。
 enum TodayAction: Equatable, Sendable {
-    case openTasks
     case openTask(UUID)
     case openMemory
     /// 替他发一句话(比如说好回头看的那件事:「现在怎么样了？」)。
@@ -13,12 +12,15 @@ enum TodayAction: Equatable, Sendable {
     case openHealthStatus
 }
 
-/// 「今天」头上的一张卡。**由本机数据拼出来,一次模型调用都不发**——这是它和「让模型写一段早间
+/// 「今天」页上的一行。**由本机数据拼出来,一次模型调用都不发**——这是它和「让模型写一段早间
 /// 简报」的根本区别:天天打开天天付钱是不该的。谁贡献的、多重要(大的在前)、点了去哪。
+///
+/// 目标不在这里:那一页的「目标」一节把进行中的整张列出来,这里再放两张就是同一件事摆两遍。
 struct TodayCard: Identifiable, Equatable, Sendable {
-    /// 卡片是哪一类。决定卡上那颗角标的颜色和那两个字,不影响排序(排序看 `priority`)。
+    /// 这一行是哪一类。决定那颗图标的颜色和那两个字,不影响排序(排序看 `priority`)。
+    /// `.health` 排在那一页的「现在」一节,其余都在「今天」一节。
     enum Kind: Sendable {
-        case reminder, overdue, goal, followUp, health, medication
+        case reminder, overdue, followUp, health, medication
     }
 
     let id: String
@@ -27,7 +29,7 @@ struct TodayCard: Identifiable, Equatable, Sendable {
     let title: String
     var body: String?
     var icon: String
-    var action: TodayAction = .openTasks
+    var action: TodayAction
     var kind: Kind = .reminder
 }
 
@@ -48,13 +50,10 @@ enum TodayPriority {
     static let dueTodayReminder = 75
     static let followUpDue = 70
     static let healthStatus = 50
-    static let goal = 40
 }
 
-/// 核心贡献的「今天」卡片:到点/错过的提醒、在推进的目标、说好回头看的事。
+/// 核心贡献的「今天」卡片:今天到点/错过的提醒、说好回头看的事。
 enum CoreToday {
-    private static let maxGoalCards = 2
-
     static func cards(_ context: TodayContext) -> [TodayCard] {
         var cards: [TodayCard] = []
         let endOfDay = ReminderRules.endOfDay(context.now, calendar: context.calendar)
@@ -72,17 +71,6 @@ enum CoreToday {
                 icon: "bell",
                 action: .openTask(task.id),
                 kind: overdue ? .overdue : .reminder
-            ))
-        }
-
-        for task in context.tasks.filter({ $0.kind == .goal && $0.isActive }).prefix(maxGoalCards) {
-            cards.append(TodayCard(
-                id: "goal-\(task.id)", pluginId: PluginIds.core, priority: TodayPriority.goal,
-                title: task.title,
-                body: task.plan.isEmpty
-                    ? String(localized: "还没有步骤")
-                    : String(localized: "步骤 \(task.plan.count(where: \.done))/\(task.plan.count)"),
-                icon: "target", action: .openTask(task.id), kind: .goal
             ))
         }
 
@@ -124,23 +112,12 @@ enum HealthToday {
 }
 
 extension TodayCard {
-    /// 健康插件那张「现在的状况」。欢迎卡上方原来那张同内容的卡在它出现时让位。
+    /// 健康插件那张「现在的状况」。
     static let healthStatusId = "health-status"
 }
 
 enum TodaySummary {
-    /// 折叠时那一行:「1 条提醒 · 3 件其他」。
-    static func line(_ cards: [TodayCard]) -> String? {
-        guard !cards.isEmpty else { return nil }
-        let reminders = cards.count { $0.priority == TodayPriority.overdueReminder || $0.priority == TodayPriority.dueTodayReminder }
-        let rest = cards.count - reminders
-        var parts: [String] = []
-        if reminders > 0 { parts.append(String(localized: "\(reminders) 条提醒")) }
-        if rest > 0 { parts.append(String(localized: "\(rest) 件其他")) }
-        return parts.joined(separator: " · ")
-    }
-
-    /// 顶栏「任务」上的角标:需要他看一眼的有几件。
+    /// 顶栏「今天」上的角标:需要他看一眼的有几件。
     static func attention(_ cards: [TodayCard]) -> Int {
         cards.count { $0.priority >= TodayPriority.dueTodayReminder }
     }
