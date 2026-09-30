@@ -119,8 +119,15 @@ final class ChatViewModel {
     /// 这位成员的侧聊名单。主对话拿它做三件事:「⋯ › 侧聊」那一页、收割时连侧聊一起收、
     /// 清理历史时连侧聊一起清。
     let sides: SideChatStore
-    /// 已经离开过这条侧聊了。关掉按钮、删除、被通知顶掉,几条路都会走到 `leaveSideChat`。
+    /// 已经离开过这条侧聊了。关掉、删除、换成员,几条路都会走到 `leaveSideChat`。
     private var didLeaveSideChat = false
+    /// 这位成员的主对话线程。侧聊里「带回主对话」往它末尾追加;主对话里就是 `thread` 本身。
+    private let mainThread: ThreadStore
+    /// 这一轮回复收尾时通知一声。只有 `SideChatHost` 用:侧聊关掉时回复还在写,写完要亮未读点。
+    var onReplyFinished: (() -> Void)?
+    /// 这一次打开期间带回过主对话的那几条。只记在内存里:它的用处是让他按完看得见结果、
+    /// 别连按两次,不是一份要存下来的账——主对话里那一条本身才是记录。
+    private(set) var broughtBackIds: Set<UUID> = []
     /// 这一份要不要落盘。不留痕的不落;测试关掉读盘时也不写——不然写的就是模拟器上那条真的线程。
     private let persists: Bool
     /// 界面这一份已经同步给盘的 id。只删这里面有、列表里没了的——后台追加、界面还没读到的
@@ -215,6 +222,7 @@ final class ChatViewModel {
         self.medicationStore = medicationStore
         let sides = sides ?? SideChatStore.beside(thread)
         self.sides = sides
+        mainThread = thread
         self.thread = if let sideChat, !isEphemeral { sides.thread(for: sideChat.id) } else { thread }
         self.taskStore = tasks
         self.noteStore = notes
@@ -550,6 +558,49 @@ final class ChatViewModel {
             await persistTail?.value
             if harvesting { harvestMemoryInBackground() }
         }
+    }
+
+    // MARK: - 主对话和侧聊之间搬一段话
+
+    /// 这条回复在「⋯」里能往哪条线上搬。按消息本身判,不去列表里找下标:气泡每次重画都要问一遍。
+    func sideChatMove(for message: ChatMessage) -> SideChatMove {
+        if isSideChat, broughtBackIds.contains(message.id) { return .broughtBack }
+        guard persists, !isReplying, SideChatQuote.canQuote(message) else { return .none }
+        if isMainThread { return .continueInSideChat }
+        return isSideChat ? .bringBack : .none
+    }
+
+    /// 这条回复能不能「在侧聊里接着聊」:主对话里、模型真的写完了的回答。
+    func canContinueInSideChat(_ messageID: UUID) -> Bool {
+        guard isMainThread, persists, !isReplying, let index = index(of: messageID) else { return false }
+        return SideChatQuote.canQuote(messages[index])
+    }
+
+    /// 拿主对话里这一问一答开一条新侧聊。名字取那句提问(他随后能改),开头是那段回答的原文。
+    /// 返回那条侧聊,界面接着把它打开。
+    func continueInSideChat(from messageID: UUID) async -> SideChat? {
+        guard canContinueInSideChat(messageID), let index = index(of: messageID) else { return nil }
+        let answer = messages[index]
+        let question = messages[..<index].last { $0.role == .user && !$0.isQueued }
+        let seed = SideChatQuote.seed(question: question, answer: answer)
+        let chat = await sides.create(title: question.flatMap { SideChatTitle.make(from: $0.text) } ?? "")
+        await sides.thread(for: chat.id).appendAtEnd(seed)
+        return chat
+    }
+
+    /// 这条回复能不能「带回主对话」:侧聊里、模型真的写完了的回答,这一次还没带回去过。
+    func canBringBack(_ messageID: UUID) -> Bool {
+        guard isSideChat, persists, !broughtBackIds.contains(messageID), let index = index(of: messageID) else { return false }
+        return SideChatQuote.canQuote(messages[index])
+    }
+
+    /// 把侧聊里这一段原样追加到主对话末尾。主对话那边照后台来的主动消息那样,在轮边界并进去。
+    func bringBackToMain(_ messageID: UUID) {
+        guard canBringBack(messageID), let chat = sideChat, let index = index(of: messageID) else { return }
+        broughtBackIds.insert(messageID)
+        let note = SideChatQuote.broughtBack(messages[index], from: chat.displayTitle)
+        let main = mainThread
+        Task { await main.appendAtEnd(note) }
     }
 
     /// 他在点名确认的 alert 上按了「同意并发送」。
@@ -1226,6 +1277,7 @@ final class ChatViewModel {
             if hasPendingBackgroundMessages { await mergeBackgroundMessages() }
             scheduleIdleHarvest()
             await refreshToday()
+            onReplyFinished?()
         }
     }
 
@@ -1613,6 +1665,15 @@ final class ChatViewModel {
         return trimmed.isEmpty ? fallback : trimmed
     }
 
+}
+
+/// 一条回复能往另一条线上搬的那一步。主对话里是「在侧聊里接着聊」,侧聊里是「带回主对话」。
+enum SideChatMove: Equatable {
+    case none
+    case continueInSideChat
+    case bringBack
+    /// 这一次打开期间已经带回去过了:按完要看得见结果,也别让他连按两次。
+    case broughtBack
 }
 
 /// 一条报错气泡底下那颗按钮做什么。

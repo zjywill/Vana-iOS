@@ -31,14 +31,21 @@ enum HistoryMarkers {
     /// - **主动消息**(Vana 自己先开口:check-in、回头看的结论、提醒、任务结果)不作为独立的
     ///   助手消息发出去,而是折进**下一条用户消息**的开头(「Vana 之前主动说过：……」)。请求里
     ///   助手和用户消息严格交替——有的 provider 不接受连着两条助手消息,也不接受以助手消息开头。
+    ///   从另一条线上搬过来的那两种(侧聊的开头、带回主对话的)各自有一段说明来历的话
+    ///   (`SideChatQuote.modelNote`),不混进「主动说过」那一句里。
     static func apply(_ messages: [ChatMessage], timeZone: TimeZone = .current) -> [AgentChatMessageDTO] {
         var previous: ChatMessage?
         var proactive: [String] = []
+        var quoted: [String] = []
         var out: [AgentChatMessageDTO] = []
         for message in messages {
             let before = previous
             previous = message
             if message.role == .assistant, message.isProactive {
+                if let note = SideChatQuote.modelNote(for: message) {
+                    quoted.append(note)
+                    continue
+                }
                 let text = message.text.trimmingCharacters(in: .whitespacesAndNewlines)
                 if !text.isEmpty { proactive.append(text) }
                 continue
@@ -53,6 +60,10 @@ enum HistoryMarkers {
                let marker = marker(previous: earlier, current: now, timeZone: timeZone) {
                 prefix += marker + "\n"
             }
+            for note in quoted {
+                prefix += note + "\n"
+            }
+            quoted.removeAll()
             if !proactive.isEmpty {
                 prefix += "（Vana 之前主动说过：\(proactive.joined(separator: "；"))）\n"
                 proactive.removeAll()

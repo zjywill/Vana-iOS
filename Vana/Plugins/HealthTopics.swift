@@ -50,6 +50,8 @@ extension ChatMessage.Origin {
         case .followUp: String(localized: "说好回头看的")
         case .reminder: String(localized: "提醒")
         case .task: String(localized: "后台任务的结果")
+        case .fromMain: String(localized: "从主对话接着聊")
+        case .fromSideChat: String(localized: "从侧聊带回来的")
         }
     }
 
@@ -60,6 +62,8 @@ extension ChatMessage.Origin {
         case .followUp: "clock.arrow.circlepath"
         case .reminder: "bell"
         case .task: "checklist"
+        case .fromMain: "arrow.turn.down.right"
+        case .fromSideChat: "arrowshape.turn.up.backward"
         }
     }
 }

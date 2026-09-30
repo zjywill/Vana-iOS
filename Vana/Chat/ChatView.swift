@@ -16,6 +16,13 @@ struct ChatView: View {
     @State private var isShowingEphemeral = false
     /// 打开着的那条侧聊。和不留痕一样盖在主对话上面,关掉回到「⋯ › 侧聊」那一页。
     @State private var openedSideChat: SideChat?
+    /// 它的 view model。开的时候从宿主拿一次存在这儿,那一层画的一直是它——删侧聊时宿主先放掉
+    /// 它,那一层还在退场,不能跟着变成空白。
+    @State private var openedSideModel: ChatViewModel?
+    /// 侧聊的 view model 由它持有:关掉时回复还在写就留着,写完亮未读点(`SideChatHost`)。
+    @State private var sideChats = SideChatHost()
+    /// 侧聊那一层里「删除这条侧聊」怎么做。主对话和不留痕是 nil。
+    private let onDeleteSideChat: (() -> Void)?
     /// 侧聊里「改名」「删除」那两个确认。
     @State private var isRenamingSideChat = false
     @State private var sideChatRenameText = ""
@@ -54,12 +61,20 @@ struct ChatView: View {
     init(
         openedCheckIn: Binding<CheckInLaunch?> = .constant(nil),
         isEphemeral: Bool = false,
-        sideChat: SideChat? = nil,
         onClose: (() -> Void)? = nil
     ) {
         _openedCheckIn = openedCheckIn
-        _model = State(initialValue: ChatViewModel(isEphemeral: isEphemeral, sideChat: sideChat))
+        _model = State(initialValue: ChatViewModel(isEphemeral: isEphemeral))
         self.onClose = onClose
+        onDeleteSideChat = nil
+    }
+
+    /// 一条侧聊那一层。view model 是宿主给的(关掉之后还在写的那个要接得上)。
+    init(sideChat model: ChatViewModel, onClose: @escaping () -> Void, onDelete: @escaping () -> Void) {
+        _openedCheckIn = .constant(nil)
+        _model = State(initialValue: model)
+        self.onClose = onClose
+        onDeleteSideChat = onDelete
     }
 
     private enum MenuRoute: Hashable {
@@ -162,6 +177,7 @@ struct ChatView: View {
                                     // 才点得动。
                                     canAnswerAsk: message.id == model.messages.last?.id
                                         && !model.isReplying,
+                                    sideChatMove: sideChatMove(for: message),
                                     // 只有报错的那几条要问一次,它读钥匙串。
                                     recovery: message.errorDescription == nil
                                         ? nil
@@ -174,6 +190,7 @@ struct ChatView: View {
                                             : model.deleteMessage(message.id)
                                     },
                                     onWithdraw: { model.withdrawQueued(message.id) },
+                                    onSideChatMove: { moveToOtherThread(message.id) },
                                     onOpenTask: { openedTask = $0 },
                                     onAnswerAsk: { callID, answer in
                                         model.answerAsk(
@@ -317,7 +334,7 @@ struct ChatView: View {
                 renameText: $sideChatRenameText,
                 isConfirmingDeletion: $isConfirmingSideChatDeletion,
                 onRename: { model.renameSideChat(to: $0) },
-                onDelete: deleteSideChat
+                onDelete: { onDeleteSideChat?() }
             ))
             .sheet(isPresented: $isShowingMedications) {
                 MedicationListView(model: model)
@@ -403,7 +420,12 @@ struct ChatView: View {
             .navigationDestination(item: $menuRoute) { route in
                 switch route {
                 case .sideChats:
-                    SideChatListView(store: model.sides, tenant: model.currentTenant) { openedSideChat = $0 }
+                    SideChatListView(
+                        store: model.sides,
+                        host: sideChats,
+                        tenant: model.currentTenant,
+                        onOpen: openSideChat
+                    )
                 case .memory: MemoryView()
                 case .plugins: PluginsView(openMedications: { isShowingMedications = true })
                 case .settings: SettingsView(chat: model, openMedications: { isShowingMedications = true })
@@ -445,13 +467,17 @@ struct ChatView: View {
             ChatView(isEphemeral: true, onClose: { isShowingEphemeral = false })
         }
         // 侧聊同样盖在主对话上,自己一个 view model、自己一条线程。关掉回到「⋯ › 侧聊」那一页。
-        .fullScreenCover(item: $openedSideChat) { chat in
-            ChatView(sideChat: chat, onClose: { openedSideChat = nil })
-        }
-        // 离开这条侧聊:不管是按了关闭、删了它,还是被一条通知顶掉,都走这一处。挂在
-        // `NavigationStack` **外面**:挂在里面的话,侧聊里推出设置页那一下也算「消失」。
-        .onDisappear {
-            model.leaveSideChat()
+        //
+        // 关掉走 `onDismiss`:按了关闭、被一条通知顶掉,都走这一处。挂在 cover 上而不是侧聊那一屏的
+        // `onDisappear` 上:那一屏里推出设置页那一下也算「消失」。
+        .fullScreenCover(item: $openedSideChat, onDismiss: closeSideChat) { chat in
+            if let sideModel = openedSideModel {
+                ChatView(
+                    sideChat: sideModel,
+                    onClose: { openedSideChat = nil },
+                    onDelete: { deleteSideChat(chat.id) }
+                )
+            }
         }
         // 第一次打开时先说清楚数据会去哪儿。它排在 HealthKit 授权面板**前面**——反过来的话,
         // 用户先被问「允许 Vana 读取健康数据吗」,再被告知这些数据会发到哪儿去,而告知的意义
@@ -484,17 +510,46 @@ struct ChatView: View {
         return Text("Vana")
     }
 
+    /// 这条气泡「⋯」里那一步。拆出来是为了 `body` 的类型检查不超时。
+    private func sideChatMove(for message: ChatMessage) -> SideChatMove {
+        guard message.role == .assistant else { return SideChatMove.none }
+        return model.sideChatMove(for: message)
+    }
+
+    /// 打开一条侧聊。宿主里还在写的那个对象就接着用。
+    private func openSideChat(_ chat: SideChat) {
+        openedSideModel = sideChats.open(chat)
+        openedSideChat = chat
+    }
+
+    /// 侧聊那一层退场了。还在写就交给宿主留着,写完亮未读点。
+    private func closeSideChat() {
+        if let id = openedSideModel?.sideChat?.id { sideChats.close(id) }
+        openedSideModel = nil
+    }
+
     /// 在侧聊里按了「删除这条侧聊」。先让它停下、写盘落地(不收割——删完再去读它,线程会把刚删
     /// 的目录重新建出来),再删;界面当场关掉,不等。
-    private func deleteSideChat() {
-        guard let id = model.sideChat?.id else { return }
-        let model = model
-        let leaving = model.leaveSideChat(harvesting: false)
+    private func deleteSideChat(_ id: UUID) {
+        let leaving = sideChats.discard(id)
+        openedSideChat = nil
+        let sides = model.sides
         Task {
             await leaving?.value
-            await model.sides.delete(id)
+            await sides.delete(id)
         }
-        onClose?()
+    }
+
+    /// 回复「⋯」里那一步:主对话里开一条侧聊接着聊,侧聊里带回主对话。
+    private func moveToOtherThread(_ messageID: UUID) {
+        if model.isMainThread {
+            Task {
+                guard let chat = await model.continueInSideChat(from: messageID) else { return }
+                openSideChat(chat)
+            }
+        } else {
+            model.bringBackToMain(messageID)
+        }
     }
 
     /// 点名确认那个 alert 上的名字。目录里查得到就用显示名(DeepSeek),查不到
@@ -584,6 +639,10 @@ struct ChatView: View {
                         menuRoute = .sideChats
                     } label: {
                         Label("侧聊", systemImage: "bubble.left.and.bubble.right")
+                        // 关着的时候写完了的那几条:菜单里说一句,「⋯」上亮一个点。
+                        if sideChats.hasUnread {
+                            Text("有新回复")
+                        }
                     }
                     Button {
                         menuRoute = .memory
@@ -608,8 +667,16 @@ struct ChatView: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
+                        .overlay(alignment: .topTrailing) {
+                            if sideChats.hasUnread {
+                                Circle()
+                                    .fill(.tint)
+                                    .frame(width: 8, height: 8)
+                                    .offset(x: 2, y: -2)
+                            }
+                        }
                 }
-                .accessibilityLabel("更多")
+                .accessibilityLabel(sideChats.hasUnread ? "更多，侧聊有新回复" : "更多")
             }
         }
     }
@@ -960,6 +1027,8 @@ private struct MessageBubble: View, Equatable {
     let canDelete: Bool
     /// 这条里的 `ask_user` 卡现在还答得了吗(见 `AskUserCard.isLive`)。
     let canAnswerAsk: Bool
+    /// 「⋯」里能不能把这条搬到另一条线上(在侧聊里接着聊 / 带回主对话)。
+    let sideChatMove: SideChatMove
     /// 这条报错底下该给他哪颗按钮:重试,还是去设置。`nil` 是「这条不是报错」。
     ///
     /// 「重试」只对**这一次没成功**有意义;key 没填、模型没选、key 没通过验证那几种,
@@ -969,6 +1038,7 @@ private struct MessageBubble: View, Equatable {
     let onOpenSetup: () -> Void
     let onDelete: () -> Void
     let onWithdraw: () -> Void
+    let onSideChatMove: () -> Void
     let onOpenTask: (UUID) -> Void
     let onAnswerAsk: (String, AskUserAnswer) -> Void
 
@@ -986,6 +1056,7 @@ private struct MessageBubble: View, Equatable {
             && lhs.recovery == rhs.recovery
             && lhs.canDelete == rhs.canDelete
             && lhs.canAnswerAsk == rhs.canAnswerAsk
+            && lhs.sideChatMove == rhs.sideChatMove
             && lhs.message.rendersIdentically(to: rhs.message)
     }
 
@@ -1070,9 +1141,16 @@ private struct MessageBubble: View, Equatable {
             // Vana 主动说的(check-in、到点的提醒、回头看的结论、任务结果)要认得出来:它不是
             // 对上一句的回答,看错了会以为模型答非所问。
             if message.isProactive {
-                Label(message.origin.label, systemImage: message.origin.icon)
+                Label(SideChatQuote.label(for: message), systemImage: message.origin.icon)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+            // 从主对话带过来的那段:当时回的是哪句话。不写这一行,底下那段回答就没头没尾。
+            if message.origin == .fromMain, let question = message.provenance?.question {
+                Text("「\(question)」")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
             }
 
             // 按发生顺序摊开(见 `ChatMessage.turnSegments`):想一段、说一段、查一次,再来一轮。
@@ -1163,6 +1241,13 @@ private struct MessageBubble: View, Equatable {
 
             // 查询次数用光时这一轮是正常收尾的(该查的多半已经查到),但模型是被打断的,
             // 得说一声,否则用户只看到它说到一半自己停了。
+            // 按完「带回主对话」要看得见结果:主对话那一条在这一层底下,他此刻看不到它。
+            if sideChatMove == .broughtBack {
+                Label("已带回主对话", systemImage: "checkmark")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
             if message.stoppedAtToolRoundLimit {
                 Text("这个问题需要的查询次数超出了单轮上限，缩小范围再问一次会更完整。")
                     .font(.footnote)
@@ -1258,6 +1343,24 @@ private struct MessageBubble: View, Equatable {
                 Label("重新回答", systemImage: "arrow.clockwise")
             }
             .disabled(!canRetry)
+        }
+
+        switch sideChatMove {
+        case .none:
+            EmptyView()
+        case .continueInSideChat:
+            Button(action: onSideChatMove) {
+                Label("在侧聊里接着聊", systemImage: "bubble.left.and.bubble.right")
+            }
+        case .bringBack:
+            Button(action: onSideChatMove) {
+                Label("带回主对话", systemImage: "arrowshape.turn.up.backward")
+            }
+        case .broughtBack:
+            Button {} label: {
+                Label("已带回主对话", systemImage: "checkmark")
+            }
+            .disabled(true)
         }
 
         Button(role: .destructive, action: onDelete) {

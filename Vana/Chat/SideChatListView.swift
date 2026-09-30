@@ -9,6 +9,9 @@ import SwiftUI
 /// 等于把会话列表请回来了。
 struct SideChatListView: View {
     let store: SideChatStore
+    /// 关着的时候还在写、或者写完了没看的那几条(未读点、「正在回复」)。删的时候也要先经过它:
+    /// 还在写的那一个要先停下。
+    let host: SideChatHost
     let tenant: Tenant
     let onOpen: (SideChat) -> Void
 
@@ -78,7 +81,11 @@ struct SideChatListView: View {
             presenting: deleting
         ) { chat in
             Button("删除", role: .destructive) {
-                Task { await store.delete(chat.id) }
+                let leaving = host.discard(chat.id)
+                Task {
+                    await leaving?.value
+                    await store.delete(chat.id)
+                }
             }
             Button("取消", role: .cancel) {}
         } message: { _ in
@@ -95,15 +102,30 @@ struct SideChatListView: View {
         Button {
             onOpen(chat)
         } label: {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(chat.displayTitle)
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                Text(chat.lastActiveAt, format: .relative(presentation: .named))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+            HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(chat.displayTitle)
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                    if host.isReplying(chat.id) {
+                        Label("正在回复", systemImage: "ellipsis")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text(chat.lastActiveAt, format: .relative(presentation: .named))
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                // 关着的时候写完了、他还没看的那条。
+                if host.unread.contains(chat.id) {
+                    Circle()
+                        .fill(.tint)
+                        .frame(width: 10, height: 10)
+                        .accessibilityLabel("有新回复")
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

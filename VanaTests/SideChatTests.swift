@@ -345,6 +345,183 @@ struct SideChatTests {
         #expect(await fixture.stores.thread.meta().harvestedUpToPos != nil)
         #expect(await side.meta().harvestedUpToPos != nil)
     }
+
+    // MARK: - 在两条线之间搬一段话(S2)
+
+    /// 搬的是文字,不是 transcript:工具调用、思考、照片一样都不带,工具只留名字。
+    @Test("a quote carries the question and the visible answer, not the transcript")
+    func seedIsTextOnly() {
+        let question = ChatMessage(role: .user, text: "十月去京都住哪")
+        var answer = ChatMessage(role: .assistant, text: "住四条附近方便。", reasoning: "先想想交通")
+        answer.toolCalls = [
+            ToolCallRecord(id: "1", name: "web_search", input: "{}", output: "很长的搜索结果"),
+            ToolCallRecord(id: "2", name: "web_search", input: "{}", output: "又一份"),
+            ToolCallRecord(id: "3", name: "fetch_url", input: "{}", output: "网页正文")
+        ]
+
+        let seed = SideChatQuote.seed(question: question, answer: answer)
+        #expect(seed.origin == .fromMain)
+        #expect(seed.role == .assistant)
+        #expect(seed.text == "住四条附近方便。")
+        #expect(seed.provenance?.question == "十月去京都住哪")
+        #expect(seed.provenance?.toolNames == ["web_search", "fetch_url"])
+        #expect(seed.toolCalls.isEmpty)
+        #expect(seed.reasoning.isEmpty)
+        #expect(seed.storedTurn.exactTranscript.messages.isEmpty)
+        #expect(seed.attachments.isEmpty)
+
+        let long = ChatMessage(role: .assistant, text: String(repeating: "长", count: SideChatQuote.maxCharacters + 50))
+        let capped = SideChatQuote.broughtBack(long, from: "京都")
+        #expect(capped.text.count == SideChatQuote.maxCharacters + 1)
+        #expect(capped.text.hasSuffix("…"))
+        #expect(SideChatQuote.label(for: capped) == "从侧聊「京都」带回来的")
+    }
+
+    /// 报错、占位、主动消息、排队中的都不搬:那不是模型真的写完的一段回答。
+    @Test("only a finished model answer can be quoted")
+    func onlyFinishedAnswersQuote() {
+        #expect(SideChatQuote.canQuote(ChatMessage(role: .assistant, text: "答")))
+        #expect(!SideChatQuote.canQuote(ChatMessage(role: .user, text: "问")))
+        #expect(!SideChatQuote.canQuote(ChatMessage(role: .assistant, text: "已停止回复", textIsPlaceholder: true)))
+        #expect(!SideChatQuote.canQuote(ChatMessage(role: .assistant, text: "提醒", origin: .reminder)))
+        #expect(!SideChatQuote.canQuote(ChatMessage(role: .assistant, text: "", errorDescription: "坏了")))
+    }
+
+    /// 给模型的那一段说清来历,折进下一条用户消息开头,不混进「主动说过」那一句。
+    @Test("a quote folds into the next user message with its own framing")
+    func quoteFoldsIntoNextUserMessage() {
+        let seed = SideChatQuote.seed(
+            question: ChatMessage(role: .user, text: "十月去京都住哪"),
+            answer: ChatMessage(role: .assistant, text: "住四条附近方便。")
+        )
+        let reminder = ChatMessage(role: .assistant, text: "该交房租了", origin: .reminder)
+        let history = HistoryMarkers.apply([seed, reminder, ChatMessage(role: .user, text: "预算三万呢")])
+        #expect(history.count == 1)
+        let text = history[0].text
+        #expect(text.contains("这条侧聊接着主对话里的这一段开始"))
+        #expect(text.contains("用户当时问：「十月去京都住哪」"))
+        #expect(text.contains("住四条附近方便。"))
+        #expect(text.contains("（Vana 之前主动说过：该交房租了）"))
+        #expect(!text.contains("主动说过：住四条"))
+        #expect(text.hasSuffix("预算三万呢"))
+    }
+
+    @Test("continuing in a side chat opens one that starts with that exchange")
+    func continueInSideChat() async throws {
+        let fixture = Fixture()
+        defer { fixture.remove() }
+        let main = fixture.model(ScriptedModelClient(profile: Self.profile, turns: [.init(text: "住四条附近方便。")]))
+        try await waitUntil("载入线程") { !main.isLoadingConversation }
+        main.send("十月去京都住哪")
+        try await waitUntil("回复结束") { !main.isReplying }
+        let answer = try #require(main.messages.last)
+        #expect(main.sideChatMove(for: answer) == .continueInSideChat)
+        #expect(main.sideChatMove(for: main.messages[0]) == .none)
+
+        let chat = try #require(await main.continueInSideChat(from: answer.id))
+        #expect(chat.title == "十月去京都住哪")
+        let seeded = await fixture.stores.sides.thread(for: chat.id).loadTail().messages
+        #expect(seeded.map(\.origin) == [.fromMain])
+
+        // 侧聊里第一句话发出去时,模型读到的开头就是那一段。
+        let client = ScriptedModelClient(profile: Self.profile, turns: [.init(text: "那就看祇园。")])
+        let side = fixture.model(client, sideChat: chat)
+        try await waitUntil("载入线程") { !side.isLoadingConversation }
+        #expect(!side.isThreadEmpty)
+        side.send("预算三万呢")
+        try await waitUntil("回复结束") { !side.isReplying }
+        #expect(client.lastPromptText.contains("用户当时问：「十月去京都住哪」"))
+        #expect(client.lastPromptText.contains("住四条附近方便。"))
+        // 主对话一个字没动。
+        await main.flushPersistence()
+        #expect(await fixture.stores.thread.loadTail().messages.count == 2)
+    }
+
+    @Test("bringing an answer back appends it to the main thread once")
+    func bringBackToMain() async throws {
+        let fixture = Fixture()
+        defer { fixture.remove() }
+        let chat = await fixture.stores.sides.create(title: "京都")
+        let side = fixture.model(ScriptedModelClient(profile: Self.profile, turns: [.init(text: "定了，住四条。")]), sideChat: chat)
+        try await waitUntil("载入线程") { !side.isLoadingConversation }
+        side.send("那就定了吧")
+        try await waitUntil("回复结束") { !side.isReplying }
+        let answer = try #require(side.messages.last)
+        #expect(side.sideChatMove(for: answer) == .bringBack)
+
+        side.bringBackToMain(answer.id)
+        side.bringBackToMain(answer.id)
+        #expect(side.sideChatMove(for: answer) == .broughtBack)
+
+        let deadline = ContinuousClock.now + .seconds(5)
+        while await fixture.stores.thread.loadTail().messages.isEmpty, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        let main = await fixture.stores.thread.loadTail().messages
+        #expect(main.count == 1)
+        #expect(main.first?.origin == .fromSideChat)
+        #expect(main.first?.text == "定了，住四条。")
+        #expect(main.first?.provenance?.sideChatTitle == "京都")
+    }
+
+    // MARK: - 宿主
+
+    /// 关掉时还在写的那个留着,回来接上同一个对象;写完了亮未读点、放掉。
+    @Test("a side chat closed mid-reply keeps writing and comes back unread")
+    func hostKeepsReplyingModel() async throws {
+        let fixture = Fixture()
+        defer { fixture.remove() }
+        let chat = await fixture.stores.sides.create(title: "京都")
+        let gate = Gate()
+        let host = SideChatHost { chat in
+            fixture.model(ScriptedModelClient(profile: Self.profile, turns: [
+                .init(text: "查完了。", beforeResponding: { await gate.wait() })
+            ]), sideChat: chat)
+        }
+
+        let model = host.open(chat)
+        try await waitUntil("载入线程") { !model.isLoadingConversation }
+        model.send("帮我比一下三家酒店")
+        try await waitUntil("开始回复") { model.isReplying }
+
+        host.close(chat.id)
+        #expect(host.model(for: chat.id) === model)
+        #expect(host.isReplying(chat.id))
+        #expect(host.open(chat) === model)
+        host.close(chat.id)
+
+        await gate.open()
+        try await waitUntil("回复结束") { !model.isReplying }
+        try await waitUntil("亮未读点") { host.unread.contains(chat.id) }
+        #expect(host.model(for: chat.id) == nil)
+        await model.flushPersistence()
+        #expect(await fixture.stores.sides.thread(for: chat.id).loadTail().messages.last?.text == "查完了。")
+
+        _ = host.open(chat)
+        #expect(!host.hasUnread)
+    }
+
+    @Test("discarding a side chat stops its reply and lets go of it")
+    func hostDiscardStops() async throws {
+        let fixture = Fixture()
+        defer { fixture.remove() }
+        let chat = await fixture.stores.sides.create(title: "京都")
+        let hold = HoldUntilCancelled()
+        let host = SideChatHost { chat in
+            fixture.model(ScriptedModelClient(profile: Self.profile, turns: [
+                .init(text: "写不完", beforeResponding: { try await hold.wait() })
+            ]), sideChat: chat)
+        }
+        let model = host.open(chat)
+        try await waitUntil("载入线程") { !model.isLoadingConversation }
+        model.send("住哪")
+        try await waitUntil("开始回复") { model.isReplying }
+
+        await host.discard(chat.id)?.value
+        #expect(!model.isReplying)
+        #expect(host.model(for: chat.id) == nil)
+        #expect(!host.hasUnread)
+    }
 }
 
 /// 把某一轮挂住,直到它被取消(等的就是停止)。

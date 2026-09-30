@@ -55,6 +55,16 @@
         }
       }
     },
+    "「%@」" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”"
+          }
+        }
+      }
+    },
     "「%@」关着，这一类暂不使用。重新打开就回来。" : {
       "localizations" : {
         "en" : {
@@ -1462,6 +1472,16 @@
         }
       }
     },
+    "从主对话接着聊" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continued from the main conversation"
+          }
+        }
+      }
+    },
     "从你的健康数据开始" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1469,6 +1489,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Start with your health data"
+          }
+        }
+      }
+    },
+    "从侧聊「%@」带回来的" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brought back from side chat “%@”"
+          }
+        }
+      }
+    },
+    "从侧聊带回来的" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brought back from a side chat"
           }
         }
       }
@@ -3310,6 +3350,16 @@
         }
       }
     },
+    "在侧聊里接着聊" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue in a side chat"
+          }
+        }
+      }
+    },
     "在吃的、不能吃的、试过没用的，分开记" : {
       "localizations" : {
         "en" : {
@@ -3854,6 +3904,16 @@
         }
       }
     },
+    "已带回主对话" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brought back to the main conversation"
+          }
+        }
+      }
+    },
     "已开启" : {
       "localizations" : {
         "en" : {
@@ -4102,6 +4162,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "How you want Vana to speak, and which metrics you care about"
+          }
+        }
+      }
+    },
+    "带回主对话" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bring back to the main conversation"
           }
         }
       }
@@ -5351,6 +5421,16 @@
         }
       }
     },
+    "更多，侧聊有新回复" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More, a side chat has a new reply"
+          }
+        }
+      }
+    },
     "更多操作" : {
       "localizations" : {
         "en" : {
@@ -5499,6 +5579,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Which of these needs attention?"
+          }
+        }
+      }
+    },
+    "有新回复" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New reply"
           }
         }
       }

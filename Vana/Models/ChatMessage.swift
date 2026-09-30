@@ -163,6 +163,25 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         case reminder
         /// 后台任务的结果。
         case task
+        /// 侧聊的开头:从主对话里某一问一答接着聊,那一段原样带过来。只出现在侧聊里。
+        case fromMain
+        /// 他从某条侧聊里挑一段回复带回主对话。只出现在主对话里。
+        case fromSideChat
+    }
+
+    /// 从另一条线上带过来的那一段是哪儿来的(`.fromMain` / `.fromSideChat`)。
+    ///
+    /// 两份读者:界面上那一行小字说它从哪儿来、当时问的是什么;给模型的那段话
+    /// (`HistoryMarkers`)要说清楚这不是对上一句的回答——否则它会以为自己答非所问。
+    struct Provenance: Codable, Sendable, Equatable {
+        /// 带过来的那段回答当时回的是哪句话。只有侧聊的开头有。
+        var question: String?
+        /// 从哪条侧聊带回来的(它的名字)。只有带回主对话的那条有。
+        var sideChatTitle: String?
+        /// 那段回答当时查过哪些工具。只留名字,不留输出(同召回读回来的原文)。
+        var toolNames: [String] = []
+        /// 原来那段是什么时候说的。
+        var date: Date?
     }
 
     let id: UUID
@@ -202,6 +221,8 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
     var origin: Origin = .normal
     /// `.task` 的消息指向哪条任务:气泡上的「查看详情」凭它跳过去。
     var refTaskId: UUID?
+    /// 从另一条线上带过来的那一段是哪儿来的。
+    var provenance: Provenance?
 
     /// 主动消息:模型要知道自己说过,但它不是对某句提问的回答。
     var isProactive: Bool { origin != .normal }
@@ -229,6 +250,7 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         case createdAt
         case origin
         case refTaskId
+        case provenance
 
         // 旧会话格式:transcript 曾经直接落的是 AIKit 的 Message。
         case replayMessages
@@ -251,7 +273,8 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         isQueued: Bool = false,
         createdAt: Date? = Date(),
         origin: Origin = .normal,
-        refTaskId: UUID? = nil
+        refTaskId: UUID? = nil,
+        provenance: Provenance? = nil
     ) {
         self.id = id
         self.role = role
@@ -266,6 +289,7 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         self.createdAt = createdAt
         self.origin = origin
         self.refTaskId = refTaskId
+        self.provenance = provenance
     }
 
     init(_ dto: AgentChatMessageDTO) {
@@ -303,6 +327,7 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
         createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
         origin = (try? container.decodeIfPresent(Origin.self, forKey: .origin)) ?? .normal
         refTaskId = try container.decodeIfPresent(UUID.self, forKey: .refTaskId)
+        provenance = try? container.decodeIfPresent(Provenance.self, forKey: .provenance)
 
         // 要问 `contains`,不能用 `try? decodeIfPresent`:键不存在时后者是"成功地解出了 nil",
         // 一样会走进这个分支,底下的旧格式就永远读不到了。
@@ -351,6 +376,7 @@ struct ChatMessage: Identifiable, Equatable, Codable, Sendable {
             try container.encode(origin, forKey: .origin)
         }
         try container.encodeIfPresent(refTaskId, forKey: .refTaskId)
+        try container.encodeIfPresent(provenance, forKey: .provenance)
     }
 }
 
@@ -517,6 +543,7 @@ extension ChatMessage {
             && createdAt == other.createdAt
             && isQueued == other.isQueued
             && origin == other.origin
+            && provenance == other.provenance
             && stoppedAtToolRoundLimit == other.stoppedAtToolRoundLimit
             && toolCalls.count == other.toolCalls.count
             && zip(toolCalls, other.toolCalls).allSatisfy { $0.rendersIdentically(to: $1) }

@@ -52,6 +52,7 @@
 		3D02FFCCEFD147A2EB8A7E1B /* AskUserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7DE15E61D2376C9C3A801B /* AskUserTests.swift */; };
 		3D225ABCB4F2001AF4D50503 /* PhotoImagePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90166914C21670A69A01C8E /* PhotoImagePolicy.swift */; };
 		3E0F3AFC2291A6B5A5B8C9B0 /* CoreInstructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45452567FC033D63A31B9379 /* CoreInstructions.swift */; };
+		3F036509FBFB4EA0DA68BA6B /* SideChatQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31F332F08BDF2B9026C9977F /* SideChatQuote.swift */; };
 		3F5335C9D5FD24761A178842 /* ExerciseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073D0EA23D9F7CC93D51CEE5 /* ExerciseTests.swift */; };
 		40402E3C4F8101A3F6047A4A /* system-owner-background.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1A8FAA2A7EADDD2F7755CC4D /* system-owner-background.txt */; };
 		41DC5E18B0CB7DAE0270C6D9 /* MemoryV2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3DD0DA0352360EDB0C1076 /* MemoryV2Tests.swift */; };
@@ -78,6 +79,7 @@
 		657E5D068418FD84495B268E /* AgentEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B71162584BAB8B0A6B744CC8 /* AgentEngine.swift */; };
 		65F07233734515BD8D51D212 /* QuickSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A9E97C04DE37021479681 /* QuickSummaryTests.swift */; };
 		6789A28EA353045916B7E924 /* DocxText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C39CAF3459083E312EFB072A /* DocxText.swift */; };
+		67914827E185AB1969B9BE66 /* SideChatHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43718CE681C453F0B7FB3DA /* SideChatHost.swift */; };
 		6800E031AF6CAA3A5A50200C /* SpokenBriefTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99812DEF2C1F215D896C7D9 /* SpokenBriefTests.swift */; };
 		6886676148B0902B530B14C4 /* VanaLaunchRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B32D85F780CE1AA587B4B87F /* VanaLaunchRouter.swift */; };
 		68E8A913A1BCCC2C70875532 /* BackgroundDigest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D103188F48FDAA2E06EA301 /* BackgroundDigest.swift */; };
@@ -251,6 +253,7 @@
 		2F329C843BC24BC69B9C8B22 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		2FBA25FD93ECD8D3A623A7F8 /* TestAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAssembly.swift; sourceTree = "<group>"; };
 		30CE1570F39B79E91A8274FE /* CheckInScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInScheduler.swift; sourceTree = "<group>"; };
+		31F332F08BDF2B9026C9977F /* SideChatQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideChatQuote.swift; sourceTree = "<group>"; };
 		31FFD960CE99235F41C98FD9 /* HealthAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthAnalysis.swift; sourceTree = "<group>"; };
 		337D5F8FD993E80F19E935D6 /* RecognizedTextLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecognizedTextLayout.swift; sourceTree = "<group>"; };
 		3589BF018D165AF6DD640AA5 /* HealthPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthPlugin.swift; sourceTree = "<group>"; };
@@ -381,6 +384,7 @@
 		D8D9A902344F47B96D111A41 /* ZIPArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZIPArchive.swift; sourceTree = "<group>"; };
 		DC60C3526638A0D14D67599D /* NotesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesTests.swift; sourceTree = "<group>"; };
 		E13D9EF0625DE3EE86E53CAD /* MemoryTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryTools.swift; sourceTree = "<group>"; };
+		E43718CE681C453F0B7FB3DA /* SideChatHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideChatHost.swift; sourceTree = "<group>"; };
 		E4D26A5B1BEC31DA80115320 /* ChatAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAttachment.swift; sourceTree = "<group>"; };
 		E5BD852B751C0419070C8538 /* Vana.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Vana.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5D65068691DF366D2832FAC /* DocumentImportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentImportTests.swift; sourceTree = "<group>"; };
@@ -506,6 +510,7 @@
 				B16EA300F6D2C18B71314036 /* ComposerBar.swift */,
 				BF5AD7B85AB604CB38063D10 /* MarkdownBlocks.swift */,
 				19F0E7FC535724B3F4A28C00 /* MarkdownTextView.swift */,
+				E43718CE681C453F0B7FB3DA /* SideChatHost.swift */,
 				C53422F8BF03917CF4353B23 /* SideChatListView.swift */,
 				E9E957C5E1ECBBD2535B7591 /* SuggestedQuestions.swift */,
 				B9A7096577BEF7F47898D2E9 /* ToolResultPanel.swift */,
@@ -809,6 +814,7 @@
 			children = (
 				90F7DB87EFC78F60BB7FFC9B /* HistoryMarkers.swift */,
 				2616CA3D92CDF0533783CCEF /* LegacySessions.swift */,
+				31F332F08BDF2B9026C9977F /* SideChatQuote.swift */,
 				3A20FF98BBC48169951BF9DC /* SideChatStore.swift */,
 				39E12E6CC1074ECAC00475CB /* ThreadStore.swift */,
 				81BCA3720C90265AEFB922B4 /* ThreadWindow.swift */,
@@ -1100,7 +1106,9 @@
 				857EA1F1B76477A1704B991D /* ReminderRules.swift in Sources */,
 				A2086BF90BCF2E64CA8B009F /* ReminderScheduler.swift in Sources */,
 				F0AA732CCC337F40D533720D /* SettingsView.swift in Sources */,
+				67914827E185AB1969B9BE66 /* SideChatHost.swift in Sources */,
 				97384AC4E6318AFA440983B8 /* SideChatListView.swift in Sources */,
+				3F036509FBFB4EA0DA68BA6B /* SideChatQuote.swift in Sources */,
 				BEF961B30FFFDD7224DA07FC /* SideChatStore.swift in Sources */,
 				1FCED682A285CB11FC124288 /* SpokenBrief.swift in Sources */,
 				B4FED28F259D29E2240C7C0A /* Subagent.swift in Sources */,
