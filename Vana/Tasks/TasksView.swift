@@ -1,11 +1,13 @@
 import SwiftUI
 import UserNotifications
 
-/// 「任务」页:提醒、目标、后台任务、最近完成。对应 Muse 的 Goals 标签。
+/// 「任务」页:提醒、目标、最近完成。对应 Muse 的 Goals 标签。
 ///
 /// 手动添加和模型工具走同一批上限(`TaskActions` 对 `TasksTools`):两条路进来的东西在盘上长得一样。
 struct TasksView: View {
     let board: TaskBoard
+    /// 目标详情里「在侧聊里聊这个目标」。nil 就不出那颗按钮。
+    var onDiscussGoal: ((TaskItem) -> Void)?
 
     @Environment(\.dismiss) private var dismiss
     @State private var isAddingReminder = false
@@ -25,9 +27,8 @@ struct TasksView: View {
 
                 let reminders = board.active(.reminder)
                 let goals = board.active(.goal)
-                let jobs = board.active(.job)
 
-                if reminders.isEmpty && goals.isEmpty && jobs.isEmpty {
+                if reminders.isEmpty && goals.isEmpty {
                     Section {
                         ContentUnavailableView {
                             Label("还没有要做的事", systemImage: "checklist")
@@ -38,11 +39,6 @@ struct TasksView: View {
                     }
                 }
 
-                if !jobs.isEmpty {
-                    Section("后台任务") {
-                        ForEach(jobs) { row($0) }
-                    }
-                }
                 if !reminders.isEmpty {
                     Section {
                         ForEach(reminders) { row($0) }
@@ -71,7 +67,7 @@ struct TasksView: View {
             .navigationTitle("任务")
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: UUID.self) { id in
-                TaskDetailView(board: board, taskId: id)
+                TaskDetailView(board: board, taskId: id, onDiscussGoal: onDiscussGoal)
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -151,8 +147,6 @@ enum TaskPresentation {
                 ? String(localized: "还没有步骤")
                 : String(localized: "步骤 \(task.plan.count(where: \.done))/\(task.plan.count)")
             return task.isActive ? progress : "\(task.status.label) · \(progress)"
-        case .job:
-            return task.status.label
         }
     }
 
@@ -160,7 +154,6 @@ enum TaskPresentation {
         switch task.kind {
         case .reminder: "bell"
         case .goal: "target"
-        case .job: "checklist"
         }
     }
 }
@@ -280,10 +273,13 @@ private struct GoalEditor: View {
     }
 }
 
-/// 一条任务的详情:目标的步骤、进展、每周回顾;后台任务的说明、状态、结果、提议、步骤、用量。
+/// 一条任务的详情:提醒的时间;目标的步骤、进展,和「在侧聊里聊这个目标」。
 struct TaskDetailView: View {
     let board: TaskBoard
     let taskId: UUID
+    /// 「在侧聊里聊这个目标」。以前是「每周回顾」——后台每七天自动请模型看一眼,写几句放进对话;
+    /// 子 agent 撤掉之后改成他想聊的时候自己开一条侧聊(那里的 system 段本来就带着进行中的目标)。
+    var onDiscussGoal: ((TaskItem) -> Void)?
 
     @State private var newStep = ""
     @State private var newNote = ""
@@ -352,20 +348,17 @@ struct TaskDetailView: View {
                             }
                     }
                 }
-                if task.isActive {
+                if task.isActive, let onDiscussGoal {
                     Section {
-                        Toggle("每周回顾", isOn: Binding(
-                            get: { task.digestEnabled },
-                            set: { enabled in Task { await TaskActions.setDigest(env, task.id, enabled: enabled) } }
-                        ))
+                        Button {
+                            onDiscussGoal(task)
+                        } label: {
+                            Label("在侧聊里聊这个目标", systemImage: "bubble.left.and.bubble.right")
+                        }
                     } footer: {
-                        Text("打开之后，每隔七天 Vana 会在后台请模型看一眼这个目标的进展，写几句回顾放进对话里。目标的内容、步骤和进展会发给你配置的模型服务。")
+                        Text("开一条以这个目标命名的侧聊，回顾进展、商量接下来怎么做。那里说的不挤主对话。")
                     }
                 }
-            }
-
-            if task.kind == .job {
-                JobSections(task: task)
             }
 
             Section {
@@ -374,9 +367,7 @@ struct TaskDetailView: View {
                         Button("完成") { Task { await TaskActions.complete(env, task.id) } }
                     }
                     Button(task.kind == .goal ? "放弃这个目标" : "取消", role: .destructive) {
-                        if task.kind == .job { AppJobControls.shared.stop(task.id) } else {
-                            Task { await TaskActions.cancel(env, task.id) }
-                        }
+                        Task { await TaskActions.cancel(env, task.id) }
                     }
                 } else if task.kind == .goal {
                     Button("重新开始") { Task { await TaskActions.reopen(env, task.id) } }
@@ -384,176 +375,7 @@ struct TaskDetailView: View {
                 Button("删除", role: .destructive) { Task { await TaskActions.delete(env, task.id) } }
             }
         }
-        .navigationTitle(task.kind == .reminder ? "提醒" : task.kind == .goal ? "目标" : "后台任务")
-    }
-}
-
-/// 后台任务的那几段:说明、结果、提议、步骤、用量。
-private struct JobSections: View {
-    let task: TaskItem
-
-    var body: some View {
-        if let error = task.error {
-            Section {
-                Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.orange)
-            }
-        }
-        JobActionRow(task: task)
-        if let result = task.result {
-            Section("结果") {
-                Text(result.summary).font(.body.weight(.medium))
-                if !result.body.isEmpty {
-                    MarkdownTextView(text: result.body)
-                }
-            }
-            if !result.proposals.isEmpty {
-                Section {
-                    ForEach(result.proposals) { proposal in
-                        ProposalRow(taskId: task.id, proposal: proposal)
-                    }
-                } header: {
-                    Text("它建议你做的")
-                } footer: {
-                    Text("后台助手自己什么都不会写下。你点了「照做」才会真的设提醒、记目标或记住。")
-                }
-            }
-            if !result.sources.isEmpty {
-                Section("来源") {
-                    ForEach(result.sources, id: \.self) { Text($0).font(.footnote).textSelection(.enabled) }
-                }
-            }
-        }
-        Section("交给它的说明") {
-            Text(task.brief).font(.footnote).foregroundStyle(.secondary).textSelection(.enabled)
-        }
-        if !task.steps.isEmpty {
-            Section("它做了什么") {
-                ForEach(Array(task.steps.enumerated()), id: \.offset) { _, step in
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(step.label)
-                        Text(step.at.formatted(date: .omitted, time: .standard)).font(.caption2).foregroundStyle(.secondary)
-                    }
-                }
-            }
-        }
-        if task.tokensUsed > 0 {
-            Section {
-                LabeledContent("估算用量", value: "约 \(task.tokensUsed) tokens")
-            } footer: {
-                Text("按字符估算，实际计费以模型服务那边为准。")
-            }
-        }
-    }
-}
-
-private struct ProposalRow: View {
-    let taskId: UUID
-    let proposal: TaskItem.Proposal
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Label(proposal.text, systemImage: icon)
-            if let at = proposal.at {
-                Text(ReminderRules.localizedDescription(at)).font(.caption).foregroundStyle(.secondary)
-            }
-            if let why = proposal.why, !why.isEmpty {
-                Text(why).font(.caption).foregroundStyle(.secondary)
-            }
-            switch proposal.status {
-            case .pending:
-                HStack {
-                    Button("照做") { AppJobControls.shared.decide(taskId, proposalId: proposal.id, accept: true) }
-                        .buttonStyle(.borderedProminent)
-                    Button("算了") { AppJobControls.shared.decide(taskId, proposalId: proposal.id, accept: false) }
-                        .buttonStyle(.bordered)
-                }
-                .controlSize(.small)
-            case .accepted:
-                Label("已照做", systemImage: "checkmark").font(.caption).foregroundStyle(.green)
-            case .dismissed:
-                Text("已略过").font(.caption).foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    private var icon: String {
-        switch proposal.kind {
-        case "reminder": "bell"
-        case "goal": "target"
-        default: "brain"
-        }
-    }
-}
-
-/// 开始 / 不做了 / 停止 / 再试一次。确认卡和详情页共用。
-struct JobActionRow: View {
-    let task: TaskItem
-
-    var body: some View {
-        switch task.status {
-        case .proposed:
-            HStack {
-                Button("开始") { Task { await AppJobControls.shared.start(task.id) } }
-                    .buttonStyle(.borderedProminent)
-                Button("不做了") { AppJobControls.shared.dismiss(task.id) }
-                    .buttonStyle(.bordered)
-            }
-        case .queued, .running:
-            HStack(spacing: 8) {
-                ProgressView().controlSize(.small)
-                Text(task.status == .running ? "后台助手在做…" : "排队中…").foregroundStyle(.secondary)
-                Spacer()
-                Button("停止", role: .destructive) { AppJobControls.shared.stop(task.id) }
-                    .buttonStyle(.bordered)
-            }
-        case .failed:
-            Button("再试一次") { Task { await AppJobControls.shared.start(task.id) } }
-                .buttonStyle(.bordered)
-        default:
-            EmptyView()
-        }
-    }
-}
-
-/// 对话里那张「开始任务」确认卡。`start_task` 只放这张卡,用户点了才跑。
-struct TaskCard: View {
-    let board: TaskBoard
-    let taskId: UUID
-    var onOpen: (UUID) -> Void
-
-    var body: some View {
-        if let task = board.task(taskId) {
-            VStack(alignment: .leading, spacing: 10) {
-                Button {
-                    onOpen(task.id)
-                } label: {
-                    HStack(alignment: .firstTextBaseline) {
-                        Label(task.title, systemImage: "checklist")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
-                        Spacer()
-                        Text(task.status.label).font(.caption).foregroundStyle(.secondary)
-                        Image(systemName: "chevron.right").font(.caption2).foregroundStyle(.tertiary)
-                    }
-                }
-                .buttonStyle(.plain)
-                if task.status == .proposed {
-                    Text("这件事会交给后台助手去做，它看不到这段对话，只按上面的说明做。需要几分钟，做完结果会出现在对话里。")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-                if let summary = task.result?.summary {
-                    Text(summary).font(.callout)
-                }
-                if let error = task.error, task.status != .done {
-                    Text(error).font(.footnote).foregroundStyle(.orange)
-                }
-                JobActionRow(task: task)
-                    .controlSize(.small)
-            }
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        }
+        .navigationTitle(task.kind == .reminder ? "提醒" : "目标")
     }
 }
 
@@ -667,8 +489,6 @@ private struct TodayCardView: View {
         switch card.kind {
         case .overdue: .red
         case .reminder: .orange
-        case .needsYou: .blue
-        case .running: .indigo
         case .goal: .green
         case .followUp: .teal
         case .health: .pink
@@ -680,8 +500,6 @@ private struct TodayCardView: View {
         switch card.kind {
         case .overdue: String(localized: "已过点")
         case .reminder: String(localized: "提醒事项")
-        case .needsYou: String(localized: "等你确认")
-        case .running: String(localized: "后台在做")
         case .goal: String(localized: "在推进的目标")
         case .followUp: String(localized: "回头看")
         case .health: String(localized: "现在的状况")

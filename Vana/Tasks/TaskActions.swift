@@ -77,60 +77,7 @@ enum TaskActions {
         await env.store.update(id, now: now) { $0.notes.append(.init(at: now, text: String(note.prefix(400)))) }
     }
 
-    /// 打开「每周回顾」的这一刻起算:第一次回顾在七天之后,不是马上。
-    static func setDigest(_ env: TasksEnvironment, _ id: UUID, enabled: Bool) async {
-        let now = env.now()
-        await env.store.update(id, now: now) {
-            $0.digestEnabled = enabled
-            if enabled { $0.lastDigestAt = now }
-        }
-    }
-
     static func reopen(_ env: TasksEnvironment, _ id: UUID) async {
         await env.store.update(id) { $0.status = .running }
-    }
-
-    /// 用户对后台助手的一条提议做了决定。「照做」才真的写:提醒走和手动添加同一条路(同样的
-    /// 上限和排程),记忆是用户亲手点了才存的,所以按「自己写的」算(不会被容量挤掉)。
-    /// 返回没能照做的原因,nil 表示成功或只是略过。
-    static func decide(
-        _ env: TasksEnvironment,
-        memory: MemoryStore?,
-        taskId: UUID,
-        proposalId: UUID,
-        accept: Bool
-    ) async -> String? {
-        guard let task = await env.store.get(taskId),
-              let proposal = task.result?.proposals.first(where: { $0.id == proposalId }),
-              proposal.status == .pending
-        else { return nil }
-
-        var problem: String?
-        if accept {
-            switch proposal.kind {
-            case "reminder":
-                if let at = proposal.at {
-                    problem = await addReminder(env, title: proposal.text, due: at, repeatRule: .none)
-                } else {
-                    problem = String(localized: "这条提醒没有时间")
-                }
-            case "goal":
-                problem = await addGoal(env, title: proposal.text, why: proposal.why ?? "")
-            case "memory":
-                if let memory {
-                    _ = try? await memory.add(kind: .profile, text: proposal.text, origin: .manual)
-                } else {
-                    problem = String(localized: "记忆现在是关着的")
-                }
-            default:
-                problem = String(localized: "不认识这种提议")
-            }
-        }
-        let next: TaskItem.Proposal.Status = accept && problem == nil ? .accepted : .dismissed
-        await env.store.update(taskId) { current in
-            guard let index = current.result?.proposals.firstIndex(where: { $0.id == proposalId }) else { return }
-            current.result?.proposals[index].status = next
-        }
-        return problem
     }
 }

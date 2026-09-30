@@ -110,7 +110,7 @@ enum AssemblyFixtures {
             focusMedication: scenario.focusMedication,
             location: scenario.location,
             webSearch: flags.webSearch ? searchStub : nil,
-            // 读网页不要 key:前台总是挂;后台只有后台任务那种一轮给(和搜索一起给)。
+            // 读网页不要 key:前台总是挂;后台只和搜索一起给。
             webFetch: !flags.background || flags.webSearch ? fetchStub : nil,
             recall: flags.recall,
             recallReach: scenario.recallReach,
@@ -119,8 +119,7 @@ enum AssemblyFixtures {
                 store: stores.bundle.tasks,
                 scheduling: NoReminderScheduling(),
                 tenantId: tenant.id,
-                activeGoals: scenario.goals,
-                jobs: Jobs()
+                activeGoals: scenario.goals
             ),
             notes: stores.bundle.notes,
             isEnabled: flags.isEnabled
@@ -269,12 +268,6 @@ enum AssemblyFixtures {
             )
         ]
     }
-}
-
-/// 派后台任务那一头的替身:只要 `start_task` 挂得出去。
-private struct Jobs: JobControls {
-    var autoStart: Bool { false }
-    func start(_ taskId: UUID) async {}
 }
 
 private extension Bool {

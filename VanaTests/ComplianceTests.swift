@@ -116,16 +116,16 @@ struct ComplianceTests {
     }
 
     /// 日常 agent 那一轮新加的几条出设备的路。每一条都是**行为**,告知里少一句就是一次没做到的告知。
-    @Test("隐私说明和告知屏写了读网页、后台任务、记忆抽取、提醒、不留痕")
+    @Test("隐私说明和告知屏写了读网页、侧聊、记忆抽取、提醒、不留痕")
     func policyCoversDailyAgentFlows() throws {
         let url = try #require(PrivacyPolicy.fileURL)
         let html = try String(contentsOf: url, encoding: .utf8)
         // 读网页由设备直连:对方看得到 IP。
         #expect(html.contains("IP 地址"))
         #expect(html.contains("内网"))
-        // 后台任务要先确认,而且只读。
-        #expect(html.contains("后台任务"))
-        #expect(html.contains("点了「开始」"))
+        // 侧聊:各自的往来怎么发。后台任务(子 agent)2026-09-30 撤掉了,告知里不能再许它。
+        #expect(html.contains("侧聊"))
+        #expect(!html.contains("后台任务"))
         // 抽记忆是一次单独的发送。
         #expect(html.contains("抽取值得长期记住"))
         // 提醒到点不调用模型。
@@ -136,13 +136,14 @@ struct ComplianceTests {
         #expect(html.contains("笔记与清单"))
 
         let leaving = DataUseNotice.leaves.points.joined()
-        #expect(leaving.contains("后台任务"))
+        #expect(leaving.contains("侧聊"))
+        #expect(!leaving.contains("后台任务"))
         #expect(leaving.contains("记住长期成立的事"))
         #expect(DataUseNotice.direct.points.joined().contains("IP 地址"))
         #expect(DataUseNotice.stays.points.joined().contains("不调用模型"))
     }
 
-    @Test("英文隐私说明也写了读网页、后台任务和提醒")
+    @Test("英文隐私说明也写了读网页、侧聊和提醒")
     func englishPolicyCoversDailyAgentFlows() throws {
         let url = try #require(Bundle.main.url(
             forResource: PrivacyPolicy.resourceName,
@@ -152,7 +153,9 @@ struct ComplianceTests {
         ))
         let html = try String(contentsOf: url, encoding: .utf8)
         #expect(html.contains("IP address"))
-        #expect(html.contains("Background tasks"))
+        #expect(html.contains("Side chats"))
+        #expect(!html.contains("Background tasks"))
+        #expect(!html.contains("background task"))
         #expect(html.contains("neither the network nor a model"))
         #expect(html.contains("Off-the-record"))
         #expect(!html.contains("conversation list"))

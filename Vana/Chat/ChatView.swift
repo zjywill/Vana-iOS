@@ -31,7 +31,9 @@ struct ChatView: View {
     @State private var isShowingTasks = false
     /// 从「今天」、确认卡、结果消息点进来的那一条任务。
     @State private var openedTask: UUID?
-    @State private var jobs = AppJobControls.shared
+    /// 目标详情里点了「在侧聊里聊这个目标」。任务页是一张 sheet:等它退场之后再把侧聊那一层推上来
+    /// ——同一条 presentation 链上撞上一次还在进行的 dismiss,那次 present 会悄悄地不发生。
+    @State private var pendingGoalChat: TaskItem?
     /// 首屏那张卡点开之后的那一页。和用药表一样走 sheet:它是一次离开对话的 detour,
     /// 看完就该回到刚才那一屏。
     @State private var isShowingStatus = false
@@ -169,7 +171,6 @@ struct ChatView: View {
                                     // 正在写的那条不一定是最后一条了:用户能在回复期间接着
                                     // 发消息,那几条排在它后面。
                                     message: message,
-                                    taskBoard: model.taskBoard,
                                     isStreaming: message.id == model.replyingMessageID,
                                     canRetry: model.canRetry(message.id),
                                     canDelete: !model.isReplying && !model.isEphemeral,
@@ -191,7 +192,6 @@ struct ChatView: View {
                                     },
                                     onWithdraw: { model.withdrawQueued(message.id) },
                                     onSideChatMove: { moveToOtherThread(message.id) },
-                                    onOpenTask: { openedTask = $0 },
                                     onAnswerAsk: { callID, answer in
                                         model.answerAsk(
                                             messageID: message.id,
@@ -339,31 +339,18 @@ struct ChatView: View {
             .sheet(isPresented: $isShowingMedications) {
                 MedicationListView(model: model)
             }
-            .sheet(isPresented: $isShowingTasks) {
-                TasksView(board: model.taskBoard)
+            .sheet(isPresented: $isShowingTasks, onDismiss: openPendingGoalChat) {
+                TasksView(board: model.taskBoard, onDiscussGoal: goalDiscussion)
             }
-            .sheet(item: $openedTask) { id in
+            .sheet(item: $openedTask, onDismiss: openPendingGoalChat) { id in
                 NavigationStack {
-                    TaskDetailView(board: model.taskBoard, taskId: id)
+                    TaskDetailView(board: model.taskBoard, taskId: id, onDiscussGoal: goalDiscussion)
                         .toolbar {
                             ToolbarItem(placement: .confirmationAction) {
                                 Button("完成") { openedTask = nil }
                             }
                         }
                 }
-            }
-            // 后台任务点了「开始」,但还没同意把数据发给这家:同样点名征一次。
-            .alert(
-                Text("发送给 \(CloudCatalog.providerName(for: jobs.pendingConsent?.providerId ?? ""))？"),
-                isPresented: Binding(
-                    get: { jobs.pendingConsent != nil },
-                    set: { if !$0 { jobs.declineConsent() } }
-                )
-            ) {
-                Button("同意并开始", action: jobs.confirmConsent)
-                Button("取消", role: .cancel, action: jobs.declineConsent)
-            } message: {
-                Text("这件后台任务的说明，连同它需要查的资料和记忆，会发送给第三方模型服务来完成，由对方按它自己的隐私政策处理。")
             }
             .sheet(isPresented: $isShowingStatus) {
                 HealthStatusView(
@@ -514,6 +501,32 @@ struct ChatView: View {
     private func sideChatMove(for message: ChatMessage) -> SideChatMove {
         guard message.role == .assistant else { return SideChatMove.none }
         return model.sideChatMove(for: message)
+    }
+
+    /// 「在侧聊里聊这个目标」那颗按钮。只在主对话上给:侧聊里再开侧聊是另一层,不做。
+    private var goalDiscussion: ((TaskItem) -> Void)? {
+        guard model.isMainThread else { return nil }
+        return { discussGoal($0) }
+    }
+
+    /// 目标详情里点了「在侧聊里聊这个目标」:先把任务页收掉,退场之后再开侧聊。
+    private func discussGoal(_ goal: TaskItem) {
+        pendingGoalChat = goal
+        isShowingTasks = false
+        openedTask = nil
+    }
+
+    /// 任务页退场了。有要聊的目标就开它那条侧聊,输入框里替他起个头(他看一眼再发,不自动发)。
+    private func openPendingGoalChat() {
+        guard let goal = pendingGoalChat else { return }
+        pendingGoalChat = nil
+        Task {
+            let chat = await model.sideChat(forGoal: goal)
+            openSideChat(chat)
+            if let sideModel = openedSideModel, sideModel.input.isEmpty {
+                sideModel.input = ChatViewModel.goalReviewPrompt(goal)
+            }
+        }
     }
 
     /// 打开一条侧聊。宿主里还在写的那个对象就接着用。
@@ -1019,7 +1032,6 @@ private struct ReasoningPanel: View {
 private struct MessageBubble: View, Equatable {
     let message: ChatMessage
     /// `start_task` 那张确认卡读它。它自己会观察任务表,气泡本身不必跟着重画。
-    let taskBoard: TaskBoard
     /// 这条正在生成:生成期间不给操作按钮,retry 一条还没写完的回复没有意义。
     let isStreaming: Bool
     let canRetry: Bool
@@ -1039,7 +1051,6 @@ private struct MessageBubble: View, Equatable {
     let onDelete: () -> Void
     let onWithdraw: () -> Void
     let onSideChatMove: () -> Void
-    let onOpenTask: (UUID) -> Void
     let onAnswerAsk: (String, AskUserAnswer) -> Void
 
     /// 只比画出来会不一样的东西。
@@ -1212,23 +1223,6 @@ private struct MessageBubble: View, Equatable {
             // 一轮里问了两次就摆两张(理论上不该发生,系统提示里写着一轮只问一个)。**不去重、
             // 不只留最后一张**:两张卡各自对应上下文里一次真实的提问,吞掉一张会让他答了一个
             // 问题、模型却在等另一个。
-            // 派后台任务的那张确认卡。和问题卡一样排在正文下面:先说清为什么要派,再给他按钮。
-            ForEach(showsToolCards ? startedTasks : [], id: \.self) { taskId in
-                TaskCard(board: taskBoard, taskId: taskId, onOpen: onOpenTask)
-                    .padding(.top, 2)
-            }
-
-            // 后台任务的结果那条主动消息:详情(全文、来源、它建议的事)在任务页。
-            if message.origin == .task, let taskId = message.refTaskId {
-                Button {
-                    onOpenTask(taskId)
-                } label: {
-                    Label("查看详情", systemImage: "chevron.right")
-                        .font(.footnote)
-                }
-                .buttonStyle(.borderless)
-            }
-
             ForEach(showsToolCards ? askQuestions : [], id: \.id) { asked in
                 AskUserCard(
                     question: asked.question,
@@ -1300,10 +1294,6 @@ private struct MessageBubble: View, Equatable {
     /// 代价是卡片在收尾那一刻才出现。可以接受:它本来就是"读完再动手"的东西,而在读的过程中
     /// 让它先占住屏幕底下那块,反而把还在写的正文一直往上顶。
     private var showsToolCards: Bool { !isStreaming }
-
-    private var startedTasks: [UUID] {
-        message.toolCalls.compactMap(\.startedTaskId)
-    }
 
     /// 这一轮摆出去的问题卡。**只认工具返回的那份**,不去正文里认 A/B/C(同动作卡)。
     private var askQuestions: [(id: String, question: AskUserQuestion, answer: AskUserAnswer?)] {

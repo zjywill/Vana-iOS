@@ -57,7 +57,7 @@ struct AssemblyContractTests {
         // 核心
         if !flags.background { names.append(AskUserTools.askToolName) }
         if flags.webSearch { names.append(WebSearchTools.searchToolName) }
-        // 读网页不要 key,前台总挂;后台只跟着搜索一起给(后台任务那一种)。
+        // 读网页不要 key,前台总挂;后台只跟着搜索一起给。
         if !flags.background || flags.webSearch { names.append(WebFetchTools.fetchToolName) }
         // 召回和记忆写入都归在记忆开关下面。
         if flags.memoryOn && flags.recall {
@@ -66,12 +66,11 @@ struct AssemblyContractTests {
         if flags.memoryOn && writes {
             names += [MemoryTools.rememberToolName, MemoryTools.forgetToolName, MemoryTools.reviseToolName]
         }
-        // 提醒、目标、派后台任务:前台才有,不留痕那一层整组不带。
+        // 提醒、目标:前台才有,不留痕那一层整组不带。
         if writes {
             names += [
                 TasksTools.getTimeToolName, TasksTools.createReminderToolName, TasksTools.listToolName,
-                TasksTools.updateTaskToolName, TasksTools.createGoalToolName, TasksTools.updateGoalToolName,
-                SubagentTools.startToolName
+                TasksTools.updateTaskToolName, TasksTools.createGoalToolName, TasksTools.updateGoalToolName
             ]
         }
         // 笔记:只前台挂;不留痕只挂读的那两个。
@@ -125,7 +124,6 @@ struct AssemblyContractTests {
         ("读网页", "用户发来一个链接想让你看"),
         ("反问", "他的描述里缺一个"),
         ("提醒与目标", "用户要你在某个时间提醒他做某件事时"),
-        ("后台任务", "遇到**独立的、要花几分钟**的事"),
         ("笔记", "用户有自己的笔记和清单"),
         ("健康规则", "处理健康相关的话题"),
         ("急症规则", "急症优先于一切"),

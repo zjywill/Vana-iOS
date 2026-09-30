@@ -588,6 +588,20 @@ final class ChatViewModel {
         return chat
     }
 
+    /// 某个目标的那条侧聊:同名的已经有了就接着用,没有就开一条。以前的「每周回顾」由后台每七天
+    /// 自动跑一次,子 agent 撤掉之后改成他想聊的时候自己开——每次都新开一条的话,列表里很快就是
+    /// 一串同名的侧聊。
+    func sideChat(forGoal goal: TaskItem) async -> SideChat {
+        let title = SideChatTitle.clean(goal.title)
+        if let existing = await sides.all().first(where: { $0.title == title }) { return existing }
+        return await sides.create(title: title)
+    }
+
+    /// 目标那条侧聊里替他起的头。放进输入框,他看一眼再发。
+    static func goalReviewPrompt(_ goal: TaskItem) -> String {
+        String(localized: "回顾一下「\(goal.title)」最近的进展，接下来该做什么？")
+    }
+
     /// 这条回复能不能「带回主对话」:侧聊里、模型真的写完了的回答,这一次还没带回去过。
     func canBringBack(_ messageID: UUID) -> Bool {
         guard isSideChat, persists, !broughtBackIds.contains(messageID), let index = index(of: messageID) else { return false }
@@ -1556,8 +1570,7 @@ final class ChatViewModel {
             tasks: isEphemeral ? nil : TasksEnvironment(
                 store: taskStore,
                 tenantId: tenant.id,
-                activeGoals: await taskStore.active().filter { $0.kind == .goal },
-                jobs: AppJobControls.shared
+                activeGoals: await taskStore.active().filter { $0.kind == .goal }
             ),
             notes: noteStore
         )

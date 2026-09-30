@@ -15,8 +15,6 @@ import Foundation
 enum PromptOrder {
     // MARK: 核心静态
     static let base = 0
-    /// 后台助手(子 agent)的角色说明。只有派出去的那一路有。
-    static let subagent = 10
     static let interjection = 20
     /// 侧聊的说明:这是哪件事、主对话在别处。只有侧聊有;侧聊存在期间逐字不变(改名时变一次)。
     static let sideChat = 25
@@ -29,7 +27,6 @@ enum PromptOrder {
     static let guideWebFetch = 125
     static let guideAskUser = 130
     static let guideTasks = 140
-    static let guideJobs = 145
     static let guideNotes = 150
 
     // MARK: 健康插件

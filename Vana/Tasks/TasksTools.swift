@@ -10,8 +10,6 @@ struct TasksEnvironment: Sendable {
     var calendar: Calendar = .current
     /// 这一轮开始时进行中的目标。system 段那一块照它拼(装配是同步的,读盘不是)。
     var activeGoals: [TaskItem] = []
-    /// 派后台任务的那一头。nil 就不挂 `start_task`。
-    var jobs: (any JobControls)?
 }
 
 /// 提醒、目标和「现在几点」。
@@ -98,13 +96,13 @@ enum TasksTools {
 
     private static let listDefinition = CapabilityDefinition(
         name: listToolName,
-        description: "列出进行中的提醒、目标和任务，带短编号。要改或取消某一条之前先用它拿编号。",
-        inputSchema: schema(["kind": choice("只看某一种，默认全部", ["all", "reminder", "goal", "job"])])
+        description: "列出进行中的提醒和目标，带短编号。要改或取消某一条之前先用它拿编号。",
+        inputSchema: schema(["kind": choice("只看某一种，默认全部", ["all", "reminder", "goal"])])
     )
 
     private static let updateTaskDefinition = CapabilityDefinition(
         name: updateTaskToolName,
-        description: "对一条提醒、目标或任务做：complete 完成、cancel 取消、reschedule 改期（只有提醒能改期，给 at 或 in_minutes）。"
+        description: "对一条提醒或目标做：complete 完成、cancel 取消、reschedule 改期（只有提醒能改期，给 at 或 in_minutes）。"
             + "按 list_tasks 给的短编号指到那一条。",
         inputSchema: schema([
             "id": string("短编号，来自 list_tasks"),
@@ -203,7 +201,6 @@ enum TasksTools {
         switch kind {
         case .reminder: "提醒"
         case .goal: "目标"
-        case .job: "任务"
         }
     }
 
@@ -215,17 +212,15 @@ enum TasksTools {
             return "- \(task.handle) · \(due)\(every.isEmpty ? "" : "（\(every)）") · \(task.title)"
         case .goal:
             return "- \(task.handle) · \(task.title) · \(task.planProgress)"
-        case .job:
-            return "- \(task.handle) · \(task.title) · \(task.status.promptLabel)"
         }
     }
 
     private static func list(_ env: TasksEnvironment, _ input: RuntimeJSONValue?) async -> CapabilityExecutionResult {
         let kind = TaskItem.Kind(rawValue: input?["kind"]?.stringValue ?? "")
         let active = await env.store.active().filter { kind == nil || $0.kind == kind }
-        guard !active.isEmpty else { return .success("现在没有进行中的提醒、目标或任务。") }
+        guard !active.isEmpty else { return .success("现在没有进行中的提醒或目标。") }
         var lines: [String] = []
-        for group in [TaskItem.Kind.reminder, .goal, .job] {
+        for group in [TaskItem.Kind.reminder, .goal] {
             let items = active.filter { $0.kind == group }
             guard !items.isEmpty else { continue }
             lines.append("\(kindLabel(group))：")

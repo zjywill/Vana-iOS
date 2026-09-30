@@ -3,7 +3,7 @@ import Foundation
 /// 后台的模型调用,**同时只准跑一件**。
 ///
 /// 前台那条回复不归这里管:用户在等它,它永远优先,而且 `ChatViewModel` 那边本来就只允许
-/// 一条。这里管的是用户看不见的那几件——会话结束抽记忆、到期的待跟进、目标的周进展。
+/// 一条。这里管的是用户看不见的那几件——抽记忆、到期的待跟进。
 ///
 /// 手机上并发的模型调用抢的是同一条窄网络和同一份电量,而这几件用户一件都看不见:两件一起跑
 /// 不会让任何一件更快到达他眼前,只会让正在等回复的那条更慢。
@@ -15,23 +15,6 @@ actor BackgroundModelWork {
     static let shared = BackgroundModelWork()
 
     private var isBusy = false
-    private var waiters: [CheckedContinuation<Void, Never>] = []
-
-    /// **排队等这把锁**,不是「忙就跳过」:用户点了开始的后台任务不能因为这一刻恰好有别的活
-    /// 就丢掉。抽记忆、待跟进那几件照旧走 `run`(拿不到就这次不跑)。
-    func runExclusive<T: Sendable>(_ work: @Sendable () async -> T) async -> T {
-        while isBusy {
-            await withCheckedContinuation { waiters.append($0) }
-        }
-        isBusy = true
-        defer { release() }
-        return await work()
-    }
-
-    private func release() {
-        isBusy = false
-        if !waiters.isEmpty { waiters.removeFirst().resume() }
-    }
 
     /// 有位子就跑,没有就返回 nil。
     ///
@@ -40,7 +23,7 @@ actor BackgroundModelWork {
     func run<T: Sendable>(_ work: @Sendable () async -> T) async -> T? {
         guard !isBusy else { return nil }
         isBusy = true
-        defer { release() }
+        defer { isBusy = false }
         return await work()
     }
 

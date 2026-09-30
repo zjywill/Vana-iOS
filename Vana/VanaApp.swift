@@ -53,11 +53,8 @@ struct VanaApp: App {
             // 地名发出去了。没授权时它直接返回,不弹任何东西。
             if phase == .active {
                 LocationProvider.shared.refresh(force: true)
-                // 到点了的提醒补一条主动消息进对话;被系统打断的后台任务接着排回去、到点的目标回顾排上。
-                Task {
-                    await ReminderScheduler.catchUpAll()
-                    await SubagentScheduler.shared.resume()
-                }
+                // 到点了的提醒补一条主动消息进对话。
+                Task { await ReminderScheduler.catchUpAll() }
             }
             Task { await CheckInScheduler.reschedule() }
             // 到期的待跟进——有一件就替他跑一轮,跑出结论了再重排一次,让早上那条通知带上它。
@@ -115,8 +112,8 @@ final class NotificationRelay: NSObject, UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse
     ) async {
         let identifier = response.notification.request.identifier
-        // 提醒和后台任务的通知:那条主动消息(补上/已经)在对话末尾了,点开 app 就是看它。
-        if identifier.hasPrefix(ReminderScheduler.identifierPrefix) || identifier.hasPrefix(SubagentScheduler.notificationPrefix) {
+        // 提醒的通知:那条主动消息(补上/已经)在对话末尾了,点开 app 就是看它。
+        if identifier.hasPrefix(ReminderScheduler.identifierPrefix) {
             await ReminderScheduler.catchUpAll()
             return
         }

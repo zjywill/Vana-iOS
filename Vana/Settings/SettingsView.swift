@@ -13,7 +13,6 @@ struct SettingsView: View {
     @AppStorage(EngineSettings.personaKey) private var persona = EngineSettings.defaultPersona
     @AppStorage(EngineSettings.thinkingEnabledKey) private var thinkingEnabled = true
     @AppStorage(EngineSettings.photoImagePolicyKey) private var photoImagePolicy = PhotoImagePolicy.askWhenNoText.rawValue
-    @AppStorage(EngineSettings.autoStartTasksKey) private var autoStartTasks = false
 
     @State private var apiKey = ""
     @State private var persistedAPIKey = ""
@@ -271,7 +270,7 @@ struct SettingsView: View {
                     """)
             }
 
-            // 记忆、对话、后台任务:三件都是「Vana 替你留着或替你做的事」,和插件无关,关不掉。
+            // 记忆和对话:都是「Vana 替你留着的东西」,和插件无关,关不掉。
             Section {
                 NavigationLink {
                     MemoryView()
@@ -285,18 +284,10 @@ struct SettingsView: View {
                         Label("对话历史", systemImage: "text.bubble")
                     }
                 }
-                Toggle(isOn: $autoStartTasks) {
-                    Label("只读的后台任务自动开始", systemImage: "checklist")
-                }
             } header: {
                 Text("记忆与对话")
             } footer: {
-                Text("""
-                    对话历史里可以看占用空间、清掉很早以前的，或者全部清空。\
-                    Vana 可以把一件要花几分钟的事（查资料、比较方案）交给后台助手去做。默认每一件都先给你一张确认卡，你点了「开始」才跑。\
-                    打开这一项之后，它派出去的任务直接开始。后台助手只读——想设提醒、记目标都只能先提议，你点了才执行；\
-                    任务的说明和它查到的资料会发给你配置的模型服务。一次只跑一件，每天最多 \(SubagentLimits.maxRunsPerDay) 件，每件最多 5 分钟。
-                    """)
+                Text("对话历史里可以看占用空间、清掉很早以前的，或者全部清空；侧聊也算在里面。")
             }
 
             // 插件自己的设置(Apple 健康授权、check-in、用药表……)在插件详情页里,不散在这一页。

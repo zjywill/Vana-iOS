@@ -400,6 +400,9 @@ private struct HourlyChart: View {
 
 /// 核心插件那几个工具在聊天里怎么写成一行字、面板叫什么。历史消息里的调用照样认,不看插件现在开没开。
 enum CoreToolLabels {
+    /// 派后台任务的那个工具。2026-09-30 撤掉了,以前存下来的调用还认得出来。
+    static let legacyStartTask = "start_task"
+
     static func note(for call: ToolCallRecord) -> String? {
         switch call.name {
         case TasksTools.getTimeToolName: String(localized: "看了一眼时间")
@@ -410,7 +413,7 @@ enum CoreToolLabels {
         case TasksTools.createGoalToolName:
             call.isError ? String(localized: "没能记成目标") : String(localized: "记成了一个目标")
         case TasksTools.updateGoalToolName: String(localized: "更新了一个目标")
-        case SubagentTools.startToolName:
+        case legacyStartTask:
             call.isError ? String(localized: "没能派出后台任务") : String(localized: "派了一个后台任务")
         case WebFetchTools.fetchToolName:
             call.isError ? String(localized: "没能读这个网页") : String(localized: "读了一个网页")
@@ -431,7 +434,7 @@ enum CoreToolLabels {
         switch call.name {
         case TasksTools.getTimeToolName, TasksTools.createReminderToolName, TasksTools.listToolName,
              TasksTools.updateTaskToolName, TasksTools.createGoalToolName, TasksTools.updateGoalToolName,
-             SubagentTools.startToolName:
+             legacyStartTask:
             String(localized: "任务")
         case MedicationTools.listToolName, MedicationTools.logToolName, MedicationTools.updateToolName:
             String(localized: "用药与补剂")

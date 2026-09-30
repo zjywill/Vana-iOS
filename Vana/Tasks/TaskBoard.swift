@@ -38,7 +38,7 @@ final class TaskBoard {
     func task(_ id: UUID) -> TaskItem? { tasks.first { $0.id == id } }
 
     var environment: TasksEnvironment {
-        TasksEnvironment(store: store, tenantId: tenantId, jobs: AppJobControls.shared)
+        TasksEnvironment(store: store, tenantId: tenantId)
     }
 
     func active(_ kind: TaskItem.Kind) -> [TaskItem] {

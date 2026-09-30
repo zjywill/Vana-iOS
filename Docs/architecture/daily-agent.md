@@ -22,7 +22,7 @@
 | 提醒不调模型、挂钟时间、补响标「错过」 | `ReminderRules`、`ReminderScheduler` | ✓ |
 | 「今天」零模型调用、插件贡献卡片 | `Vana/Today`、`VanaPlugin.todayCards` | ✓ |
 | 目标 ≤5、常驻易变区、手动和工具同一批上限 | `TaskStore`、`TaskActions`、`TasksPlugin` | ✓ |
-| 后台任务：确认卡、只读、隔离、提议、预算、一次一件、同意闸 | `Vana/Tasks/Subagent.swift`、`SubagentScheduler.swift` | ✓ |
+| 后台任务：确认卡、只读、隔离、提议、预算、一次一件、同意闸 | 2026-09-30 撤掉(方案 §16.7) | — |
 | `fetch_url` 的地址规矩 | `Vana/Search/WebFetch.swift`（`FetchURLPolicy`、`DirectWebFetch`） | ✓ |
 | 笔记：按需、无删除工具、`memoryExclusions` | `Vana/Notes`、`NotesPlugin` | ✓ |
 | 每条出设备的路过同意闸 | `CloudAccess`（前台）/ `CloudAccess.backgroundSettings()`（后台） | ✓ |
@@ -35,7 +35,7 @@
 | S1 存储、列表、空白侧聊、各自窗口、说明块、收割与清理覆盖侧聊、离开即停 | ✓ 2026-09-30(`Vana/Thread/SideChatStore`、`Vana/Chat/SideChatListView`、`ChatViewModel(sideChat:)`) |
 | S2 「在侧聊里接着聊」、「带回主对话」、离开后接着写完 + 未读点 | ✓ 2026-09-30(`SideChatQuote`、`SideChatHost`、`ChatMessage.Provenance`) |
 | S3 跨线程召回、主对话里的侧聊名单块 | ✓ 2026-09-30(`HistoryRecallTools.Source`、`RecallReach`、`ChatViewModel.recallSetup`) |
-| S4 撤掉子 agent + 告知对齐 | 未开始 |
+| S4 撤掉子 agent + 告知对齐 | ✓ 2026-09-30(目标的「每周回顾」换成「在侧聊里聊这个目标」) |
 
 S2 和方案不一样的两处:入口在回复底下那颗「⋯」里,和「删除这一问一答」在一起(方案写的是长按;回复气泡本来就
 没有长按菜单,操作都收在那颗「⋯」里);搬过去的正文
@@ -49,8 +49,8 @@ S1 落地时和方案不一样的一处:侧聊的名字上限分了两档(自动
 - **健康插件多一样 Apple 健康**（`HealthDataPlugin`，只有机主有）。Android 那边的「测量卡片」iOS 没有——
   iOS 的数字从 HealthKit 来。
 - **提醒**用 `UNCalendarNotificationTrigger`，系统保证时刻，所以没有「可能晚几分钟」那句。
-- **后台任务的存活**：跑的时候申请 `beginBackgroundTask`，被系统收走的那件下次回到前台接着排。
-  **没有上 `BGProcessingTask`**：和 Android 那边一样，先看真有没有人总在任务跑到一半时切走 app。
+- ~~**后台任务的存活**~~：后台任务 2026-09-30 撤掉了（方案 §16.7）。侧聊关掉时回复照样写完，app 切到后台
+  之后和主对话一样，靠系统给的那几十秒。
 - **读网页的内网防护**：URLSession 没有可替换的 DNS 钩子，所以连接之前自己 `getaddrinfo` 一遍，
   每一跳重定向都重新解析（自动跳转在 delegate 里关掉）。解析和连接之间换了地址（DNS rebinding）这一种
   挡不住——Android 的 `Dns` 钩子能挡，这里有意接受：只读、只收文字、不带任何凭据。

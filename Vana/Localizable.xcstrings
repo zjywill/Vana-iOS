@@ -379,6 +379,7 @@
       }
     },
     "%lld 件等你确认" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -895,6 +896,7 @@
       }
     },
     "不做了" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -975,6 +977,7 @@
       }
     },
     "不认识这种提议" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1058,6 +1061,7 @@
       }
     },
     "中途被系统打断了，可以再试一次。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1168,6 +1172,7 @@
       }
     },
     "交给它的说明" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1636,6 +1641,7 @@
       }
     },
     "估算用量" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1857,6 +1863,7 @@
       }
     },
     "你点了「开始」的后台任务：任务说明、它用到的记忆和过往对话片段、它搜索或读取到的网页内容。后台任务只读，不会改动你的数据" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1966,6 +1973,16 @@
         }
       }
     },
+    "侧聊里的往来同样如此。一条侧聊的请求不带主对话的原文；主对话的请求里会带上你开着的几条侧聊的名字" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The same goes for side chats. A side chat’s request does not carry the main conversation’s text; requests from the main conversation include the names of your open side chats"
+          }
+        }
+      }
+    },
     "侧聊里说的不挤主对话，Vana 记得的事两边都用得上。在侧聊里建的提醒，到点出现在主对话里。" : {
       "localizations" : {
         "en" : {
@@ -1997,6 +2014,7 @@
       }
     },
     "停止" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2229,6 +2247,7 @@
       }
     },
     "再试一次" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2990,6 +3009,7 @@
       }
     },
     "只读的后台任务自动开始" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3060,6 +3080,7 @@
       }
     },
     "同意并开始" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3100,6 +3121,7 @@
       }
     },
     "后台任务" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3120,6 +3142,7 @@
       }
     },
     "后台助手在做…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3130,6 +3153,7 @@
       }
     },
     "后台助手自己什么都不会写下。你点了「照做」才会真的设提醒、记目标或记住。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3140,6 +3164,7 @@
       }
     },
     "后台在做" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3290,6 +3315,16 @@
         }
       }
     },
+    "回顾一下「%@」最近的进展，接下来该做什么？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Let’s review how “%@” has been going lately. What should I do next?"
+          }
+        }
+      }
+    },
     "回顾了 %@ 的对话" : {
       "localizations" : {
         "en" : {
@@ -3356,6 +3391,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continue in a side chat"
+          }
+        }
+      }
+    },
+    "在侧聊里聊这个目标" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Talk about this goal in a side chat"
           }
         }
       }
@@ -3563,6 +3608,7 @@
       }
     },
     "失败了" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3593,6 +3639,7 @@
       }
     },
     "它做了什么" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3613,6 +3660,7 @@
       }
     },
     "它建议你做的" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3735,7 +3783,18 @@
         }
       }
     },
+    "对话历史里可以看占用空间、清掉很早以前的，或者全部清空；侧聊也算在里面。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversation history shows how much space it takes, and lets you clear older messages or everything; side chats are included."
+          }
+        }
+      }
+    },
     "对话历史里可以看占用空间、清掉很早以前的，或者全部清空。Vana 可以把一件要花几分钟的事（查资料、比较方案）交给后台助手去做。默认每一件都先给你一张确认卡，你点了「开始」才跑。打开这一项之后，它派出去的任务直接开始。后台助手只读——想设提醒、记目标都只能先提议，你点了才执行；任务的说明和它查到的资料会发给你配置的模型服务。一次只跑一件，每天最多 %lld 件，每件最多 5 分钟。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3992,6 +4051,7 @@
       }
     },
     "已照做" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4002,6 +4062,7 @@
       }
     },
     "已略过" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4212,6 +4273,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Age range"
+          }
+        }
+      }
+    },
+    "开一条以这个目标命名的侧聊，回顾进展、商量接下来怎么做。那里说的不挤主对话。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens a side chat named after this goal to review progress and plan what’s next. What you say there doesn’t crowd the main conversation."
           }
         }
       }
@@ -4544,6 +4615,7 @@
       }
     },
     "打开之后，每隔七天 Vana 会在后台请模型看一眼这个目标的进展，写几句回顾放进对话里。目标的内容、步骤和进展会发给你配置的模型服务。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4672,6 +4744,7 @@
       }
     },
     "按字符估算，实际计费以模型服务那边为准。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4692,6 +4765,7 @@
       }
     },
     "排队中" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4702,6 +4776,7 @@
       }
     },
     "排队中…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5513,6 +5588,7 @@
       }
     },
     "有一条没能照做：%@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5684,6 +5760,7 @@
       }
     },
     "来源" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5774,6 +5851,7 @@
       }
     },
     "查看详情" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6131,6 +6209,7 @@
       }
     },
     "每周回顾" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6728,6 +6807,7 @@
       }
     },
     "照做" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7132,6 +7212,7 @@
       }
     },
     "等你确认" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7142,6 +7223,7 @@
       }
     },
     "算了" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7234,6 +7316,7 @@
       }
     },
     "结果" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7699,6 +7782,7 @@
       }
     },
     "记忆现在是关着的" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8217,7 +8301,18 @@
         }
       }
     },
+    "还没到点" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upcoming"
+          }
+        }
+      }
+    },
     "还没同意把数据发给当前的模型服务。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8349,6 +8444,7 @@
       }
     },
     "还没配置云端模型，先到设置里填好。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8449,6 +8545,7 @@
       }
     },
     "这件事会交给后台助手去做，它看不到这段对话，只按上面的说明做。需要几分钟，做完结果会出现在对话里。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8459,6 +8556,7 @@
       }
     },
     "这件后台任务的说明，连同它需要查的资料和记忆，会发送给第三方模型服务来完成，由对方按它自己的隐私政策处理。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8733,6 +8831,7 @@
       }
     },
     "这条提醒没有时间" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -9213,6 +9312,7 @@
       }
     },
     "需要你" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

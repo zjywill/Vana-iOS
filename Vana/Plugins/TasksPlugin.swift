@@ -1,11 +1,10 @@
 import Foundation
 import AgentRuntime
 
-/// 提醒、目标、现在几点、派后台任务。核心插件,任何 Vana 都带着。
+/// 提醒、目标、现在几点。核心插件,任何 Vana 都带着。
 ///
 /// - 写的那几个声明 `.writeLocal`:不留痕浮层和后台那几轮都不挂——不该在用户不在场时替他设提醒。
-/// - `start_task` 另带 `.needsUser`:它只放一张确认卡、要用户点了才跑。后台路因此挂不上它,
-///   后台助手不能再派后台助手。
+/// - 以前还有 `start_task`(派后台任务),2026-09-30 连同子 agent 撤掉了:独立的活由用户自己开侧聊。
 /// - 进行中的目标(≤5 条,一行一个)**常驻 system 段**易变区——以前「目标」是一条专属的会话线;
 ///   现在只有一条对话,模型随时知道他在推进什么,目标一变只打掉尾巴。
 struct TasksPlugin: AgentPlugin {
@@ -13,13 +12,9 @@ struct TasksPlugin: AgentPlugin {
     let env: TasksEnvironment
 
     func tools(context: PluginContext) -> [PluginTool] {
-        var tools = PluginTool.from(TasksTools.registry(env)) { name in
+        PluginTool.from(TasksTools.registry(env)) { name in
             TasksTools.readTools.contains(name) ? [.read] : [.writeLocal]
         }
-        if env.jobs != nil {
-            tools += PluginTool.from(SubagentTools.startTaskRegistry(env)) { _ in [.writeLocal, .needsUser] }
-        }
-        return tools
     }
 
     func promptBlocks(context: PluginContext, mountedTools: Set<String>) -> [PromptBlock] {
@@ -38,18 +33,6 @@ struct TasksPlugin: AgentPlugin {
             blocks.append(PromptBlock(
                 order: PromptOrder.guideTasks,
                 text: "要知道现在几点（不只是今天几号）时调用 \(TasksTools.getTimeToolName)。"
-            ))
-        }
-        if mountedTools.contains(SubagentTools.startToolName) {
-            let web = mountedTools.contains(WebSearchTools.searchToolName)
-                ? "它能上网搜索；"
-                : "它现在不能上网（没配搜索），只能用记忆和过往的对话；"
-            blocks.append(PromptBlock(
-                order: PromptOrder.guideJobs,
-                text: "遇到**独立的、要花几分钟**的事（比较几个方案、整理一个主题的资料、查一批信息），"
-                    + "可以用 \(SubagentTools.startToolName) 派给后台助手，\(web)它看不到这段对话，所以 brief 要写得自足。"
-                    + "它会先给用户一张确认卡，他点了才跑，做完结果会出现在对话里。"
-                    + "一句话能答的、需要来回商量的、涉及他此刻感受的事，直接在对话里做，不要派。"
             ))
         }
         let goals = env.activeGoals.filter { $0.kind == .goal && $0.isActive }.prefix(TasksTools.maxActiveGoals)

@@ -18,7 +18,7 @@ enum TodayAction: Equatable, Sendable {
 struct TodayCard: Identifiable, Equatable, Sendable {
     /// 卡片是哪一类。决定卡上那颗角标的颜色和那两个字,不影响排序(排序看 `priority`)。
     enum Kind: Sendable {
-        case reminder, overdue, needsYou, running, goal, followUp, health, medication
+        case reminder, overdue, goal, followUp, health, medication
     }
 
     let id: String
@@ -45,15 +45,13 @@ struct TodayContext: Sendable {
 
 enum TodayPriority {
     static let overdueReminder = 90
-    static let needsYou = 85
     static let dueTodayReminder = 75
     static let followUpDue = 70
-    static let running = 60
     static let healthStatus = 50
     static let goal = 40
 }
 
-/// 核心贡献的「今天」卡片:到点/错过的提醒、等你确认的后台任务、在推进的目标、说好回头看的事。
+/// 核心贡献的「今天」卡片:到点/错过的提醒、在推进的目标、说好回头看的事。
 enum CoreToday {
     private static let maxGoalCards = 2
 
@@ -74,18 +72,6 @@ enum CoreToday {
                 icon: "bell",
                 action: .openTask(task.id),
                 kind: overdue ? .overdue : .reminder
-            ))
-        }
-
-        for task in context.tasks where task.kind == .job && task.isActive {
-            let (priority, body, kind): (Int, String, TodayCard.Kind) = switch task.status {
-            case .needsYou, .proposed: (TodayPriority.needsYou, String(localized: "等你确认"), .needsYou)
-            case .running: (TodayPriority.running, String(localized: "进行中"), .running)
-            default: (TodayPriority.running, String(localized: "排队中"), .running)
-            }
-            cards.append(TodayCard(
-                id: "job-\(task.id)", pluginId: PluginIds.core, priority: priority,
-                title: task.title, body: body, icon: "checklist", action: .openTask(task.id), kind: kind
             ))
         }
 
@@ -143,14 +129,12 @@ extension TodayCard {
 }
 
 enum TodaySummary {
-    /// 折叠时那一行:「2 件等你确认 · 1 条提醒 · 3 件其他」。
+    /// 折叠时那一行:「1 条提醒 · 3 件其他」。
     static func line(_ cards: [TodayCard]) -> String? {
         guard !cards.isEmpty else { return nil }
         let reminders = cards.count { $0.priority == TodayPriority.overdueReminder || $0.priority == TodayPriority.dueTodayReminder }
-        let needsYou = cards.count { $0.priority == TodayPriority.needsYou }
-        let rest = cards.count - reminders - needsYou
+        let rest = cards.count - reminders
         var parts: [String] = []
-        if needsYou > 0 { parts.append(String(localized: "\(needsYou) 件等你确认")) }
         if reminders > 0 { parts.append(String(localized: "\(reminders) 条提醒")) }
         if rest > 0 { parts.append(String(localized: "\(rest) 件其他")) }
         return parts.joined(separator: " · ")

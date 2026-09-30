@@ -58,14 +58,13 @@ enum BackgroundTurn {
         return text.isEmpty ? nil : text
     }
 
-    /// 后台路的装配输入:只读记忆、召回、机主的 Apple 健康。子 agent 在它上面再挂搜索和读网页。
+    /// 后台路的装配输入:只读记忆、召回、机主的 Apple 健康。不带搜索和读网页:待跟进回访多挂一样
+    /// 就多花一份钱(以前子 agent 在它上面再挂这两样,2026-09-30 撤掉了)。
     static func environment(
         now: Date,
         memoryStore: MemoryStore,
         thread: ThreadStore,
-        tenant: Tenant,
-        webSearch: WebSearchClient? = nil,
-        webFetch: WebFetchClient? = nil
+        tenant: Tenant
     ) async -> PluginEnvironment {
         var recall: CapabilityRegistry?
         if let hidden = await thread.meta().windowStartPos, await thread.hasArchiveRows(before: hidden) {
@@ -77,8 +76,6 @@ enum BackgroundTurn {
             memoryStore: memoryStore,
             // 读记忆照旧——不认识用户的话,这一轮回答的质量还不如不跑。
             memory: EngineSettings.memoryEnabled ? await memoryStore.snapshot(now: now) : .empty,
-            webSearch: webSearch,
-            webFetch: webFetch,
             includesHealthData: true
         )
     }

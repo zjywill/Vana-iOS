@@ -111,13 +111,6 @@ enum EngineSettings {
     /// (`PromptAssemblyTests` 盯着),只留核心那两条不分话题的安全底线;用药表、家人档案这些
     /// 数据一条不动,重新打开就回来。
     static let healthEnabledKey = "plugin.health"
-    /// 设置 › 后台任务 › 只读任务自动开始。**默认关**:每个任务先弹确认卡,用户点了才跑。
-    /// 开着的时候那张卡直接显示「进行中」——这是用户主动打开的开关,说明里写明了会发什么。
-    static let autoStartTasksKey = "autoStartTasks"
-
-    static var autoStartTasks: Bool {
-        UserDefaults.standard.object(forKey: autoStartTasksKey) as? Bool ?? false
-    }
     static let notesEnabledKey = "plugin.notes"
 
     /// 插件开关。**一处定义**:装配、抽取器、插件页读的都是它。子开关(用药表)和记忆沿用各自

@@ -102,7 +102,7 @@
 <ul>
   <li>Conversations (including the health data read in each turn) — one ongoing main conversation plus any side chats you open yourself, kept on this device until you clear them (see “How you can delete data” below)</li>
   <li>Long-term memories (short notes about facts, recent events and follow-ups about you)</li>
-  <li>Reminders, goals, and the background tasks you approved together with their results</li>
+  <li>Reminders and goals</li>
   <li>Notes and lists</li>
   <li>The medications &amp; supplements list</li>
   <li>Receipts, reports, lab reports, medicine boxes and other photos and files you take or choose</li>
@@ -123,7 +123,7 @@
   <li>The names and progress of active goals; the content of a note or list you ask Vana to read (notes are not part of every request — they are sent only the time they are read)</li>
   <li><strong>To remember things that stay true</strong>: after you leave the app, Vana sends not-yet-processed parts of the conversation to the same model service to extract what is worth remembering long-term (only when Memory is on, and under the same consent as above)</li>
 </ul>
-<p><strong>Background tasks.</strong> Vana can run a self-contained job that takes a few minutes (researching, comparing options) in the background. By default each one first shows you a confirmation card and runs only after you tap “Start”; once started, it sends <strong>the task brief, the memories and past-conversation excerpts it uses, and the web content it searches or reads</strong> to the same model service, under the same consent. Background tasks are read-only: they never change your memories, reminders, goals or medication list — any change they want is listed as a suggestion for you to confirm one by one.</p>
+<p><strong>Side chats.</strong> You can open a side chat yourself to talk one thing through apart from the main conversation. Side chats stay on this device just like the main conversation, and are sent to the model service you configured only when you send a message. A side chat’s request carries that side chat’s own exchanges, not the main conversation’s text; what Vana remembers is sent as usual, and when you bring up something discussed elsewhere, Vana may look up relevant excerpts from the main conversation or other side chats and send them along. Requests from the main conversation include the names of your open side chats.</p>
 <p><strong>Reading web pages.</strong> When you send a link, or a search result is worth reading in full, this device visits the page directly (no relay server), so <em>the website can see your IP address and the URL requested</em>; the text read is sent to the model service as material for the answer. Only public http/https pages are read; localhost, private-network addresses and URLs carrying a username or password are always refused.</p>
 <p>If you enter a serper.dev search key, Vana sends the <strong>search terms</strong> to that service when it needs outside material. Search terms never contain your personal situation or private data (including health data) — this is stated both in the tool description and in the system prompt.</p>
 <p>The model service and the search service are third parties. How they handle what they receive is governed by <strong>their own privacy policies</strong> (for example, DeepSeek’s privacy policy is available on its website) and is outside Vana’s control — we cannot make promises on their behalf. Which provider to use, and whether to add a search key at all, is your choice; if you are not comfortable with how one of them handles data, switch to another or don’t use it. Everything listed above is used solely to answer the question you just asked; Vana uses it for no other purpose and never sells it.</p>
@@ -160,16 +160,16 @@
 <p>Capabilities that can be switched on or off as a whole are called plugins; currently “Notes and lists” and “Health” (Apple Health data, medications and supplements, the exercise library and the rules for reading lab reports). The switches are in the menu at the top right of the chat › Plugins. When a plugin is off, its data is no longer put into requests to the model and its tools are no longer offered; what it already stored stays on this device, is back when you turn it on again, and can be deleted item by item.</p>
 
 <h2>Notifications and reminders</h2>
-<p>The morning and evening check-ins, the reminders you set and the “background task finished” notices are all local notifications scheduled on this device; they do not go through any push server. <strong>When a reminder is due, Vana only posts a notification — it uses neither the network nor a model.</strong></p>
+<p>The morning and evening check-ins and the reminders you set are local notifications scheduled on this device; they do not go through any push server. <strong>When a reminder is due, Vana only posts a notification — it uses neither the network nor a model.</strong></p>
 
 <h2>Off-the-record chat</h2>
-<p>An “Off-the-record chat” opened from the menu lives only in memory: it is not written to disk, does not join the ongoing conversation, takes no part in memory extraction, never sets reminders, creates goals or starts background tasks, and its photos stay in memory only; close it and it is gone. To be clear about the limit: <strong>the question itself still goes to the model service you configured</strong> — off-the-record cannot change that.</p>
+<p>An “Off-the-record chat” opened from the menu lives only in memory: it is not written to disk, does not join the ongoing conversation, takes no part in memory extraction, never sets reminders or creates goals, and its photos stay in memory only; close it and it is gone. To be clear about the limit: <strong>the question itself still goes to the model service you configured</strong> — off-the-record cannot change that.</p>
 
 <h2>How you can delete data</h2>
 <ul>
   <li>Conversations: one ongoing main conversation plus any side chats you open yourself. Long-press a reply and choose “Delete this exchange” to delete that question and answer (with its photos); a side chat can be deleted as a whole from the Side chats page or its own menu (with its photos); in Settings &gt; Conversation history you can clear messages older than 30 days, or clear everything (the main conversation and every side chat, photos included).</li>
   <li>Memories: delete them one by one on the memory page.</li>
-  <li>Reminders, goals, background tasks: delete them one by one on the Tasks page.</li>
+  <li>Reminders and goals: delete them one by one on the Tasks page.</li>
   <li>Notes and lists: delete them one by one in Notes and lists.</li>
   <li>Medications &amp; supplements: delete them one by one in the list.</li>
   <li>Everything for one family member: delete that member in the member list; their entire directory is deleted with them.</li>

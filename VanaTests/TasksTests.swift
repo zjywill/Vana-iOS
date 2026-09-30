@@ -18,11 +18,6 @@ private final class RecordingScheduling: ReminderScheduling, @unchecked Sendable
     func cancel(_ taskId: UUID) async { lock.withLock { _cancelled.append(taskId) } }
 }
 
-private struct FakeJobs: JobControls {
-    var autoStart = false
-    func start(_ taskId: UUID) async {}
-}
-
 private let shanghai: Calendar = {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
@@ -116,7 +111,8 @@ struct TaskStoreTests {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let url = directory.appending(path: TaskStore.fileName)
         try Data("""
-        [{"id":"\(UUID().uuidString)","kind":"fromTheFuture","title":"x","status":"queued"}]
+        [{"id":"\(UUID().uuidString)","kind":"fromTheFuture","title":"x","status":"queued"},
+         {"id":"\(UUID().uuidString)","kind":"job","title":"以前的后台任务","status":"done","brief":"查一下"}]
         """.utf8).write(to: url)
         let store = TaskStore(directory: directory)
         #expect(await store.all().isEmpty)
@@ -125,6 +121,8 @@ struct TaskStoreTests {
         let reopened = TaskStore(directory: directory)
         #expect(await reopened.all().map(\.title) == ["备半马"])
         #expect(try String(contentsOf: url, encoding: .utf8).contains("fromTheFuture"))
+        // 撤掉子 agent 之前存下来的后台任务:认不出 kind,原样留着,不再显示。
+        #expect(try String(contentsOf: url, encoding: .utf8).contains("以前的后台任务"))
     }
 
     @Test func aHandleFindsExactlyOneOrNothing() async {
@@ -141,8 +139,8 @@ struct TaskStoreTests {
 struct TasksToolsTests {
     private static let now = ReminderRules.parseLocal("2026-10-01T10:00", calendar: shanghai)!
 
-    private static func environment(_ store: TaskStore, _ scheduling: RecordingScheduling = RecordingScheduling(), jobs: (any JobControls)? = nil) -> TasksEnvironment {
-        TasksEnvironment(store: store, scheduling: scheduling, tenantId: UUID(), now: { now }, calendar: shanghai, jobs: jobs)
+    private static func environment(_ store: TaskStore, _ scheduling: RecordingScheduling = RecordingScheduling()) -> TasksEnvironment {
+        TasksEnvironment(store: store, scheduling: scheduling, tenantId: UUID(), now: { now }, calendar: shanghai)
     }
 
     private static func call(_ registry: CapabilityRegistry, _ name: String, _ input: String) async -> CapabilityExecutionResult {
@@ -222,208 +220,22 @@ struct TasksToolsTests {
     }
 
     /// `start_task` 只放一张确认卡:状态是「等你确认」,工具的回答里明说不要说已经开始了。
-    @Test func startTaskOnlyProposes() async throws {
-        let store = freshTasks()
-        let registry = SubagentTools.startTaskRegistry(Self.environment(store, jobs: FakeJobs()))
-        let result = await Self.call(registry, SubagentTools.startToolName, #"{"title":"比较三款净化器","brief":"比较价格、噪音和滤网成本"}"#)
-        #expect(!result.isError)
-        #expect(result.output.text.contains("不要说已经开始了"))
-        let task = try #require(await store.all().first)
-        #expect(task.status == .proposed)
-        #expect(ToolCallRecord.startedTaskId(fromToolMetadata: result.output.metadata) == task.id)
-    }
 
-    @Test func startTaskRespectsTheQueueLimit() async {
-        let store = freshTasks()
-        for index in 0..<SubagentLimits.maxQueued {
-            await store.add(TaskItem(kind: .job, title: "在跑\(index)", status: .queued))
-        }
-        let registry = SubagentTools.startTaskRegistry(Self.environment(store, jobs: FakeJobs()))
-        let result = await Self.call(registry, SubagentTools.startToolName, #"{"title":"又一件","brief":"x"}"#)
-        #expect(result.isError)
-    }
-}
-
-@Suite("Subagent", .serialized)
-struct SubagentTests {
-    private static let profile = AgentModelProfile(providerId: "anthropic", modelId: "claude-sonnet-5", contextWindow: 200_000, maxOutputTokens: 8_000)
-
-    @Test func resultSplitsSummaryBodyAndSources() throws {
-        let result = try #require(SubagentResult.parse("""
-        三款里 A 最安静，B 滤网最便宜。
-
-        A：噪音 30 分贝……
-        B：滤网一年 200 元……
-
-        来源：
-        - example.com/a
-        - example.com/b
-        """))
-        #expect(result.summary == "三款里 A 最安静，B 滤网最便宜。")
-        #expect(result.body.contains("噪音 30 分贝"))
-        #expect(result.sources == ["example.com/a", "example.com/b"])
-        #expect(SubagentResult.parse("   ") == nil)
-    }
-
-    @Test func anOverlongFirstParagraphIsClippedButNothingIsLost() throws {
-        let long = String(repeating: "很长的结论，", count: 40)
-        let result = try #require(SubagentResult.parse(long))
-        #expect(result.summary.count <= 160)
-        #expect(result.body.contains(long))
-    }
-
-    private static func queuedJob(_ store: TaskStore) async -> TaskItem {
-        var job = TaskItem(kind: .job, title: "整理资料", status: .queued)
-        job.brief = "整理一下 X"
-        return await store.add(job)
-    }
-
-    @Test func aRunRecordsTheResultAndProposals() async throws {
-        let store = freshTasks()
-        let job = await Self.queuedJob(store)
-        let client = ScriptedModelClient(profile: Self.profile, turns: [
-            .init(toolCalls: [CapabilityInvocation(
-                toolCallId: "p1",
-                name: SubagentTools.proposeToolName,
-                input: #"{"kind":"goal","text":"每周读一本书"}"#
-            )]),
-            .init(text: "整理好了。\n\n细节在这里。")
-        ])
-        let runner = SubagentRunner(store: store, engineFor: { collector in
-            LoopEngine(client: client, capabilities: SubagentTools.proposeRegistry(collector))
-        })
-        guard case .done(let done) = await runner.run(job.id) else {
-            Issue.record("应该做完")
-            return
-        }
-        #expect(done.status == .done)
-        #expect(done.result?.summary == "整理好了。")
-        #expect(done.result?.proposals.map(\.text) == ["每周读一本书"])
-        #expect(done.attempts == 1)
-        #expect(!done.steps.isEmpty)
-        // 隔离:发出去的只有任务说明,没有主对话。
-        #expect(client.requests.first?.prompt.messages.filter { $0.role == .user }.count == 1)
-    }
-
-    @Test func aFailingModelFailsTheTaskWithoutRetrying() async throws {
-        let store = freshTasks()
-        let job = await Self.queuedJob(store)
-        let client = ScriptedModelClient(profile: Self.profile, turns: [
-            .init(finishReason: .init(unified: .error), failureMessage: "invalid api key")
-        ])
-        let runner = SubagentRunner(store: store, engineFor: { _ in LoopEngine(client: client, capabilities: .empty) })
-        guard case .failed(let failed) = await runner.run(job.id) else {
-            Issue.record("应该失败")
-            return
-        }
-        #expect(failed.status == .failed)
-        #expect(failed.error?.isEmpty == false)
-    }
-
-    @Test func aRunThatTakesTooLongIsStopped() async throws {
-        let store = freshTasks()
-        let job = await Self.queuedJob(store)
-        let client = ScriptedModelClient(profile: Self.profile, turns: [
-            .init(text: "慢", beforeResponding: { try await Task.sleep(for: .seconds(5)) })
-        ])
-        var runner = SubagentRunner(store: store, engineFor: { _ in LoopEngine(client: client, capabilities: .empty) })
-        runner.wallClock = .milliseconds(100)
-        guard case .failed(let failed) = await runner.run(job.id) else {
-            Issue.record("应该超时")
-            return
-        }
-        #expect(failed.error?.contains("5 分钟") == true)
-    }
-
-    @Test func onlyQueuedJobsRun() async {
-        let store = freshTasks()
-        let proposed = await store.add(TaskItem(kind: .job, title: "没点开始", status: .proposed))
-        let client = ScriptedModelClient(profile: Self.profile, turns: [.init(text: "不该跑")])
-        let runner = SubagentRunner(store: store, engineFor: { _ in LoopEngine(client: client, capabilities: .empty) })
-        guard case .skipped = await runner.run(proposed.id) else {
-            Issue.record("没点开始的不该跑")
-            return
-        }
-        #expect(client.requests.isEmpty)
-    }
-
-    /// 后台路挂不上写盘的、要用户参与的工具:后台助手不能再派后台助手,也不能自己设提醒。
-    @Test func theBackgroundRouteCannotWriteOrDelegate() {
+    /// 后台路挂不上写盘的、要用户参与的工具,也没有派后台任务的那个——子 agent 撤掉之后,
+    /// 后台只剩待跟进回访和收割那几轮,它们不该在用户不在场时替他设提醒、记东西、问他问题。
+    @Test func theBackgroundRouteCannotWrite() {
         let (stores, root) = TestAssembly.freshStores()
         defer { try? FileManager.default.removeItem(at: root) }
         var environment = TestAssembly.environment(stores: stores)
-        environment.tasks = TasksEnvironment(store: stores.tasks, scheduling: NoReminderScheduling(), tenantId: UUID(), jobs: FakeJobs())
-        let collector = ProposalCollector()
+        environment.tasks = TasksEnvironment(store: stores.tasks, scheduling: NoReminderScheduling(), tenantId: UUID())
         let engine = AIKitEngine(
-            plugins: PluginRegistry.agentPlugins(environment, route: .background) + [SubagentPlugin(collector: collector)],
+            plugins: PluginRegistry.agentPlugins(environment, route: .background),
             pluginContext: PluginRegistry.context(for: environment, route: .background, isPrivate: false)
         )
         let names = engine.capabilityRegistry.definitions.map(\.name)
-        #expect(names.contains(SubagentTools.proposeToolName))
-        for forbidden in [SubagentTools.startToolName, TasksTools.createReminderToolName, MemoryTools.rememberToolName, AskUserTools.askToolName] {
+        for forbidden in ["start_task", "propose_action", TasksTools.createReminderToolName, MemoryTools.rememberToolName, AskUserTools.askToolName] {
             #expect(!names.contains(forbidden))
         }
-        #expect(engine.systemInstruction().contains("你现在是 Vana 派出去的后台助手"))
-    }
-
-    @Test func limitsCountQueuedAndToday() {
-        let now = Date()
-        var jobs = (0..<SubagentLimits.maxRunsPerDay).map { index -> TaskItem in
-            var job = TaskItem(kind: .job, title: "\(index)", status: .done)
-            job.startedAt = now
-            return job
-        }
-        #expect(SubagentLimits.problem(jobs, now: now)?.contains("今天") == true)
-        jobs = []
-        #expect(SubagentLimits.problem(jobs, now: now) == nil)
-    }
-
-    @Test func proposalsAreCapped() async {
-        let collector = ProposalCollector()
-        let registry = SubagentTools.proposeRegistry(collector)
-        for _ in 0..<ProposalCollector.maxProposals {
-            _ = await registry.execute(CapabilityInvocation(toolCallId: "1", name: SubagentTools.proposeToolName, input: #"{"kind":"memory","text":"x"}"#))
-        }
-        let over = await registry.execute(CapabilityInvocation(toolCallId: "1", name: SubagentTools.proposeToolName, input: #"{"kind":"memory","text":"x"}"#))
-        #expect(over.isError)
-        #expect(collector.all.count == ProposalCollector.maxProposals)
-    }
-
-    /// 「照做」才真的写:提醒走手动添加同一条路,记忆按用户自己写的算。
-    @Test func decidingAProposalAppliesOrDismissesIt() async throws {
-        let store = freshTasks()
-        var job = TaskItem(kind: .job, title: "x", status: .done)
-        job.result = .init(summary: "s", proposals: [
-            .init(kind: "goal", text: "每周读一本书"),
-            .init(kind: "memory", text: "他喜欢科幻")
-        ])
-        await store.add(job)
-        let memory = MemoryStore(directory: URL.temporaryDirectory.appending(path: UUID().uuidString))
-        let env = TasksEnvironment(store: store, scheduling: NoReminderScheduling(), tenantId: UUID())
-        let goalProposal = try #require(job.result?.proposals[0])
-        let memoryProposal = try #require(job.result?.proposals[1])
-
-        #expect(await TaskActions.decide(env, memory: memory, taskId: job.id, proposalId: goalProposal.id, accept: true) == nil)
-        #expect(await TaskActions.decide(env, memory: memory, taskId: job.id, proposalId: memoryProposal.id, accept: false) == nil)
-        #expect(await store.all().contains { $0.kind == .goal && $0.title == "每周读一本书" })
-        #expect(await memory.items().isEmpty)
-        let statuses = await store.get(job.id)?.result?.proposals.map(\.status)
-        #expect(statuses == [.accepted, .dismissed])
-    }
-
-    @Test func weeklyReviewOnlyForGoalsThatAskedForIt() {
-        let now = Date()
-        var on = TaskItem(kind: .goal, title: "备半马", status: .running, createdAt: now.addingTimeInterval(-8 * 86_400))
-        on.digestEnabled = true
-        on.updatedAt = now.addingTimeInterval(-86_400)
-        var off = on
-        off.id = UUID()
-        off.digestEnabled = false
-        var recent = on
-        recent.id = UUID()
-        recent.lastDigestAt = now.addingTimeInterval(-86_400)
-        #expect(GoalDigest.due([on, off, recent], now: now).map(\.id) == [on.id])
-        #expect(GoalDigest.brief(on, now: now).contains("备半马"))
     }
 }
 
@@ -437,25 +249,23 @@ struct TodayTests {
         later.dueAt = min(now.addingTimeInterval(60), ReminderRules.endOfDay(now, calendar: .current).addingTimeInterval(-1))
         var nextWeek = TaskItem(kind: .reminder, title: "下周", status: .queued)
         nextWeek.dueAt = now.addingTimeInterval(7 * 86_400)
-        let proposed = TaskItem(kind: .job, title: "等你确认的", status: .proposed)
         let goal = TaskItem(kind: .goal, title: "目标", status: .running)
 
         let cards = PluginRegistry.todayCards(TodayContext(
             now: now,
-            tasks: [goal, nextWeek, later, overdue, proposed],
+            tasks: [goal, nextWeek, later, overdue],
             dueFollowUps: [MemoryItem(kind: .followUp, text: "两周后看深睡", dueAt: now)],
             isEnabled: { _ in true }
         ))
-        #expect(cards.map(\.title).prefix(3) == ["已过点", "等你确认的", "今天晚点"])
+        #expect(cards.map(\.title).prefix(2) == ["已过点", "今天晚点"])
         #expect(!cards.contains { $0.title == "下周" })
         #expect(cards.contains { $0.title == "目标" })
-        #expect(TodaySummary.attention(cards) == 3)
+        #expect(TodaySummary.attention(cards) == 2)
         #expect(TodaySummary.line([]) == nil)
         // 卡上那颗角标按类别上色:过点的和到点的不能是同一种颜色。
         let kinds = Dictionary(uniqueKeysWithValues: cards.map { ($0.title, $0.kind) })
         #expect(kinds["已过点"] == .overdue)
         #expect(kinds["今天晚点"] == .reminder)
-        #expect(kinds["等你确认的"] == .needsYou)
         #expect(kinds["目标"] == .goal)
         #expect(cards.contains { $0.kind == .followUp })
     }
