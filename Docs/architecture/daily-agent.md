@@ -34,7 +34,7 @@
 |---|---|
 | S1 存储、列表、空白侧聊、各自窗口、说明块、收割与清理覆盖侧聊、离开即停 | ✓ 2026-09-30(`Vana/Thread/SideChatStore`、`Vana/Chat/SideChatListView`、`ChatViewModel(sideChat:)`) |
 | S2 「在侧聊里接着聊」、「带回主对话」、离开后接着写完 + 未读点 | ✓ 2026-09-30(`SideChatQuote`、`SideChatHost`、`ChatMessage.Provenance`) |
-| S3 跨线程召回、主对话里的侧聊名单块 | 未开始 |
+| S3 跨线程召回、主对话里的侧聊名单块 | ✓ 2026-09-30(`HistoryRecallTools.Source`、`RecallReach`、`ChatViewModel.recallSetup`) |
 | S4 撤掉子 agent + 告知对齐 | 未开始 |
 
 S2 和方案不一样的两处:入口在回复底下那颗「⋯」里,和「删除这一问一答」在一起(方案写的是长按;回复气泡本来就

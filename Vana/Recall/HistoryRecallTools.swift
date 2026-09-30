@@ -1,7 +1,10 @@
 import Foundation
 import AgentRuntime
 
-/// 检索这条对话里**已经滑出窗口**的历史。
+/// 检索这条对话里**已经滑出窗口**的历史,以及别的线(主对话、侧聊)里说过的。
+///
+/// 侧聊和主对话窗口各管各的,互通靠的就是这一层和记忆:别的线整条都算「看不见」,搜出来的每一处
+/// 标上它在哪条线上(`Source.label`)。
 ///
 /// 工具名(`search_sessions` / `read_session`)沿用旧的——历史 transcript 里已经写过对它们的
 /// 调用,改名只会让旧调用对不上号;对模型来说它们的意思是「翻对话历史」。
@@ -33,24 +36,51 @@ enum HistoryRecallTools {
     private static let headerPrefix = "这是 "
     private static let headerSuffix = " 的一段对话"
 
+    /// 能翻的一条线。
+    struct Source: Sendable {
+        /// nil 是这条对话本身;别的线写它是哪条(「主对话」「侧聊「京都」」),搜出来的每一处都标上。
+        var label: String?
+        var store: ThreadStore
+        /// 它**之前**的才算看不见。这条对话本身是窗口起点;别的线整条都看不见。
+        var hiddenBefore: Double = .greatestFiniteMagnitude
+    }
+
     /// - Parameter hiddenBefore: 窗口起点的位置。它**之前**的才是「滑出去了」的历史。
     static func registry(store: ThreadStore, hiddenBefore: Double) -> CapabilityRegistry {
-        CapabilityRegistry(definitions: [searchDefinition, readDefinition]) { invocation in
+        registry(sources: [Source(label: nil, store: store, hiddenBefore: hiddenBefore)])
+    }
+
+    /// 几条线一起翻。只有这条对话本身的时候,工具说明和线上一直以来的那份逐字一样。
+    static func registry(sources: [Source]) -> CapabilityRegistry {
+        let spansOtherThreads = sources.contains { $0.label != nil }
+        return CapabilityRegistry(definitions: [searchDefinition(spansOtherThreads: spansOtherThreads), readDefinition]) { invocation in
             let input = try? RuntimeJSONValue.decode(from: invocation.input)
             switch invocation.name {
             case searchToolName:
                 return await search(
                     query: input?["query"]?.stringValue ?? "",
                     sinceDays: input?["since_days"]?.intValue,
-                    store: store,
-                    hiddenBefore: hiddenBefore
+                    sources: sources
                 )
             case readToolName:
-                return await read(handle: input?["id"]?.stringValue ?? "", store: store, hiddenBefore: hiddenBefore)
+                return await read(handle: input?["id"]?.stringValue ?? "", sources: sources)
             default:
                 return .failure("不支持名为 \(invocation.name) 的工具。")
             }
         }
+    }
+
+    /// 搜出来的一处:哪一行、在哪条线上。
+    private struct Hit {
+        var row: ThreadStore.ArchiveRow
+        var source: Int
+        var label: String?
+    }
+
+    /// 谁更近。同一条线上按位置(它才是真顺序:插话之前的回复位置更小);跨线只能按时间。
+    private static func isMoreRecent(_ a: Hit, _ b: Hit) -> Bool {
+        if a.source == b.source { return a.row.pos > b.row.pos }
+        return (a.row.createdAt ?? .distantPast) > (b.row.createdAt ?? .distantPast)
     }
 
     /// 一条消息的短编号:id 的稳定散列。**不按「第几条」编**——删掉一条,编号就全错位了;
@@ -69,39 +99,43 @@ enum HistoryRecallTools {
     private static func search(
         query: String,
         sinceDays: Int?,
-        store: ThreadStore,
-        hiddenBefore: Double,
+        sources: [Source],
         now: Date = Date()
     ) async -> CapabilityExecutionResult {
         let since = sinceDays.map { now.addingTimeInterval(-Double(min(max($0, 1), 365)) * 86_400) }
-        let candidates = await store.archiveRows(before: hiddenBefore).filter { row in
-            row.isUser && (since.map { (row.createdAt ?? .distantPast) >= $0 } ?? true)
+        var candidates: [Hit] = []
+        for (index, source) in sources.enumerated() {
+            candidates += await source.store.archiveRows(before: source.hiddenBefore)
+                .filter { row in row.isUser && (since.map { (row.createdAt ?? .distantPast) >= $0 } ?? true) }
+                .map { Hit(row: $0, source: index, label: source.label) }
         }
         guard !candidates.isEmpty else { return .success("还没有可以回顾的过往对话。") }
 
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        let matches: [ThreadStore.ArchiveRow]
+        let matches: [Hit]
         if trimmed.isEmpty {
-            matches = Array(candidates.suffix(maxMatches).reversed())
+            matches = Array(candidates.sorted(by: isMoreRecent).prefix(maxMatches))
         } else {
             let wanted = terms(in: trimmed)
-            let scored = candidates.compactMap { row -> (ThreadStore.ArchiveRow, Int)? in
-                let score = wanted.intersection(terms(in: row.text)).count
-                return score > 0 ? (row, score) : nil
+            let scored = candidates.compactMap { hit -> (Hit, Int)? in
+                let score = wanted.intersection(terms(in: hit.row.text)).count
+                return score > 0 ? (hit, score) : nil
             }
             guard let best = scored.map(\.1).max() else { return .success("没有找到相关的过往对话。") }
             let floor = max(1, best * 2 / 3)
             matches = scored
                 .filter { $0.1 >= floor }
-                .sorted { $0.1 != $1.1 ? $0.1 > $1.1 : $0.0.pos > $1.0.pos }
+                .sorted { $0.1 != $1.1 ? $0.1 > $1.1 : isMoreRecent($0.0, $1.0) }
                 .prefix(maxMatches)
                 .map(\.0)
         }
 
         var lines = ["找到 \(matches.count) 处相关的过往对话："]
-        for row in matches {
+        for hit in matches {
+            let row = hit.row
             let first = row.text.split(separator: "\n", maxSplits: 1).first.map(String.init) ?? row.text
-            lines.append("- \(handle(of: row.id)) · \(dateLabel(row.createdAt, now: now)) · \(first.prefix(80))")
+            let place = hit.label.map { " · \($0)" } ?? ""
+            lines.append("- \(handle(of: row.id)) · \(dateLabel(row.createdAt, now: now))\(place) · \(first.prefix(80))")
         }
         // 末尾这句是条件句,不是祈使句。写成「用 read_session 读其中一条」的话,检索结果本身
         // 就成了下一次调用的指令——哪怕列出来的这几条明显不是用户说的那次,模型也会挨个读下去。
@@ -110,21 +144,25 @@ enum HistoryRecallTools {
         return .success(lines.joined(separator: "\n"))
     }
 
-    private static func read(handle: String, store: ThreadStore, hiddenBefore: Double) async -> CapabilityExecutionResult {
+    private static func read(handle: String, sources: [Source]) async -> CapabilityExecutionResult {
         let trimmed = handle.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let target = await store.archiveRows(before: hiddenBefore)
-            .first(where: { Self.handle(of: $0.id).caseInsensitiveCompare(trimmed) == .orderedSame })
-        else {
-            return .failure("没有编号为 \(trimmed) 的对话。先调 search_sessions 拿编号。")
+        for source in sources {
+            guard let target = await source.store.archiveRows(before: source.hiddenBefore)
+                .first(where: { Self.handle(of: $0.id).caseInsensitiveCompare(trimmed) == .orderedSame })
+            else { continue }
+            guard let rows = await source.store.archiveRows(around: target.id) else {
+                return .failure("编号 \(trimmed) 的对话已经读不到了，可能刚被删除。")
+            }
+            return .success(transcript(rows, place: source.label))
         }
-        guard let rows = await store.archiveRows(around: target.id) else {
-            return .failure("编号 \(trimmed) 的对话已经读不到了，可能刚被删除。")
-        }
-        return .success(transcript(rows))
+        return .failure("没有编号为 \(trimmed) 的对话。先调 search_sessions 拿编号。")
     }
 
-    static func transcript(_ rows: [ThreadStore.ArchiveRow], now: Date = Date()) -> String {
-        var lines = ["\(headerPrefix)\(dateLabel(rows.first?.createdAt, now: now))\(headerSuffix)：", ""]
+    /// - Parameter place: 这段在哪条线上。写在日期**后面**的括号里:胶囊上的日期是从开头那几个字
+    ///   里取的(`dateLabel(inOutput:)`),不能被它挤乱。
+    static func transcript(_ rows: [ThreadStore.ArchiveRow], place: String? = nil, now: Date = Date()) -> String {
+        let where_ = place.map { "（\($0)）" } ?? ""
+        var lines = ["\(headerPrefix)\(dateLabel(rows.first?.createdAt, now: now))\(headerSuffix)\(where_)：", ""]
         var used = lines.reduce(0) { $0 + $1.count }
         for row in rows {
             var body = String(row.text.prefix(row.isUser ? maxUserCharacters : maxAssistantCharacters))
@@ -183,6 +221,20 @@ enum HistoryRecallTools {
     }
 
     // MARK: - 定义
+
+    /// 只有这条对话本身时,说明和线上一直以来的那份逐字一样;能翻别的线时多说一句「还有哪儿」。
+    private static func searchDefinition(spansOtherThreads: Bool) -> CapabilityDefinition {
+        spansOtherThreads ? searchAcrossThreadsDefinition : searchDefinition
+    }
+
+    private static let searchAcrossThreadsDefinition: CapabilityDefinition = {
+        var definition = searchDefinition
+        definition.description = (definition.description ?? "").replacingOccurrences(
+            of: "搜索这条对话里更早的、已经不在上面的部分，",
+            with: "搜索这条对话里更早的、已经不在上面的部分，以及别的对话线（主对话、侧聊）里说过的，"
+        ) + "他提到主对话或别的侧聊里的事时也一样。"
+        return definition
+    }()
 
     private static let searchDefinition = CapabilityDefinition(
         name: searchToolName,

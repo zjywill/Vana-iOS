@@ -1528,15 +1528,13 @@ final class ChatViewModel {
     /// 装配要用的全部输入。聊天和抽记忆都从这里取——抽取器要遵守的「哪些话题别记」
     /// 得和聊天时实际挂出去的插件是同一份,不然两边各说各话。
     private func pluginEnvironment() async -> PluginEnvironment {
-        // 召回读整条线程的档案;**只有真的有原文滑出了窗口才挂**——没有「看不见的历史」,
+        // 召回读整条线程的档案;**只有真的有看不见的原文才挂**——没有「看不见的历史」,
         // 就没有可回顾的。不留痕的那条对话不在线程里,也不去翻它。
-        var recall: CapabilityRegistry?
-        if let hidden = await hiddenBeforePos() {
-            recall = HistoryRecallTools.registry(store: thread, hiddenBefore: hidden)
-        }
+        let (recall, reach) = await recallSetup()
         return PluginEnvironment(
             tenant: tenant,
             recall: recall,
+            recallReach: reach,
             memoryStore: memoryStore,
             // 不留痕照样**读**记忆:承诺的是不往盘上写,不是失忆。
             memory: memory,
@@ -1583,6 +1581,45 @@ final class ChatViewModel {
         let dispatcher = AgentHookDispatcher([hook])
         hooks = dispatcher
         return dispatcher
+    }
+
+    /// 召回够得着哪些线。这条对话自己只翻滑出窗口的那段;别的线(主对话里是全部侧聊,侧聊里是
+    /// 主对话和别的侧聊)整条都算看不见——窗口各管各的,互通就靠这一层和记忆。一条都没有就不挂。
+    ///
+    /// 每轮现算:侧聊刚删掉的话,下一轮就翻不到它(同「删掉的消息必须立刻从档案里消失」)。
+    /// 线的名字是给模型看的,固定中文,不跟着界面语言走。
+    func recallSetup() async -> (CapabilityRegistry?, RecallReach?) {
+        guard persists else { return (nil, nil) }
+        let unbounded = Double.greatestFiniteMagnitude
+        let own = await hiddenBeforePos()
+        var others: [HistoryRecallTools.Source] = []
+        var listings: [RecallReach.Listing] = []
+        var reachesOtherSideChats = false
+        if isSideChat, await mainThread.hasArchiveRows(before: unbounded) {
+            others.append(.init(label: "主对话", store: mainThread))
+        }
+        for chat in await sides.all() where chat.id != sideChat?.id {
+            let store = sides.thread(for: chat.id)
+            guard await store.hasArchiveRows(before: unbounded) else { continue }
+            others.append(.init(label: "侧聊「\(chat.displayTitle)」", store: store))
+            reachesOtherSideChats = true
+            if isMainThread {
+                listings.append(.init(title: chat.displayTitle, lastActiveAt: chat.lastActiveAt))
+            }
+        }
+        var sources = others
+        if let own { sources.insert(.init(label: nil, store: thread, hiddenBefore: own), at: 0) }
+        guard !sources.isEmpty else { return (nil, nil) }
+        guard !others.isEmpty else { return (HistoryRecallTools.registry(sources: sources), nil) }
+        let scope = isMainThread
+            ? "他开的侧聊"
+            : (reachesOtherSideChats ? "主对话和别的侧聊" : "主对话")
+        let reach = RecallReach(
+            ownHistory: own != nil,
+            others: scope,
+            sideChats: Array(listings.prefix(RecallReach.maxListed))
+        )
+        return (HistoryRecallTools.registry(sources: sources), reach)
     }
 
     // MARK: - 窗口

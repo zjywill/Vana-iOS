@@ -50,4 +50,6 @@ enum PromptOrder {
     static let medications = 340
     static let focusMedication = 360
     static let goals = 370
+    /// 主对话里挂的侧聊名单:几个名字加最近一次的日期。侧聊一有人说话就可能变,排在最后。
+    static let sideChats = 380
 }

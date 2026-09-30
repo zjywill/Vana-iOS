@@ -68,6 +68,8 @@ enum AssemblyFixtures {
         var persona: AssistantPersona?
         /// 在哪条侧聊里(它的名字)。nil 是主对话。
         var sideChatTitle: String?
+        /// 召回还够得着哪些别的线(主对话里是侧聊)。
+        var recallReach: RecallReach?
     }
 
     // MARK: - 临时 store
@@ -111,6 +113,7 @@ enum AssemblyFixtures {
             // 读网页不要 key:前台总是挂;后台只有后台任务那种一轮给(和搜索一起给)。
             webFetch: !flags.background || flags.webSearch ? fetchStub : nil,
             recall: flags.recall,
+            recallReach: scenario.recallReach,
             // 前台才有提醒和目标(不留痕那一层不带);后台那几轮本来就不挂。
             tasks: flags.isPrivate ? nil : TasksEnvironment(
                 store: stores.bundle.tasks,

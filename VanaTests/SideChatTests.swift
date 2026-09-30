@@ -522,6 +522,87 @@ struct SideChatTests {
         #expect(host.model(for: chat.id) == nil)
         #expect(!host.hasUnread)
     }
+
+    // MARK: - 跨线程召回(S3)
+
+    private static func invoke(_ registry: CapabilityRegistry, _ name: String, _ input: String) async -> CapabilityExecutionResult {
+        await registry.execute(CapabilityInvocation(toolCallId: "1", name: name, input: input))
+    }
+
+    /// 别的线整条都算看不见,搜出来的每一处标上它在哪条线上;读回来的那段也标上,日期照样取得出来。
+    @Test("recall reaches other threads and says where each hit lives")
+    func recallAcrossThreads() async throws {
+        let main = ThreadStore(directory: URL.temporaryDirectory.appending(path: UUID().uuidString))
+        let side = ThreadStore(directory: URL.temporaryDirectory.appending(path: UUID().uuidString))
+        let inWindow = ChatMessage(role: .user, text: "装修预算还没定")
+        _ = await main.sync([inWindow], dirty: [], known: [])
+        let kyoto = ChatMessage(role: .user, text: "装修的事先放放，京都住四条")
+        _ = await side.sync([kyoto, ChatMessage(role: .assistant, text: "好，四条交通方便。")], dirty: [], known: [])
+        let hidden = try #require(await main.position(of: inWindow.id))
+
+        let registry = HistoryRecallTools.registry(sources: [
+            .init(label: nil, store: main, hiddenBefore: hidden),
+            .init(label: "侧聊「京都」", store: side)
+        ])
+        let found = await Self.invoke(registry, HistoryRecallTools.searchToolName, #"{"query":"装修"}"#)
+        #expect(found.output.text.contains("侧聊「京都」 · 装修的事先放放"))
+        // 这条对话窗口里的那句模型本来就看得见,不该再搜出来。
+        #expect(!found.output.text.contains("装修预算还没定"))
+
+        let handle = HistoryRecallTools.handle(of: kyoto.id)
+        let read = await Self.invoke(registry, HistoryRecallTools.readToolName, "{\"id\":\"\(handle)\"}")
+        #expect(!read.isError)
+        #expect(read.output.text.contains("的一段对话（侧聊「京都」）："))
+        #expect(read.output.text.contains("Vana：好，四条交通方便。"))
+        #expect(HistoryRecallTools.dateLabel(inOutput: read.output.text)?.contains("（") == false)
+    }
+
+    /// 只有这条对话自己的时候,工具说明和线上一直以来的那份逐字一样;能翻别的线才多说一句。
+    @Test("the search tool only mentions other threads when it can reach them")
+    func searchDescriptionFollowsReach() async {
+        let store = ThreadStore(directory: URL.temporaryDirectory.appending(path: UUID().uuidString))
+        let alone = HistoryRecallTools.registry(store: store, hiddenBefore: 1)
+        let spanning = HistoryRecallTools.registry(sources: [.init(label: "主对话", store: store)])
+        let aloneText = alone.definitions.first { $0.name == HistoryRecallTools.searchToolName }?.description ?? ""
+        let spanningText = spanning.definitions.first { $0.name == HistoryRecallTools.searchToolName }?.description ?? ""
+        #expect(!aloneText.contains("侧聊"))
+        #expect(spanningText.contains("以及别的对话线（主对话、侧聊）里说过的"))
+    }
+
+    /// 主对话够得着有内容的侧聊,并把它们列成名单;侧聊够得着主对话。空的侧聊不算、删掉的立刻不算。
+    @Test("each thread's recall reaches the others that have something in them")
+    func recallReachFromViewModels() async throws {
+        let fixture = Fixture()
+        defer { fixture.remove() }
+        let kyoto = await fixture.stores.sides.create(title: "京都")
+        _ = await fixture.stores.sides.thread(for: kyoto.id).sync([ChatMessage(role: .user, text: "住哪")], dirty: [], known: [])
+        _ = await fixture.stores.sides.create(title: "空的")
+
+        let main = fixture.model()
+        try await waitUntil("载入线程") { !main.isLoadingConversation }
+        let (mainRecall, mainReach) = await main.recallSetup()
+        #expect(mainRecall != nil)
+        #expect(mainReach?.ownHistory == false)
+        #expect(mainReach?.others == "他开的侧聊")
+        #expect(mainReach?.sideChats.map(\.title) == ["京都"])
+
+        let side = fixture.model(sideChat: kyoto)
+        try await waitUntil("载入线程") { !side.isLoadingConversation }
+        let (_, emptyMainReach) = await side.recallSetup()
+        // 主对话还一个字都没有,侧聊自己也没有滑出窗口的:没什么可翻的。
+        #expect(emptyMainReach == nil)
+
+        _ = await fixture.stores.thread.sync([ChatMessage(role: .user, text: "预算三万")], dirty: [], known: [])
+        let (sideRecall, sideReach) = await side.recallSetup()
+        #expect(sideRecall != nil)
+        #expect(sideReach?.others == "主对话")
+        #expect(sideReach?.sideChats.isEmpty == true)
+
+        await fixture.stores.sides.delete(kyoto.id)
+        let (afterDelete, reachAfterDelete) = await main.recallSetup()
+        #expect(afterDelete == nil)
+        #expect(reachAfterDelete == nil)
+    }
 }
 
 /// 把某一轮挂住,直到它被取消(等的就是停止)。

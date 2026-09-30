@@ -16,6 +16,7 @@ enum TestAssembly {
         webSearch: WebSearchClient? = nil,
         webFetch: WebFetchClient? = nil,
         recall: Bool = false,
+        recallReach: RecallReach? = nil,
         includesHealthData: Bool = true,
         tasks: TasksEnvironment? = nil,
         notes: NoteStore? = nil,
@@ -28,6 +29,7 @@ enum TestAssembly {
             recall: recall && stores != nil
                 ? HistoryRecallTools.registry(store: stores!.thread, hiddenBefore: .greatestFiniteMagnitude)
                 : nil,
+            recallReach: recallReach,
             memoryStore: stores?.memory,
             memory: memory,
             location: location,

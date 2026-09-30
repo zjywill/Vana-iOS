@@ -253,6 +253,50 @@ struct AssemblyContractTests {
         #expect(leaked.isEmpty, "侧聊里还有健康词：\(leaked)")
     }
 
+    /// 召回够得着侧聊时:召回那段说清还有哪儿能翻;主对话里多一块侧聊名单,排在易变区最后,
+    /// 并且说一句「他没提起时别主动说」。健康关掉之后照样没有健康词。
+    @Test("recall across side chats adds its sentence and the side chat list, last")
+    func recallReachParagraphs() {
+        let stores = AssemblyFixtures.Stores()
+        defer { stores.remove() }
+
+        var scenario = AssemblyFixtures.everything
+        scenario.goals = [TaskItem(kind: .goal, title: "每周运动三次", status: .queued)]
+        let plain = AssemblyFixtures.systemText(scenario, stores: stores)
+        #expect(!plain.contains("他另外开着几条侧聊"))
+        #expect(!plain.contains("他提到他开的侧聊"))
+
+        scenario.recallReach = RecallReach(
+            ownHistory: true,
+            others: "他开的侧聊",
+            sideChats: [.init(title: "十月去京都", lastActiveAt: Date())]
+        )
+        let text = AssemblyFixtures.systemText(scenario, stores: stores)
+        #expect(text.contains("他开的侧聊里说过的你在这里也看不到"))
+        #expect(text.contains("他提到他开的侧聊里的事时也一样。"))
+        #expect(text.contains("- 「十月去京都」，最近一次是"))
+        #expect(text.contains("他没提起时不要主动说起它们"))
+        Self.expectOrdered(
+            [
+                ("召回", "他开的侧聊里说过的你在这里也看不到"),
+                ("目标", "他正在推进的目标"),
+                ("侧聊名单", "他另外开着几条侧聊")
+            ],
+            in: text
+        )
+
+        // 召回没挂(记忆关着)就连名单一起不发:名单指向的正是召回那两个工具。
+        var memoryOff = scenario
+        memoryOff.flags.memoryOn = false
+        #expect(!AssemblyFixtures.systemText(memoryOff, stores: stores).contains("他另外开着几条侧聊"))
+
+        scenario.flags.health = false
+        scenario.focusMedication = nil
+        let corpus = Self.everythingTheModelReads(scenario, stores: stores)
+        let leaked = Self.healthWords.filter { corpus.contains($0) }
+        #expect(leaked.isEmpty, "侧聊名单里还有健康词：\(leaked)")
+    }
+
     /// `remember` 那段里让路给用药表的那一句,只在用药写入工具挂着时才说。
     @Test("the remember paragraph only yields to the medication tools when they are mounted")
     func rememberYieldsToMedications() {

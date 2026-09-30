@@ -73,6 +73,8 @@ struct PluginEnvironment: @unchecked Sendable {
     var tenant: Tenant = .owner()
     /// 召回的那两个工具。nil 就不挂(还没有看不见的历史,或者这条路不该翻)。
     var recall: CapabilityRegistry?
+    /// 召回除了这条对话自己滑出去的那段,还够得着哪些线(主对话、侧聊)。nil 是只有这条对话自己。
+    var recallReach: RecallReach?
     var memoryStore: MemoryStore?
     var memory: MemorySnapshot = .empty
     var location: LocationSnapshot = .unknown

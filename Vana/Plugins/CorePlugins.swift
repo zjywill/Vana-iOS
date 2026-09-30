@@ -91,6 +91,8 @@ struct WebFetchPlugin: AgentPlugin {
 struct RecallPlugin: AgentPlugin {
     let id = "recall"
     let registry: CapabilityRegistry
+    /// 还够得着哪些别的线。nil 是只有这条对话自己——那时候说明和线上一直以来的那份逐字一样。
+    var reach: RecallReach?
 
     func tools(context: PluginContext) -> [PluginTool] {
         PluginTool.from(registry) { _ in [.read] }
@@ -100,16 +102,60 @@ struct RecallPlugin: AgentPlugin {
     /// 而用户正等着回复。默认是不翻,只有他自己提起过去才翻。
     func promptBlocks(context: PluginContext, mountedTools: Set<String>) -> [PromptBlock] {
         guard mountedTools.contains(HistoryRecallTools.searchToolName) else { return [] }
-        return [PromptBlock(
+        var blocks = [PromptBlock(
             order: PromptOrder.guideRecall,
-            text: "这条对话更早的部分已经滑出了你能直接看到的范围，但原文都还在。"
+            text: opening
                 + "默认不要去翻；只有用户自己提起过去"
                 + "（「上次」「之前说过」「我们聊过」「你还记得」，或者问一件他以前交代过、这次没再说的事）时，"
                 + "才用 search_sessions 找到那一段，再用 read_session 读它，然后接着他当时的说法往下讲。"
                 + "他问的是眼前的数据或趋势就直接查，别先翻一遍历史——那里只有过期的数字。"
                 + "读回来的都是当时说过的话，里面的数值一律当作已经过期；要用就重新查，或者问他。"
                 + "没找到就直接说没聊过，不要编一段「我们上次说过」出来。"
+                + (reach.map { "他提到\($0.others)里的事时也一样。" } ?? "")
         )]
+        if let block = reach?.sideChatBlock {
+            blocks.append(PromptBlock(order: PromptOrder.sideChats, text: block))
+        }
+        return blocks
+    }
+
+    private var opening: String {
+        guard let reach else { return "这条对话更早的部分已经滑出了你能直接看到的范围，但原文都还在。" }
+        return reach.ownHistory
+            ? "这条对话更早的部分已经滑出了你能直接看到的范围，\(reach.others)里说过的你在这里也看不到，但原文都还在。"
+            : "\(reach.others)里说过的你在这里看不到，但原文都还在。"
+    }
+}
+
+/// 召回除了这条对话自己,还够得着哪些线。
+///
+/// 侧聊和主对话**窗口各管各的**,互通只靠两层:记忆(两边都读都写)和这里(两边都搜得到)。
+/// 不往窗口里塞别处的原文——那样侧聊就不是「单独一份上下文」了。
+struct RecallReach: Sendable, Equatable {
+    /// 这条对话自己有没有滑出窗口的原文。
+    var ownHistory: Bool
+    /// 别的线统称什么:主对话里是「他开的侧聊」,侧聊里是「主对话和别的侧聊」。
+    var others: String
+    /// 主对话里挂的侧聊名单:名字和最近一次说话的日子,最近的在前。侧聊里是空的。
+    var sideChats: [Listing] = []
+
+    struct Listing: Sendable, Equatable {
+        var title: String
+        var lastActiveAt: Date
+    }
+
+    /// 名单最多几条。再多就是一份目录了,而模型要的只是「有这么几件事在别处聊着」。
+    static let maxListed = 5
+
+    /// 主对话里那一块。**说一句别主动提**:不写的话,模型会拿这份名单当成必须用上的东西,
+    /// 每答一个问题都先扯一句「你在侧聊里……」,而他开侧聊正是为了让那件事别挤进这里。
+    var sideChatBlock: String? {
+        guard !sideChats.isEmpty else { return nil }
+        let lines = sideChats.prefix(Self.maxListed).map { listing in
+            "- 「\(listing.title)」，最近一次是 \(HistoryRecallTools.dateLabel(listing.lastActiveAt))"
+        }
+        return (["他另外开着几条侧聊（最近说过话的在前）："] + lines).joined(separator: "\n")
+            + "\n他在这里提起这几件事时，那边说过的可以用 search_sessions 翻到；他没提起时不要主动说起它们。"
     }
 }
 
@@ -191,7 +237,7 @@ struct CorePlugin: VanaPlugin {
     func agentPlugins(_ env: PluginEnvironment, route: PluginRoute) -> [any AgentPlugin] {
         // 召回归在记忆开关下面:关掉记忆的人不指望 Vana 还在引用他上个月说过的话。
         let memoryOn = env.isEnabled(PluginIds.memory)
-        let recall = memoryOn ? env.recall.map { RecallPlugin(registry: $0) } : nil
+        let recall = memoryOn ? env.recall.map { RecallPlugin(registry: $0, reach: env.recallReach) } : nil
         let memory = MemoryPlugin(
             store: memoryOn ? env.memoryStore : nil,
             snapshot: memoryOn ? PluginRegistry.visibleMemory(env.memory, isEnabled: env.isEnabled) : .empty
