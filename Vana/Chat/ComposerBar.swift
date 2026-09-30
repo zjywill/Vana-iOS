@@ -34,6 +34,13 @@ struct ComposerBar: View {
     /// 铺开排还是一行排。**必须是存下来的状态,不能是算出来的属性**:进和出的门槛不一样,
     /// 而"不一样"这件事只有记着上一次的答案才成立。
     @State private var isStacked = false
+    /// 整张卡片有多宽,和一行排时卡片比输入框宽出多少(加号、右边几颗按钮、间距)。
+    ///
+    /// 换不换排问的是「这段字在**一行排的那一栏**里放不放得下一行」,而铺开之后那一栏
+    /// 已经不存在了——所以量的是两样不随排法变的东西:卡片宽度随时量,两侧占掉的那一截
+    /// 只在一行排时量一次记着。转屏之后卡片变宽,那一栏跟着变宽,两侧那截不变。
+    @State private var cardWidth: CGFloat = 0
+    @State private var rowChrome: CGFloat?
 
     /// 单行时正好是半高(`ComposerLayout.rowMinHeight` 的一半),画出来就是一颗胶囊;
     /// 长成多行之后才真的当成 27 的圆角用。
@@ -360,11 +367,12 @@ struct ComposerBar: View {
 
     /// 平时是一行:加号、输入框、发送,空着的时候就是一颗胶囊。
     ///
-    /// 长到三行就换成上下两层,输入框独占一整幅宽度,按钮沉到底边:粘一整段病历进来的时候,
-    /// 夹在两颗按钮中间的那一栏只有七成宽,同样的字要多占两行,还越读越窄。
+    /// 一行放不下就换成上下两层,输入框独占一整幅宽度,按钮沉到底边:夹在两颗按钮中间的
+    /// 那一栏只有七成宽,同样的字要多占几行,还越读越窄;而第二行一出来,胶囊就已经不是
+    /// 胶囊了,两侧那几颗圆钮悬在一个变高的框中间,不如干脆铺开。
     ///
     /// 两种排法走同一个 `Layout`,不是 `if` 出两棵树:`if` 换支的那一下输入框会被拆了
-    /// 重建,焦点跟着没,重建之后敲进去的字直接掉在地上——打到第三行正好触发,再打就没了。
+    /// 重建,焦点跟着没,重建之后敲进去的字直接掉在地上——打到第二行正好触发,再打就没了。
     private var card: some View {
         ComposerLayout(isStacked: isStacked) {
             moreMenu
@@ -375,9 +383,10 @@ struct ComposerBar: View {
             }
             sendButton
         }
-        .onChange(of: model.input, initial: true) {
-            isStacked = Self.stacks(model.input, wasStacked: isStacked)
-        }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { cardWidth = $0 }
+        .onChange(of: model.input, initial: true) { restack() }
+        .onChange(of: cardWidth) { restack() }
+        .onChange(of: rowChrome) { restack() }
         .animation(.smooth(duration: 0.2), value: isStacked)
         .padding(.horizontal, 4)
         .padding(.bottom, isStacked ? 4 : 0)
@@ -409,39 +418,63 @@ struct ComposerBar: View {
             .onSubmit { model.send() }
             .padding(.vertical, 13)
             .accessibilityLabel("消息")
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width in
+                // 铺开时这一栏是整幅宽,不是要量的那一栏。
+                guard !isStacked, cardWidth > 0 else { return }
+                rowChrome = cardWidth - width
+            }
     }
 
-    /// 换不换排,只看这段文字本身,不看输入框量出来多高。
+    private func restack() {
+        // 还没量到一行排那一栏有多宽时(第一帧),只认换行:按一个猜的宽度翻面,
+        // 下一帧量到了又翻回来。
+        guard let rowChrome, cardWidth > 0 else {
+            isStacked = model.input.contains("\n")
+            return
+        }
+        let font = UIFont.preferredFont(forTextStyle: .body)
+        isStacked = Self.stacks(
+            textWidth: (model.input as NSString).size(withAttributes: [.font: font]).width,
+            hasNewline: model.input.contains("\n"),
+            wasStacked: isStacked,
+            lineWidth: cardWidth - rowChrome,
+            hysteresis: font.pointSize * Self.hysteresisEms
+        )
+    }
+
+    /// 一行排那一栏放不下一行字,就铺开。
     ///
-    /// 量高度那版会绕回来:高度决定排版,排版决定输入框有多宽,宽度又决定高度。SwiftUI
-    /// 在这个环里会拿着一份过期的行数排版,粘进来的长文有一半根本不显示。
+    /// **量的是字本身有多宽,不是输入框量出来多高。** 量高度那版会绕回来:高度决定排版,
+    /// 排版决定输入框有多宽,宽度又决定高度。SwiftUI 在这个环里会拿着一份过期的行数排版,
+    /// 粘进来的长文有一半根本不显示。而「这段字按正文字号排成一行有多宽」和「一行排那一栏
+    /// 有多宽」都不随排法变,环就断了。
+    ///
+    /// 原来按字符数估(汉字两格、其余一格),门槛是两行——英文字母窄得多,估出来的格数和
+    /// 屏幕上差着一截,换了语言门槛就不准。现在按真实字体量,门槛是一行:第二行一出现,
+    /// 输入框就独占整幅宽,不再夹在两颗按钮中间挤着长高。
     ///
     /// **门槛必须是两个,不是一个。** 只有一个门槛时,光标停在门槛上的那一刻,每敲一下
-    /// 键盘整块输入区就翻一次面——而中文输入法让这件事必然发生:拼音串「kankan」按一格
-    /// 宽算是 6,上屏成「看看」之后是 4,**同一句话在敲的过程中宽度是来回跳的**,于是它
-    /// 在两种排法之间来回抖(那 0.2 秒的动画把每一次都放大成一次可见的跳动)。所以进和
-    /// 出用不同的数:铺开之后要短回 `unstackWidth` 才收回去,中间那 6 格正好盖住一个
-    /// 拼音音节的长度。
+    /// 键盘整块输入区就翻一次面——而中文输入法让这件事必然发生:拼音串「kankan」比上屏
+    /// 之后的「看看」宽得多,**同一句话在敲的过程中宽度是来回跳的**,于是它在两种排法
+    /// 之间来回抖(那 0.2 秒的动画把每一次都放大成一次可见的跳动)。所以铺开之后要短到
+    /// 比那一栏再窄 `hysteresis`(约三个字宽,盖住一个拼音音节)才收回去。
     ///
-    /// 汉字按两格宽估。**这两个数要对着真实的宽度给**:窄排下那一栏被两侧三颗按钮夹着,
-    /// 一行只有 22 格上下(十一个汉字),不是原来写的 34——按 34 估的那版要到第四行才
-    /// 铺开,而注释里说的一直是第三行。
-    nonisolated static func stacks(_ text: String, wasStacked: Bool) -> Bool {
-        if text.contains("\n") { return true }
-
-        let limit = wasStacked ? unstackWidth : stackWidth
-        var width = 0
-        for scalar in text.unicodeScalars {
-            width += scalar.value > 0x2E80 ? 2 : 1
-            if width > limit { return true }
-        }
-        return false
+    /// `caretSlack` 是光标和折行的余量:字宽刚好等于栏宽时,系统已经折行了。
+    nonisolated static func stacks(
+        textWidth: CGFloat,
+        hasNewline: Bool,
+        wasStacked: Bool,
+        lineWidth: CGFloat,
+        hysteresis: CGFloat
+    ) -> Bool {
+        if hasNewline { return true }
+        let limit = lineWidth - caretSlack - (wasStacked ? hysteresis : 0)
+        return textWidth > limit
     }
 
-    /// 窄排一行约 22 格,满两行就该铺开。
-    nonisolated static let stackWidth = 44
-    /// 铺开之后一行约 38 格:短到这个数以内,收回窄排也还是两行以内,不会立刻又被推出去。
-    nonisolated static let unstackWidth = 38
+    nonisolated static let caretSlack: CGFloat = 6
+    /// 收回一行排要再短多少,以正文字号为单位(约三个汉字)。
+    nonisolated static let hysteresisEms: CGFloat = 3
 
     /// 加号是**给这句话添东西**,不是「开一条新对话」。
     ///

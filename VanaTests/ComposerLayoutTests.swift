@@ -1,3 +1,4 @@
+import CoreGraphics
 import Testing
 @testable import Vana
 
@@ -6,39 +7,45 @@ import Testing
 /// 这套东西唯一的失败模式是**在门槛上来回抖**:界面上不报错,只表现为敲一个字整块输入区
 /// 翻一次面,而那正好发生在他打字的时候。所以下面这几条盯的都是"翻不翻面",不是"好不好看"。
 struct ComposerLayoutTests {
-    /// 窄排一行约十一个汉字,满两行(第三行开始)才铺开。
-    ///
-    /// 原来的门槛按一行 34 格估,要到第四行才换排——注释里说的一直是第三行。
-    @Test func stacksOnThirdNarrowLine() {
-        #expect(!ComposerBar.stacks(String(repeating: "字", count: 22), wasStacked: false))
-        #expect(ComposerBar.stacks(String(repeating: "字", count: 23), wasStacked: false))
+    /// 一行排那一栏 200 点宽、正文 17 点。
+    private let line: CGFloat = 200
+    private let hysteresis: CGFloat = 17 * ComposerBar.hysteresisEms
+
+    private func stacks(_ width: CGFloat, wasStacked: Bool, newline: Bool = false) -> Bool {
+        ComposerBar.stacks(
+            textWidth: width,
+            hasNewline: newline,
+            wasStacked: wasStacked,
+            lineWidth: line,
+            hysteresis: hysteresis
+        )
+    }
+
+    /// 一行放得下就不铺开,第二行一出来就铺开。
+    @Test func stacksAsSoonAsTheSecondLineAppears() {
+        #expect(!stacks(line - ComposerBar.caretSlack, wasStacked: false))
+        #expect(stacks(line - ComposerBar.caretSlack + 1, wasStacked: false))
     }
 
     @Test func newlineAlwaysStacks() {
-        #expect(ComposerBar.stacks("一\n二", wasStacked: false))
+        #expect(stacks(10, wasStacked: false, newline: true))
+        #expect(stacks(10, wasStacked: true, newline: true))
     }
 
     /// **进和出的门槛不一样。** 一样的话,光标停在门槛上的那一刻每敲一下就翻一次面。
     @Test func hysteresisKeepsStackedNearTheEdge() {
-        let edge = String(repeating: "字", count: 22)
-        #expect(!ComposerBar.stacks(edge, wasStacked: false))
-        #expect(ComposerBar.stacks(edge, wasStacked: true))
+        let edge = line - ComposerBar.caretSlack - 10
+        #expect(!stacks(edge, wasStacked: false))
+        #expect(stacks(edge, wasStacked: true))
+        #expect(!stacks(edge - hysteresis, wasStacked: true))
     }
 
-    /// 中文输入法让抖动**必然发生**:拼音串按一格宽算,上屏成汉字之后反而变短,所以同一句
-    /// 话在敲的过程中宽度是来回跳的。那一跳不许翻面。
-    @Test func pinyinInFlightDoesNotFlip() {
-        let committed = String(repeating: "字", count: 19)          // 38 格,刚好铺开一行
-        let composing = committed + "kankan"                        // 44 格,拼音还挂在后面
-        #expect(ComposerBar.stacks(composing, wasStacked: false) == false)
-        #expect(ComposerBar.stacks(composing, wasStacked: true))
-        #expect(ComposerBar.stacks(committed + "看看", wasStacked: true))
-    }
-
-    /// 收回窄排的那个数要留够余量:收回去之后必须还在两行以内,否则下一帧又被推出去。
-    @Test func unstackThresholdStillFitsTwoNarrowLines() {
-        #expect(ComposerBar.unstackWidth <= ComposerBar.stackWidth)
-        #expect(!ComposerBar.stacks(String(repeating: "a", count: ComposerBar.unstackWidth),
-                                    wasStacked: false))
+    /// 中文输入法让抖动**必然发生**:拼音串比上屏之后的汉字宽,同一句话在敲的过程中宽度是
+    /// 来回跳的。「kankan」(约 55 点)上屏成「看看」(34 点),那一缩不许翻面。
+    @Test func pinyinCommitDoesNotFlip() {
+        let composing = line - ComposerBar.caretSlack + 5
+        let committed = composing - 21
+        #expect(stacks(composing, wasStacked: false))
+        #expect(stacks(committed, wasStacked: true))
     }
 }
