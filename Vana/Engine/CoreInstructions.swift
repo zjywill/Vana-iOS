@@ -81,6 +81,21 @@ enum CoreInstructions {
         它和原来的问题冲突时以后来这句为准。
         """
 
+    /// 侧聊里多说的那一段。不说的话,模型会把这里当成主对话:要么以为「刚才聊的」就在上面,
+    /// 要么答应「到时候在这儿提醒你」——而提醒到点只进主对话。
+    ///
+    /// 名字是他起的(或者拿第一句话起的),一行、有长度上限(`SideChatTitle`)。还没起名时
+    /// 不写话题,不拿「新侧聊」这三个字去误导模型。**不带任何领域词**:侧聊不属于哪个插件。
+    static func sideChat(title: String) -> String {
+        let topic = SideChatTitle.clean(title)
+        let opening = topic.isEmpty ? "这是一条侧聊。" : "这是一条侧聊，话题是「\(topic)」。"
+        return opening + """
+            用户把这件事从他和你的主对话里单独拿出来聊，好让它不挤占日常的那条对话。\
+            专心聊这件事。主对话里最近说的你在这里看不到，需要的背景他会说。\
+            提醒和目标照常能建，但提醒到点时出现在主对话里，不在这里。
+            """
+    }
+
     private static func formatToday(_ date: Date) -> String {
         let day = date.formatted(.iso8601.year().month().day().dateSeparator(.dash))
         let weekday = date.formatted(.dateTime.locale(Locale(identifier: "zh_CN")).weekday(.wide))

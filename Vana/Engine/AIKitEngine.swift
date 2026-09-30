@@ -127,6 +127,8 @@ struct AIKitEngine: AgentEngine {
     ///
     /// 后台那几轮默认不挂:没有用户在场,答完之后要生成的那点东西没人会看。
     private let hooks: AgentHookDispatcher?
+    /// 这一轮在哪条侧聊里(它的名字)。主对话、后台、不留痕都是 nil。
+    private let sideChatTitle: String?
 
     init(
         providerId: String = "anthropic",
@@ -135,7 +137,8 @@ struct AIKitEngine: AgentEngine {
         pluginContext: PluginContext = PluginContext(),
         thinking: Bool? = nil,
         maxToolRounds: Int = AIKitEngine.defaultToolRounds,
-        hooks: AgentHookDispatcher? = nil
+        hooks: AgentHookDispatcher? = nil,
+        sideChatTitle: String? = nil
     ) {
         self.providerId = providerId
         self.model = model
@@ -144,6 +147,7 @@ struct AIKitEngine: AgentEngine {
         self.thinking = thinking
         self.maxToolRounds = maxToolRounds
         self.hooks = hooks
+        self.sideChatTitle = sideChatTitle
     }
 
     /// 按一份装配环境造。前台、后台、测试都走这一条,不各拼一遍插件。
@@ -154,7 +158,8 @@ struct AIKitEngine: AgentEngine {
         route: PluginRoute = .foreground,
         isPrivate: Bool = false,
         thinking: Bool? = nil,
-        hooks: AgentHookDispatcher? = nil
+        hooks: AgentHookDispatcher? = nil,
+        sideChatTitle: String? = nil
     ) {
         self.init(
             providerId: providerId,
@@ -162,7 +167,8 @@ struct AIKitEngine: AgentEngine {
             plugins: PluginRegistry.agentPlugins(environment, route: route),
             pluginContext: PluginRegistry.context(for: environment, route: route, isPrivate: isPrivate),
             thinking: thinking,
-            hooks: hooks
+            hooks: hooks,
+            sideChatTitle: sideChatTitle
         )
     }
 
@@ -182,7 +188,7 @@ struct AIKitEngine: AgentEngine {
             + assembly.registry.definitions.reduce(0) { $0 + TokenEstimate.definition($1) }
     }
 
-    /// 核心那几块:身份与规则、插话、人格(静态区),今天(易变区)。
+    /// 核心那几块:身份与规则、插话、侧聊说明、人格(静态区),今天(易变区)。
     private func coreBlocks(acceptsInterjections: Bool) -> [PromptBlock] {
         var blocks = [
             PromptBlock(order: PromptOrder.base, text: CoreInstructions.text()),
@@ -191,6 +197,9 @@ struct AIKitEngine: AgentEngine {
         // 后台那几轮没有用户在场,那段话对它们只是白占 token。
         if acceptsInterjections {
             blocks.append(PromptBlock(order: PromptOrder.interjection, text: CoreInstructions.interjection))
+        }
+        if let sideChatTitle {
+            blocks.append(PromptBlock(order: PromptOrder.sideChat, text: CoreInstructions.sideChat(title: sideChatTitle)))
         }
         let persona = EngineSettings.persona.instruction
         if !persona.isEmpty {

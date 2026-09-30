@@ -14,6 +14,12 @@ struct ChatView: View {
     @State private var menuRoute: MenuRoute?
     /// 不留痕的那一层:内存里聊,关掉就没。盖在整个主对话上面,不进线程。
     @State private var isShowingEphemeral = false
+    /// 打开着的那条侧聊。和不留痕一样盖在主对话上面,关掉回到「⋯ › 侧聊」那一页。
+    @State private var openedSideChat: SideChat?
+    /// 侧聊里「改名」「删除」那两个确认。
+    @State private var isRenamingSideChat = false
+    @State private var sideChatRenameText = ""
+    @State private var isConfirmingSideChatDeletion = false
     /// 「任务」页。
     @State private var isShowingTasks = false
     /// 从「今天」、确认卡、结果消息点进来的那一条任务。
@@ -48,14 +54,16 @@ struct ChatView: View {
     init(
         openedCheckIn: Binding<CheckInLaunch?> = .constant(nil),
         isEphemeral: Bool = false,
+        sideChat: SideChat? = nil,
         onClose: (() -> Void)? = nil
     ) {
         _openedCheckIn = openedCheckIn
-        _model = State(initialValue: ChatViewModel(isEphemeral: isEphemeral))
+        _model = State(initialValue: ChatViewModel(isEphemeral: isEphemeral, sideChat: sideChat))
         self.onClose = onClose
     }
 
     private enum MenuRoute: Hashable {
+        case sideChats
         case memory
         case plugins
         case settings
@@ -88,29 +96,35 @@ struct ChatView: View {
                                     Self.privacyNote
                                 }
 
-                                // 排在欢迎卡**前面**:欢迎卡的开头是这个 app 是什么,
-                                // 而回头客要的是"我怎么样"。
-                                // 「今天」里已经有那张状况卡时让位:同一句话摆两遍,像是出了两件事。
-                                if let summary = model.quickSummary,
-                                   !model.todayCards.contains(where: { $0.id == TodayCard.healthStatusId }) {
-                                    QuickSummaryCard(
-                                        text: summary,
-                                        // 家人那边没有处境可展开:那份数据属于机主。
-                                        onOpen: model.situation == nil
-                                            ? nil
-                                            : { isShowingStatus = true }
+                                // 侧聊的空白页不是主对话的首屏:欢迎卡、首屏那段话和建议都不出,
+                                // 只说一句这里是什么。
+                                if model.isSideChat {
+                                    Self.sideChatNote
+                                } else {
+                                    // 排在欢迎卡**前面**:欢迎卡的开头是这个 app 是什么,
+                                    // 而回头客要的是"我怎么样"。
+                                    // 「今天」里已经有那张状况卡时让位:同一句话摆两遍,像是出了两件事。
+                                    if let summary = model.quickSummary,
+                                       !model.todayCards.contains(where: { $0.id == TodayCard.healthStatusId }) {
+                                        QuickSummaryCard(
+                                            text: summary,
+                                            // 家人那边没有处境可展开:那份数据属于机主。
+                                            onOpen: model.situation == nil
+                                                ? nil
+                                                : { isShowingStatus = true }
+                                        )
+                                    }
+
+                                    WelcomeCard(
+                                        setupGuidance: model.engineGuidance,
+                                        blurb: model.welcomeBody,
+                                        questions: model.suggestions,
+                                        tenant: model.currentTenant,
+                                        showsHealthAttribution: model.hasHealthData,
+                                        onSelectQuestion: model.send,
+                                        onOpenSetup: { isShowingCloudSetup = true }
                                     )
                                 }
-
-                                WelcomeCard(
-                                    setupGuidance: model.engineGuidance,
-                                    blurb: model.welcomeBody,
-                                    questions: model.suggestions,
-                                    tenant: model.currentTenant,
-                                    showsHealthAttribution: model.hasHealthData,
-                                    onSelectQuestion: model.send,
-                                    onOpenSetup: { isShowingCloudSetup = true }
-                                )
                             }
                             // 上面有「今天」时收紧:那一排已经留过顶部的空。
                             .padding(.top, model.isEphemeral || model.todayCards.isEmpty ? 24 : 0)
@@ -291,12 +305,20 @@ struct ChatView: View {
                 .animation(.smooth(duration: 0.2), value: isScrolledUp)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle(model.isEphemeral ? "不留痕聊天" : "Vana")
+            .navigationTitle(navigationTitle)
             // 隐私是整条会话的属性,不是刚才点过的一个动作,所以它得一直在视线里。放在
             // 标题下面而不是 chip 排里:那排会随着开聊消失,而这条承诺要一直有效。
             .navigationSubtitle(model.navigationSubtitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbarItems }
+            .modifier(SideChatDialogs(
+                title: model.sideChat?.displayTitle ?? "",
+                isRenaming: $isRenamingSideChat,
+                renameText: $sideChatRenameText,
+                isConfirmingDeletion: $isConfirmingSideChatDeletion,
+                onRename: { model.renameSideChat(to: $0) },
+                onDelete: deleteSideChat
+            ))
             .sheet(isPresented: $isShowingMedications) {
                 MedicationListView(model: model)
             }
@@ -375,10 +397,13 @@ struct ChatView: View {
                 Text("你的问题，连同它需要用到的内容（这条对话的往来、从 Apple「健康」读到的聚合数值、长期记忆和用药表里的条目），会发送给第三方模型服务 \(pendingConsentProviderName) 来生成回答，由对方按它自己的隐私政策处理。这台设备上发给这家服务的请求只问这一次；换用其他服务时会再次询问。")
             }
             .navigationDestination(isPresented: $isShowingCloudSetup) {
-                SettingsView(chat: model.isEphemeral ? nil : model, openMedications: { isShowingMedications = true })
+                // 「对话历史」只挂在主对话上:清理的范围是主对话加全部侧聊。
+                SettingsView(chat: model.isMainThread ? model : nil, openMedications: { isShowingMedications = true })
             }
             .navigationDestination(item: $menuRoute) { route in
                 switch route {
+                case .sideChats:
+                    SideChatListView(store: model.sides, tenant: model.currentTenant) { openedSideChat = $0 }
                 case .memory: MemoryView()
                 case .plugins: PluginsView(openMedications: { isShowingMedications = true })
                 case .settings: SettingsView(chat: model, openMedications: { isShowingMedications = true })
@@ -387,7 +412,7 @@ struct ChatView: View {
             // 切到后台:趁这时候把水位线之后攒下的抽一遍记忆。
             .onChange(of: scenePhase) { _, phase in
                 // 回到前台就是又打开了一次:「今天」挪到最新那条下面,再贴一次底让他看见它。
-                if phase == .active, !model.isEphemeral, !model.isReplying {
+                if phase == .active, model.isMainThread, !model.isReplying {
                     model.pinTodayToLatest()
                 }
                 guard phase == .background else { return }
@@ -395,13 +420,18 @@ struct ChatView: View {
             }
             .onChange(of: openedCheckIn) { _, checkIn in
                 guard let checkIn else { return }
+                // 通知、Siri 都落在主对话:他正开着侧聊的话,先把那一层收掉,不然主对话里多出来的
+                // 那句话被盖在底下,他看不见。
+                openedSideChat = nil
+                menuRoute = nil
                 model.open(checkIn)
                 openedCheckIn = nil
             }
             .task {
                 // 本地那句处境和首屏建议:零成本,首屏和「今天」共用。
                 model.refreshSuggestionsIfNeeded()
-                guard !model.isEphemeral else { return }
+                // 首次那一屏和健康授权只在主对话上问:侧聊、不留痕都盖在它上面,它已经问过了。
+                guard model.isMainThread else { return }
                 isShowingDataUseNotice = !hasAcceptedDataUseNotice
                 await requestHealthAuthorization()
             }
@@ -413,6 +443,15 @@ struct ChatView: View {
         // 不留痕那一层盖在整个主对话上。它自己一个 view model,关掉就连同内存里那几条一起没了。
         .fullScreenCover(isPresented: $isShowingEphemeral) {
             ChatView(isEphemeral: true, onClose: { isShowingEphemeral = false })
+        }
+        // 侧聊同样盖在主对话上,自己一个 view model、自己一条线程。关掉回到「⋯ › 侧聊」那一页。
+        .fullScreenCover(item: $openedSideChat) { chat in
+            ChatView(sideChat: chat, onClose: { openedSideChat = nil })
+        }
+        // 离开这条侧聊:不管是按了关闭、删了它,还是被一条通知顶掉,都走这一处。挂在
+        // `NavigationStack` **外面**:挂在里面的话,侧聊里推出设置页那一下也算「消失」。
+        .onDisappear {
+            model.leaveSideChat()
         }
         // 第一次打开时先说清楚数据会去哪儿。它排在 HealthKit 授权面板**前面**——反过来的话,
         // 用户先被问「允许 Vana 读取健康数据吗」,再被告知这些数据会发到哪儿去,而告知的意义
@@ -438,6 +477,26 @@ struct ChatView: View {
         }
     }
 
+    /// 标题栏:不留痕、侧聊的名字、或者就是 Vana。
+    private var navigationTitle: Text {
+        if model.isEphemeral { return Text("不留痕聊天") }
+        if let sideChat = model.sideChat { return Text(verbatim: sideChat.displayTitle) }
+        return Text("Vana")
+    }
+
+    /// 在侧聊里按了「删除这条侧聊」。先让它停下、写盘落地(不收割——删完再去读它,线程会把刚删
+    /// 的目录重新建出来),再删;界面当场关掉,不等。
+    private func deleteSideChat() {
+        guard let id = model.sideChat?.id else { return }
+        let model = model
+        let leaving = model.leaveSideChat(harvesting: false)
+        Task {
+            await leaving?.value
+            await model.sides.delete(id)
+        }
+        onClose?()
+    }
+
     /// 点名确认那个 alert 上的名字。目录里查得到就用显示名(DeepSeek),查不到
     /// (自建 endpoint、手填的 id)就原样给 id——名字必须有,哪怕不好看。
     private var pendingConsentProviderName: String {
@@ -451,7 +510,7 @@ struct ChatView: View {
     /// 不在这份名单里,那一下输入框真的离开了层级,系统自己会收。
     private var isCoveringConversation: Bool {
         isShowingMedications || isShowingStatus || isShowingDataUseNotice || isShowingEphemeral
-            || isShowingTasks || openedTask != nil
+            || isShowingTasks || openedTask != nil || openedSideChat != nil
     }
 
     /// 点了一张「今天」卡片。
@@ -485,6 +544,26 @@ struct ChatView: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button("关闭", action: onClose)
             }
+            if model.isSideChat {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Button {
+                            sideChatRenameText = model.sideChat?.title ?? ""
+                            isRenamingSideChat = true
+                        } label: {
+                            Label("改名", systemImage: "pencil")
+                        }
+                        Button(role: .destructive) {
+                            isConfirmingSideChatDeletion = true
+                        } label: {
+                            Label("删除这条侧聊", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                    .accessibilityLabel("更多")
+                }
+            }
         } else {
             // 「任务」:提醒、目标、后台任务。角标是需要他看一眼的那几件。
             ToolbarItem(placement: .topBarTrailing) {
@@ -497,10 +576,15 @@ struct ChatView: View {
                 .accessibilityLabel(model.attentionCount > 0 ? "任务，\(model.attentionCount) 件需要你看" : "任务")
             }
 
-            // 一颗「⋯」收住所有「离开对话去看别的东西」:记忆、插件、不留痕、设置。没有会话列表
+            // 一颗「⋯」收住所有「离开对话去看别的东西」:侧聊、记忆、插件、不留痕、设置。没有会话列表
             // 了,也就没有左上角那颗抽屉按钮;用药表这类领域入口收进插件页,核心界面不认识它们。
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    Button {
+                        menuRoute = .sideChats
+                    } label: {
+                        Label("侧聊", systemImage: "bubble.left.and.bubble.right")
+                    }
                     Button {
                         menuRoute = .memory
                     } label: {
@@ -550,14 +634,14 @@ struct ChatView: View {
     /// 不进给模型的上下文。不留痕那一层里不出。
     @ViewBuilder
     private var todayStrip: some View {
-        if !model.isEphemeral {
+        if model.isMainThread {
             TodayStrip(cards: model.todayCards, onAction: perform)
         }
     }
 
     /// 贴底时要贴到「今天」:它排在最后一条消息下面的时候。
     private var isTodayLast: Bool {
-        !model.isEphemeral && !model.todayCards.isEmpty
+        model.isMainThread && !model.todayCards.isEmpty
             && model.todayAfterMessageId != nil && model.todayAfterMessageId == model.messages.last?.id
     }
 
@@ -646,6 +730,22 @@ struct ChatView: View {
     /// 而承诺只有具体到「不进哪儿」才可信。最后那句同样要紧——问题终究要发给云端模型才
     /// 有人回答,不说这一句,用户迟早会自己想到,那时候前面几条也跟着不算数了。
     @ViewBuilder
+    /// 侧聊空着时那一句。不是欢迎卡:他刚自己开了这条侧聊,知道这个 app 是什么;要说的只是
+    /// 这里和主对话是什么关系。
+    private static var sideChatNote: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("侧聊", systemImage: "bubble.left.and.bubble.right")
+                .font(.subheadline.weight(.medium))
+            Text("这里说的不挤主对话，Vana 记得的事两边都用得上。在这里建的提醒，到点出现在主对话里。")
+        }
+        .font(.footnote)
+        .foregroundStyle(.secondary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(.fill.quaternary, in: .rect(cornerRadius: 16, style: .continuous))
+        .accessibilityElement(children: .combine)
+    }
+
     private static var privacyNote: some View {
         VStack(alignment: .leading, spacing: 6) {
             Label("这里说的话不会被保存", systemImage: "eye.slash")
@@ -1454,4 +1554,33 @@ private struct WelcomeCard: View {
 
 #Preview {
     ChatView()
+}
+
+/// 侧聊里「⋯」那两项:改名、删除。拆成一个修饰符,不然连着写在 `body` 里类型检查器会超时。
+private struct SideChatDialogs: ViewModifier {
+    let title: String
+    @Binding var isRenaming: Bool
+    @Binding var renameText: String
+    @Binding var isConfirmingDeletion: Bool
+    let onRename: (String) -> Void
+    let onDelete: () -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .alert("改名", isPresented: $isRenaming) {
+                TextField(title, text: $renameText)
+                Button("好") { onRename(renameText) }
+                Button("取消", role: .cancel) {}
+            }
+            .confirmationDialog(
+                Text("删除「\(title)」？"),
+                isPresented: $isConfirmingDeletion,
+                titleVisibility: .visible
+            ) {
+                Button("删除", role: .destructive, action: onDelete)
+                Button("取消", role: .cancel) {}
+            } message: {
+                Text("这条侧聊里的消息和它们带的照片都会从本机删除，无法撤销。Vana 已经记住的事不受影响。")
+            }
+    }
 }

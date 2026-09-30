@@ -28,6 +28,18 @@
 | 每条出设备的路过同意闸 | `CloudAccess`（前台）/ `CloudAccess.backgroundSettings()`（后台） | ✓ |
 | 隐私说明中英两份 + 告知屏 | `Vana/Legal`，`ComplianceTests` | ✓ |
 
+## 侧聊(方案 §16,iOS 先行)
+
+| 期 | 状态 |
+|---|---|
+| S1 存储、列表、空白侧聊、各自窗口、说明块、收割与清理覆盖侧聊、离开即停 | ✓ 2026-09-30(`Vana/Thread/SideChatStore`、`Vana/Chat/SideChatListView`、`ChatViewModel(sideChat:)`) |
+| S2 长按「在侧聊里接着聊」、「带回主对话」、离开后接着写完 + 未读点 | 未开始 |
+| S3 跨线程召回、主对话里的侧聊名单块 | 未开始 |
+| S4 撤掉子 agent + 告知对齐 | 未开始 |
+
+S1 落地时和方案不一样的一处:侧聊的名字上限分了两档(自动起名 20 字、他自己打的 40 字符),见 `CLAUDE.md`「侧聊」一节。
+隐私说明中英两份里「只有一条持续的对话」改成了「一条主对话加上你自己开的侧聊」,生效日期改为 2026-09-30。
+
 ## 和 Android 不一样的地方
 
 - **健康插件多一样 Apple 健康**（`HealthDataPlugin`，只有机主有）。Android 那边的「测量卡片」iOS 没有——

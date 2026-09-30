@@ -11,6 +11,8 @@ struct TenantStores: Sendable {
     let attachments: AttachmentStore
     let tasks: TaskStore
     let notes: NoteStore
+    /// 侧聊:名单加每条一个线程目录。和主对话共用 `attachments`——删侧聊时照片跟着走。
+    let sides: SideChatStore
 
     init(root: URL) {
         self.root = root
@@ -23,6 +25,10 @@ struct TenantStores: Sendable {
         tasks = TaskStore(directory: root)
         notes = NoteStore(directory: root)
         thread = ThreadStore(directory: root.appending(path: "thread", directoryHint: .isDirectory), attachments: attachments)
+        sides = SideChatStore.instance(
+            directory: root.appending(path: SideChatStore.directoryName, directoryHint: .isDirectory),
+            attachments: attachments
+        )
     }
 }
 

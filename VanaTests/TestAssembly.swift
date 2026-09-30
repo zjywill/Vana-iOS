@@ -46,9 +46,10 @@ enum TestAssembly {
     static func engine(
         _ environment: PluginEnvironment = environment(),
         route: PluginRoute = .foreground,
-        isPrivate: Bool = false
+        isPrivate: Bool = false,
+        sideChatTitle: String? = nil
     ) -> AIKitEngine {
-        AIKitEngine(environment: environment, route: route, isPrivate: isPrivate)
+        AIKitEngine(environment: environment, route: route, isPrivate: isPrivate, sideChatTitle: sideChatTitle)
     }
 
     static func toolNames(_ engine: AIKitEngine) -> [String] {

@@ -1,6 +1,6 @@
 import Foundation
 
-/// 每个成员一个目录:`Documents/tenants/<uuid>/{thread,attachments,memory.json,medications.json,tasks.json,notes.json}`。
+/// 每个成员一个目录:`Documents/tenants/<uuid>/{thread,sides,attachments,memory.json,medications.json,tasks.json,notes.json}`。
 ///
 /// **目录隔离,不是给每条记录加 tenantId。** 判据是失败模式:加字段要求每一处查询都记得带上
 /// 过滤条件,而漏一处的后果是**串数据**——拿妹妹的化验单去解释爸爸的心率,静默、看着正常、
@@ -28,6 +28,7 @@ enum TenantPaths {
     /// 老布局迁移时它也跟着搬进成员目录,在那儿被清掉,而不是赖在 `Documents/` 下面。
     static let perTenantItems: [Item] = [
         Item(name: "thread", hint: .isDirectory),
+        Item(name: SideChatStore.directoryName, hint: .isDirectory),
         Item(name: "sessions", hint: .isDirectory),
         Item(name: "attachments", hint: .isDirectory),
         Item(name: "memory.json", hint: .notDirectory),

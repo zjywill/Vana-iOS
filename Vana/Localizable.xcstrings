@@ -1,7 +1,9 @@
 {
   "sourceLanguage" : "zh-Hans",
   "strings" : {
-    "" : {},
+    "" : {
+
+    },
     " · %lld 段" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1125,6 +1127,16 @@
         }
       }
     },
+    "主对话和全部侧聊里保存的消息、以及它们带的照片都会被删除，无法撤销。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Messages saved in the main conversation and in every side chat, along with their photos, will be deleted. This can't be undone."
+          }
+        }
+      }
+    },
     "云端 API key" : {
       "localizations" : {
         "en" : {
@@ -1904,6 +1916,26 @@
         }
       }
     },
+    "侧聊" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Side chat"
+          }
+        }
+      }
+    },
+    "侧聊里说的不挤主对话，Vana 记得的事两边都用得上。在侧聊里建的提醒，到点出现在主对话里。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What you say in a side chat doesn't crowd the main conversation, and what Vana remembers works in both. Reminders set in a side chat go off in the main conversation."
+          }
+        }
+      }
+    },
     "保存" : {
       "localizations" : {
         "en" : {
@@ -2503,6 +2535,16 @@
         }
       }
     },
+    "删除「%@」？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete “%@”?"
+          }
+        }
+      }
+    },
     "删除这一问一答" : {
       "localizations" : {
         "en" : {
@@ -2519,6 +2561,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete this"
+          }
+        }
+      }
+    },
+    "删除这条侧聊" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this side chat"
           }
         }
       }
@@ -3613,6 +3665,16 @@
         }
       }
     },
+    "对话（包括侧聊）只存在这台设备上，不进 iCloud 备份，换新手机时不会跟着走。单条消息可以在对话里长按删除；删掉的消息连同它带的照片一起从本机清掉。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversations (side chats included) stay on this device only. They are not included in iCloud backups and won't move to a new phone. Long-press a message in the conversation to delete it; deleted messages are removed from this device together with their photos."
+          }
+        }
+      }
+    },
     "对话历史" : {
       "localizations" : {
         "en" : {
@@ -3634,6 +3696,7 @@
       }
     },
     "对话只存在这台设备上，不进 iCloud 备份，换新手机时不会跟着走。单条消息可以在对话里长按删除；删掉的消息连同它带的照片一起从本机清掉。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4317,6 +4380,16 @@
         }
       }
     },
+    "想把一件事单独拿出来聊，比如一趟行程、一次比价、一份要细看的材料，就开一条侧聊。那里说的不挤主对话，Vana 记得的事两边都用得上。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When you want to talk something through on its own — a trip, a price comparison, a document to go over closely — open a side chat. What you say there doesn't crowd the main conversation, and what Vana remembers works in both."
+          }
+        }
+      }
+    },
     "想聊什么" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4731,7 +4804,6 @@
       }
     },
     "改名" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4888,6 +4960,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The text is already recognized, and what's above is enough to answer. The original also carries a name, record number, hospital and doctor's signature — if you do send it, all of that goes to the model service you configured."
+          }
+        }
+      }
+    },
+    "新侧聊" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New side chat"
           }
         }
       }
@@ -5839,6 +5921,7 @@
       }
     },
     "此操作会删除本机保存的消息和它们带的照片，无法撤销。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6066,6 +6149,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "e.g. lose fat, train for a half marathon, fix my sleep schedule"
+          }
+        }
+      }
+    },
+    "比如：十月去京都" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "e.g. Kyoto in October"
           }
         }
       }
@@ -7080,6 +7173,16 @@
         }
       }
     },
+    "给它起个名字。也可以留空，第一句话会拿来当名字。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Give it a name, or leave it blank and your first message will name it."
+          }
+        }
+      }
+    },
     "编辑" : {
       "localizations" : {
         "en" : {
@@ -8055,6 +8158,16 @@
         }
       }
     },
+    "还没有侧聊" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No side chats yet"
+          }
+        }
+      }
+    },
     "还没有步骤" : {
       "localizations" : {
         "en" : {
@@ -8497,6 +8610,16 @@
         }
       }
     },
+    "这条侧聊里的消息和它们带的照片都会从本机删除，无法撤销。Vana 已经记住的事不受影响。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The messages in this side chat and their photos will be deleted from this device. This can't be undone. What Vana has already remembered is not affected."
+          }
+        }
+      }
+    },
     "这条对话不会被保存" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -8561,6 +8684,16 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "这里是%1$@的记录。拍一张%2$@的化验单或报告，或者先把%3$@在吃的药记下来。"
+          }
+        }
+      }
+    },
+    "这里说的不挤主对话，Vana 记得的事两边都用得上。在这里建的提醒，到点出现在主对话里。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What you say here doesn't crowd the main conversation, and what Vana remembers works in both. Reminders set here go off in the main conversation."
           }
         }
       }

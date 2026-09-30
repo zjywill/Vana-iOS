@@ -217,6 +217,42 @@ struct AssemblyContractTests {
         #expect(!AssemblyFixtures.systemText(scenario, stores: stores).contains("用户可能在你还在查资料"))
     }
 
+    /// 侧聊说明只在侧聊里发,排在静态区(插话之后、人格之前);还没起名时不写话题。
+    /// 侧聊不属于哪个插件:健康关掉之后,侧聊里模型读到的东西照样一个健康词都没有。
+    @Test("the side chat paragraph is only sent inside a side chat, in the static zone")
+    func sideChatParagraph() {
+        let stores = AssemblyFixtures.Stores()
+        defer { stores.remove() }
+
+        let marker = "这是一条侧聊"
+        var scenario = AssemblyFixtures.everything
+        #expect(!AssemblyFixtures.systemText(scenario, stores: stores).contains(marker))
+
+        scenario.sideChatTitle = "十月去京都"
+        let text = AssemblyFixtures.systemText(scenario, stores: stores)
+        #expect(text.contains("话题是「十月去京都」"))
+        Self.expectOrdered(
+            [
+                ("插话", "用户可能在你还在查资料"),
+                ("侧聊", marker),
+                ("人格", "语气偏向教练")
+            ],
+            in: text
+        )
+
+        scenario.sideChatTitle = ""
+        let untitled = AssemblyFixtures.systemText(scenario, stores: stores)
+        #expect(untitled.contains(marker))
+        #expect(!untitled.contains("话题是"))
+
+        scenario.flags.health = false
+        scenario.focusMedication = nil
+        scenario.sideChatTitle = "十月去京都"
+        let corpus = Self.everythingTheModelReads(scenario, stores: stores)
+        let leaked = Self.healthWords.filter { corpus.contains($0) }
+        #expect(leaked.isEmpty, "侧聊里还有健康词：\(leaked)")
+    }
+
     /// `remember` 那段里让路给用药表的那一句,只在用药写入工具挂着时才说。
     @Test("the remember paragraph only yields to the medication tools when they are mounted")
     func rememberYieldsToMedications() {

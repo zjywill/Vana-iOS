@@ -612,7 +612,7 @@ HealthKit 没有把它开放给第三方——`HKHealthStore` 读到的永远是
 
 ### 目录隔离,不是给每条记录加 tenantId
 
-`Documents/tenants/<uuid>/{thread,attachments,memory.json,medications.json,tasks.json,notes.json}`
+`Documents/tenants/<uuid>/{thread,sides,attachments,memory.json,medications.json,tasks.json,notes.json}`
 (`TenantPaths`)。
 
 判据是**失败模式**:加字段要求每一处查询都记得带上过滤条件,漏一处的后果是串数据——拿妹妹的
@@ -691,7 +691,8 @@ API key;自己造成员密码(要挡人就用设备级 Face ID,别在健康 app 
   Vana 主动说的话(`ChatMessage.Origin` 不是 `.normal`:check-in、待跟进、提醒、任务结果)不作为独立
   助手消息发出去,**折进下一条用户消息开头**——请求里助手/用户严格交替,有的协议不接受连着两条助手消息。
 - **删的粒度是一问一答**(长按回复 →「删除这一问一答」,主动消息删那一条),连同其中的照片;
-  「设置 › 对话历史」里清 30 天前的、或清空全部。分叉没有了——一条线上没有"从这里另起一条"的位置。
+  「设置 › 对话历史」里清 30 天前的、或清空全部。分叉没有了——一条线上没有"从这里另起一条"的位置;
+  要把一件事单独拿出来聊,是他自己开一条侧聊(见下一节),主对话照常往下走。
 - 日期分隔、欢迎卡只在线程真的空着时出现(`isThreadEmpty`)。
 
 ### 召回(`HistoryRecallTools`)
@@ -709,6 +710,41 @@ API key;自己造成员密码(要挡人就用设备级 Face ID,别在健康 app 
 - 归在记忆开关下面。关掉记忆的人不会指望 Vana 还在引用他上个月说过的话。
 - 档案是内存里的,不落盘;删掉的消息必须**立刻**从里面消失——用户刚删完还能被引用出来,是这套东西
   最难解释的一种失灵。
+
+## 侧聊(`SideChatStore` / `ChatViewModel(sideChat:)` / `SideChatListView`)
+
+参照 Muse 的「一条主对话 + side chats」。方案和分期在 Android 那份 `daily-agent-plan.md` §16,**这一块 iOS 先行**。
+它补的是主对话窗口太小(12k–32k)这件事:一次深聊(一趟行程、一次比价、一份要细看的材料)几轮就把日常的
+上下文挤出窗口,事后找回来只能往上翻。
+
+- **只有用户手动开**(「⋯ › 侧聊」)。模型不开侧聊,也不建议「挪过去」。这也是撤掉子 agent 的理由:独立的
+  活由有人在场的侧聊来做,那套确认卡、只读、提议、预算就用不着了(S4,还没删)。
+- **主对话永远是家**:冷启动、通知、Siri、提醒、check-in、「今天」都只落主对话。通知点开时正开着侧聊的话,
+  先把那一层收掉(`openedCheckIn` 那处)。
+- **窗口各管各的,长期层共享**。system 段(记忆、用药、目标、位置、成员身份)两边同一份;窗口游标、收割水位线
+  各记在各自线程的 `meta.json` 里。主对话收割时连侧聊一起收(`MemoryHarvester.runIfDue(threads:)`),
+  清理历史、占用空间也连侧聊一起算——「清空全部对话」的「全部」包括侧聊。
+- **侧聊就是另一个 `ChatViewModel` 接另一条线程**,线程格式一个字不改(`<成员>/sides/<uuid>/`),插话、排队、
+  窗口、重试、hook 全部原样。主对话专属的东西按 `isMainThread` 关掉:「今天」、首屏那段话和建议、欢迎卡、
+  首次告知和健康授权。
+- **同一条侧聊永远是同一个 `ThreadStore` 实例**(`SideChatStore.thread(for:)`),同一个 `sides/` 目录永远是
+  同一个 `SideChatStore`(`instance(directory:)`):两个实例就是两个写者。
+- **`ChatViewModel` 不给 `sides` 时从手里的线程推出来**(`SideChatStore.beside`),不默认指着
+  `TenantScope.currentStores`:主对话的 `clearHistory` 会连侧聊一起清,默认值指着真的那份的话,一条测试
+  就能把模拟器上的侧聊全删了(同 `MemoryStore.shared` 那次)。
+- **删的顺序是先落名单、再清线程(连照片)、最后删目录**。反过来删到一半崩了,名单上留着一条点进去是空的
+  侧聊;按这个顺序最坏只剩一个孤儿目录,下次读名单时清掉——**只在名单读懂了的时候清**,读不懂的那几条
+  的目录也放过。
+- **侧聊说明块**(`CoreInstructions.sideChat`,`PromptOrder.sideChat = 25`)在静态区,侧聊存在期间逐字不变。
+  所以拿第一句话起名要在**第一次请求发出去之前**定下来(`noteSideChatActivity` 当场改内存那一份):先发
+  没名字的、下一轮再换,等于白白打掉一次缓存。不带领域词,契约测试盯着。
+- **名字两个上限**:拿第一句话起的最多 20 个字带省略号;他自己打的最多 40 个字符。同一个名字英文比中文长
+  两三倍,按中文的上限截,「Kyoto in October trip」会被切成「…tri」(踩过)。
+- **离开侧聊时回复停下**(`leaveSideChat`,等于按了停止),挂在 `NavigationStack` **外面**的 `onDisappear` 上
+  ——挂在里面的话,侧聊里推出设置页那一下也算「离开」。离开后接着写完、未读点、长按「在侧聊里接着聊」、
+  「带回主对话」、跨线程召回是 S2/S3 的事。
+
+`VanaTests/SideChatTests` 盯着这一套,侧聊说明块的契约在 `AssemblyContractTests`。
 
 ## 不留痕聊天(`ChatViewModel(isEphemeral: true)`)
 

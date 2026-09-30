@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// 设置 › 对话历史。一条永远的对话里没有「删这条会话」了,清理只剩三种粒度:
-/// 某一条(对话里长按)、某天以前的、全部。
+/// 某一条(对话里长按)、某天以前的、全部。侧聊算在里面:占用空间、清 30 天前、清空全部都连侧聊
+/// 一起(`ChatViewModel.historySizeBytes` / `clearHistory`);单删一条侧聊在「侧聊」页。
 ///
 /// 占用空间摆在最上面:这是用户决定要不要清的唯一依据,而一条攒了一年的对话到底多大,
 /// 不说他根本没概念。
@@ -30,7 +31,7 @@ struct ConversationHistoryView: View {
                 }
             } footer: {
                 Text("""
-                    对话只存在这台设备上，不进 iCloud 备份，换新手机时不会跟着走。\
+                    对话（包括侧聊）只存在这台设备上，不进 iCloud 备份，换新手机时不会跟着走。\
                     单条消息可以在对话里长按删除；删掉的消息连同它带的照片一起从本机清掉。
                     """)
             }
@@ -69,7 +70,7 @@ struct ConversationHistoryView: View {
             }
             Button("取消", role: .cancel) {}
         } message: { _ in
-            Text("此操作会删除本机保存的消息和它们带的照片，无法撤销。")
+            Text("主对话和全部侧聊里保存的消息、以及它们带的照片都会被删除，无法撤销。")
         }
     }
 
@@ -86,6 +87,6 @@ struct ConversationHistoryView: View {
     }
 
     private func refreshSize() async {
-        sizeBytes = await TenantScope.currentStores.thread.sizeBytes()
+        sizeBytes = await model.historySizeBytes()
     }
 }

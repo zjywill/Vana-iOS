@@ -14,6 +14,9 @@ import AgentRuntime
 /// - **收割**:记忆抽取按水位线做,和窗口解耦(`MemoryHarvester`)。
 ///
 /// `isEphemeral` 是「不留痕」浮层:内存里聊,不读盘不写盘、不抽记忆,关了就没。
+///
+/// `sideChat` 是一条侧聊:同一个类型接另一条线程(`SideChatStore`),插话、窗口、重试、hook
+/// 全部原样。主对话专属的那几样(「今天」、首屏那段话和建议、check-in)在侧聊里不出。
 @MainActor
 @Observable
 final class ChatViewModel {
@@ -24,6 +27,11 @@ final class ChatViewModel {
     /// 承诺的边界只到本机为止——问题照样要发给用户配置的云端模型才能回答,这一点界面上
     /// 明说(`ChatView.privacyNote`)。
     let isEphemeral: Bool
+    /// 这是哪条侧聊。主对话和不留痕都是 nil。名字会被他改、会拿第一句话起,所以是 var。
+    private(set) var sideChat: SideChat?
+    var isSideChat: Bool { sideChat != nil }
+    /// 那条永远的对话本身。「今天」、首屏、check-in、清理全部历史都只在这里。
+    var isMainThread: Bool { !isEphemeral && sideChat == nil }
     var input = ""
     var isReplying = false
     /// 正在写的那条回复。事件的收件人,也是气泡判断「我是不是正在流」的依据。
@@ -108,6 +116,11 @@ final class ChatViewModel {
     // MARK: 线程
 
     private let thread: ThreadStore
+    /// 这位成员的侧聊名单。主对话拿它做三件事:「⋯ › 侧聊」那一页、收割时连侧聊一起收、
+    /// 清理历史时连侧聊一起清。
+    let sides: SideChatStore
+    /// 已经离开过这条侧聊了。关掉按钮、删除、被通知顶掉,几条路都会走到 `leaveSideChat`。
+    private var didLeaveSideChat = false
     /// 这一份要不要落盘。不留痕的不落;测试关掉读盘时也不写——不然写的就是模拟器上那条真的线程。
     private let persists: Bool
     /// 界面这一份已经同步给盘的 id。只删这里面有、列表里没了的——后台追加、界面还没读到的
@@ -149,6 +162,8 @@ final class ChatViewModel {
         var parts: [String] = []
         if !tenant.isOwner { parts.append(tenant.displayName) }
         if isEphemeral { parts.append(String(localized: "不留痕 · 关掉就没了")) }
+        // 一直认得出是侧聊:标题栏写的是它的名字,这一行说它是什么。
+        if isSideChat { parts.append(String(localized: "侧聊")) }
         return parts.joined(separator: " · ")
     }
 
@@ -177,23 +192,30 @@ final class ChatViewModel {
     ///   - loadsPersistedThread: 关掉就不读盘,`isLoadingConversation` 直接是 false。测试用。
     ///   - memoryStore / medicationStore / thread: 测试必须传自己的。app 侧的测试跑在 app host
     ///     里,`.shared` 就是模拟器上那份真的数据。
+    ///   - sides: 不给就用 `thread` 旁边那份(`SideChatStore.beside`),和线程永远是同一位成员的。
+    ///   - sideChat: 给了就是那条侧聊,线程由 `sides` 给(同一条永远是同一个实例),`thread` 不用。
     init(
         engineFactory: EngineFactory? = nil,
         loadsPersistedThread: Bool = true,
         isEphemeral: Bool = false,
+        sideChat: SideChat? = nil,
         tenant: Tenant = TenantScope.current,
         memoryStore: MemoryStore = .shared,
         medicationStore: MedicationStore = .shared,
         thread: ThreadStore = TenantScope.currentStores.thread,
+        sides: SideChatStore? = nil,
         tasks: TaskStore = TenantScope.currentStores.tasks,
         notes: NoteStore = TenantScope.currentStores.notes
     ) {
         self.engineFactory = engineFactory
         self.isEphemeral = isEphemeral
+        self.sideChat = isEphemeral ? nil : sideChat
         self.tenant = tenant
         self.memoryStore = memoryStore
         self.medicationStore = medicationStore
-        self.thread = thread
+        let sides = sides ?? SideChatStore.beside(thread)
+        self.sides = sides
+        self.thread = if let sideChat, !isEphemeral { sides.thread(for: sideChat.id) } else { thread }
         self.taskStore = tasks
         self.noteStore = notes
         taskBoard = TaskBoard(store: tasks, tenantId: tenant.id)
@@ -249,7 +271,7 @@ final class ChatViewModel {
 
     /// 「今天」那几张卡。**零模型调用**:本机的任务、到期的待跟进、用药回访、那句本地处境。
     func refreshToday() async {
-        guard persists else { return }
+        guard persists, isMainThread else { return }
         let now = Date()
         let dueFollowUps = EngineSettings.memoryEnabled ? await memoryStore.snapshot(now: now).due(at: now) : []
         let context = TodayContext(
@@ -300,6 +322,7 @@ final class ChatViewModel {
     /// 打开 app(冷启动读完线程、或者从后台回到前台)时调一次:把「今天」挪到最新那条消息下面。
     /// 排队中的不算——那几条还没被 Vana 看到,「今天」排在它们上面才对得上时间。
     func pinTodayToLatest() {
+        guard isMainThread else { return }
         todayAfterMessageId = messages.last { !$0.isQueued }?.id
     }
 
@@ -387,12 +410,14 @@ final class ChatViewModel {
         persist()
     }
 
-    /// 清空整条对话。设置 › 对话历史用。
+    /// 清空整条对话。设置 › 对话历史用。主对话这一份连侧聊一起清——「清空全部对话」里的
+    /// 「全部」就是这个意思。
     func clearHistory() async {
         guard !isReplying else { return }
         stopReply()
         await persistTail?.value
         if persists { await thread.deleteAll() }
+        if persists, isMainThread { await sides.deleteAll() }
         messages = []
         syncedIds = []
         dirtyIds = []
@@ -410,12 +435,21 @@ final class ChatViewModel {
     func clearHistory(olderThanDays days: Int) async -> Int {
         guard !isReplying, persists else { return 0 }
         await persistTail?.value
-        let removed = await thread.deleteOlderThan(Date().addingTimeInterval(-Double(days) * 86_400))
+        let cutoff = Date().addingTimeInterval(-Double(days) * 86_400)
+        var removed = await thread.deleteOlderThan(cutoff)
+        if isMainThread { removed += await sides.deleteOlderThan(cutoff) }
         // 重新读一遍末尾:删掉的可能正是手里这一段的开头。
         messages = []
         syncedIds = []
         await loadInitialHistory()
         return removed
+    }
+
+    /// 对话历史在盘上占多少。主对话这一份把侧聊也算进去,和清理的范围对得上。
+    func historySizeBytes() async -> Int {
+        guard persists else { return 0 }
+        let own = await thread.sizeBytes()
+        return isMainThread ? own + (await sides.sizeBytes()) : own
     }
 
     // MARK: - 发送
@@ -461,10 +495,61 @@ final class ChatViewModel {
                 isQueued: true
             ))
             persist()
+            noteSideChatActivity(text)
         }
         // 正在回复:这一句排进队列就完了,不再开一轮。取走它的是 `takeQueuedInput`。
         guard !isReplying, hasQueuedInput else { return }
         startReply()
+    }
+
+    /// 侧聊里说了一句话:名单按最近说过话排;还没起名的拿这句起名。
+    ///
+    /// 名字要在**这一轮请求发出去之前**定下来:侧聊说明块里带着它,先发一版没名字的、下一轮
+    /// 再换,等于白白打掉一次 prompt 缓存。所以这里当场改内存里那一份,盘上那份由名单自己按
+    /// 同一条规则改(`SideChatStore.noteActivity`)。
+    private func noteSideChatActivity(_ text: String) {
+        guard persists, var chat = sideChat else { return }
+        chat.lastActiveAt = Date()
+        if chat.autoTitled, let title = SideChatTitle.make(from: text) {
+            chat.title = title
+            chat.autoTitled = false
+        }
+        sideChat = chat
+        let sides = sides
+        Task { await sides.noteActivity(chat.id, text: text, now: chat.lastActiveAt) }
+    }
+
+    /// 他在侧聊里改了名字。
+    func renameSideChat(to title: String) {
+        guard var chat = sideChat else { return }
+        chat.title = SideChatTitle.clean(title)
+        chat.autoTitled = false
+        sideChat = chat
+        let sides = sides
+        Task { await sides.rename(chat.id, to: title) }
+    }
+
+    /// 离开这条侧聊(关掉它、或者要删它)。**正在写的回复停下**——等于按了停止,已经写出来的
+    /// 留着;回来时接上同一个对象、让它接着写完是下一步的事。离开时顺手收割一次:里面刚说的
+    /// 那几句,主对话那边的收割要等到下一次切后台才轮得到。
+    ///
+    /// - Parameter harvesting: 要删这条侧聊时传 false——删完之后再去读它,`ThreadStore` 会把
+    ///   刚删掉的目录重新建出来。
+    ///
+    /// 标记是**当场**做的,等回复停下、写盘落地的那一段放在返回的 task 里:几条路(关掉按钮、
+    /// 删除、被通知顶掉)会前后脚走到这儿,只有第一条算数。
+    @discardableResult
+    func leaveSideChat(harvesting: Bool = true) -> Task<Void, Never>? {
+        guard isSideChat, !didLeaveSideChat else { return nil }
+        didLeaveSideChat = true
+        let reply = currentReplyTask
+        stopReply()
+        return Task {
+            await reply?.value
+            idleHarvestTask?.cancel()
+            await persistTail?.value
+            if harvesting { harvestMemoryInBackground() }
+        }
     }
 
     /// 他在点名确认的 alert 上按了「同意并发送」。
@@ -905,6 +990,8 @@ final class ChatViewModel {
     func refreshSuggestionsIfNeeded() {
         guard !hasRequestedSuggestions, !isLoadingConversation else { return }
         hasRequestedSuggestions = true
+        // 首屏那段话和建议是主对话的首屏。侧聊的空白页只说一句它是什么。
+        guard !isSideChat else { return }
 
         summaryTask = Task {
             // 家人成员这条路上 `HealthSituation` 整个不跑。它读的是 HealthKit,而那份数据
@@ -1019,11 +1106,16 @@ final class ChatViewModel {
     }
 
     /// app 退到后台:趁这时候把水位线之后攒下的抽一遍。
+    ///
+    /// 主对话这一份连侧聊一起收:记忆只有一份,侧聊里说的和主对话里说的一样该记。水位线各记
+    /// 各的,所以不会重复看。侧聊那一份只收自己(它是刚被说过话的那一条)。
     func harvestMemoryInBackground() {
         guard persists, engineFactory == nil else { return }
         Task {
             await persistTail?.value
-            await MemoryHarvester.runIfDue(thread: thread, memory: memoryStore, environment: harvestEnvironment())
+            var threads = [thread]
+            if isMainThread { threads += await sides.allThreads() }
+            await MemoryHarvester.runIfDue(threads: threads, memory: memoryStore, environment: harvestEnvironment())
         }
     }
 
@@ -1376,7 +1468,8 @@ final class ChatViewModel {
             // 写的那一头由 `PluginContext.isPrivate` 统一堵死:`remember`、用药表的两个写工具
             // 在不留痕的那条对话里根本不挂出去。
             isPrivate: isEphemeral,
-            hooks: followUpHooks(settings)
+            hooks: followUpHooks(settings),
+            sideChatTitle: sideChat?.title
         )
     }
 

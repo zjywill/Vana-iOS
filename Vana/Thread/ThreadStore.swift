@@ -79,7 +79,7 @@ actor ThreadStore {
     static let archiveUserLimit = 800
     static let archiveAssistantLimit = 320
 
-    let directory: URL
+    nonisolated let directory: URL
     private let attachments: AttachmentStore?
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder

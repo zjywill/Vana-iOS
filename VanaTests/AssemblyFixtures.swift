@@ -66,6 +66,8 @@ enum AssemblyFixtures {
         var goals: [TaskItem] = []
         var acceptsInterjections = true
         var persona: AssistantPersona?
+        /// 在哪条侧聊里(它的名字)。nil 是主对话。
+        var sideChatTitle: String?
     }
 
     // MARK: - 临时 store
@@ -123,7 +125,8 @@ enum AssemblyFixtures {
         return TestAssembly.engine(
             environment,
             route: flags.background ? .background : .foreground,
-            isPrivate: flags.isPrivate
+            isPrivate: flags.isPrivate,
+            sideChatTitle: scenario.sideChatTitle
         )
     }
 

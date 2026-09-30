@@ -25,6 +25,26 @@ enum MemoryHarvester {
         case failed
     }
 
+    /// 一位成员名下的几条线程(主对话和侧聊)挨个收一遍,各收一块。记忆只有一份,水位线各记各的。
+    ///
+    /// 撞上 `.busy` 或 `.skipped` 就停:别的后台活占着位子、没配 key、没同意,换一条线程再试
+    /// 也是同一个答案。
+    @discardableResult
+    static func runIfDue(
+        threads: [ThreadStore],
+        memory: MemoryStore,
+        environment: PluginEnvironment,
+        extract: (@Sendable (MemorySnapshot, MemoryPolicy, [ChatMessage]) async throws -> [MemoryOperation])? = nil
+    ) async -> [Outcome] {
+        var outcomes: [Outcome] = []
+        for thread in threads {
+            let outcome = await runIfDue(thread: thread, memory: memory, environment: environment, extract: extract)
+            outcomes.append(outcome)
+            if outcome == .busy || outcome == .skipped { break }
+        }
+        return outcomes
+    }
+
     /// - Parameter extract: 真的去调模型的那一步。测试注入一个假的。
     static func runIfDue(
         thread: ThreadStore,
