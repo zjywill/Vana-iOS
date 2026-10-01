@@ -92,8 +92,53 @@ xcodegen && xcodebuild -project Vana.xcodeproj -scheme Vana -configuration Relea
 
 ### 4. 上传
 
-Xcode > Window > Organizer > 选那个 archive > Distribute App > **TestFlight Internal Testing
-Only**（只自己测就够了；要发外部测试或上架就选 App Store Connect）。
+**命令行走 App Store Connect API key，不走 Xcode 里登录的 Apple ID。** 后者会悄悄过期：
+2026-10-01 传 build 16 时，Xcode 的账号列表整个空了，`xcodebuild -exportArchive` 只报一句
+`App Store Connect access for "NGM7GX8DGB" is required`——重新登录、退出 Xcode 都没让命令行
+看见账号。API key 不依赖这个登录状态。
+
+| | |
+|---|---|
+| `.p8` | `~/Documents/apple sign/api-key/AuthKey_4U5HXNFC3G.p8` |
+| Key ID | `4U5HXNFC3G` |
+| Issuer ID | `60da6cff-6bcb-4f4d-9367-32c89b61447a` |
+
+Key ID 和 Issuer ID 不是机密；**`.p8` 是机密，不进仓库**，只能下载一次（丢了按
+`~/Documents/apple sign/README.md` 重新生成，Key ID 会变）。这把 key 和 Kite 那边共用，
+同一个团队 NGM7GX8DGB。
+
+```bash
+cat > /tmp/ExportOptions.plist <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>method</key><string>app-store-connect</string>
+<key>destination</key><string>upload</string>
+<key>teamID</key><string>NGM7GX8DGB</string>
+<key>signingStyle</key><string>automatic</string>
+<key>testFlightInternalTestingOnly</key><true/>
+<key>manageAppVersionAndBuildNumber</key><false/>
+</dict></plist>
+EOF
+```
+
+```bash
+xcodebuild -exportArchive -archivePath build/Vana.xcarchive \
+  -exportOptionsPlist /tmp/ExportOptions.plist -exportPath /tmp/vana-export \
+  -allowProvisioningUpdates \
+  -authenticationKeyPath "$HOME/Documents/apple sign/api-key/AuthKey_4U5HXNFC3G.p8" \
+  -authenticationKeyID 4U5HXNFC3G \
+  -authenticationKeyIssuerID 60da6cff-6bcb-4f4d-9367-32c89b61447a
+```
+
+- `testFlightInternalTestingOnly` 只给内部测试用；要发外部测试或上架就去掉这一行。
+- `manageAppVersionAndBuildNumber` 关着：build 号由 `project.yml` 说了算，不让 Xcode 上传时
+  偷偷改一个盘上没有的号。
+- IPA 约 180MB，上传要二十多分钟。中途报 `Couldn't communicate with a helper application`
+  是 Xcode 自己的 XPC 抽风，原样重跑就行，不用重新归档。
+
+GUI 的等价路径：Xcode > Window > Organizer > 选那个 archive > Distribute App >
+**TestFlight Internal Testing Only**。它用的是 Xcode 里登录的账号，所以账号过期时一样会失败。
 
 出口合规那一问不会再弹——`ITSAppUsesNonExemptEncryption = false` 已经在 Info.plist 里。
 
