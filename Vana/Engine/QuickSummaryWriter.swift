@@ -89,7 +89,7 @@ struct QuickSummaryWriter: Sendable {
                         maxOutputTokens: 400,
                         // 比首屏那三条低:这段话要贴着给定的事实写,不需要它发挥。
                         temperature: 0.4,
-                        // 同 `FollowUpSuggester`:留空是接受模型的默认,而好几家的默认是
+                        // 同 `QuestionSuggester`:留空是接受模型的默认,而好几家的默认是
                         // 思考——思考算进 output,这点预算会在写出正文之前就用光。
                         thinking: .off
                     )) {

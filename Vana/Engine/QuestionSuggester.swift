@@ -55,7 +55,7 @@ struct QuestionSuggester: Sendable {
             ],
             maxOutputTokens: 200,
             temperature: 0.7,
-            // 同 `FollowUpSuggester`:留空是接受模型的默认,而好几家的默认是思考。
+            // 留空是接受模型的默认,而好几家的默认是思考——思考算进 output,这点预算会在写出正文之前就用光。
             thinking: .off
         ))
 

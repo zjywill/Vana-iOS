@@ -73,8 +73,6 @@ final class ChatViewModel {
     private(set) var situation: HealthSituation?
     /// 那段话正在写。详情页那颗刷新按钮靠它转圈,也靠它挡住连按。
     private(set) var isWritingSummary = false
-    /// 接着刚才那段回答问的几条追问。空着不是错误状态,是常态的一半。
-    private(set) var followUps: [String] = []
     /// 「今天」页上的那几行。本机数据拼的,零模型调用;只在主对话上有(侧聊、不留痕里没有那颗按钮)。
     private(set) var todayCards: [TodayCard] = []
     /// 顶栏「今天」上的角标:需要他看一眼的有几件。
@@ -112,8 +110,6 @@ final class ChatViewModel {
     ///
     /// 以前这会切进一条专属的「用药线」会话;现在只有一条对话,所以只是一个焦点。
     private(set) var focusMedication: MedicationItem?
-    /// 挂在 loop 生命周期上的那几个旁观者(眼下只有追问 chip)。第一次真的要发请求时才建。
-    private var hooks: AgentHookDispatcher?
 
     // MARK: 线程
 
@@ -428,8 +424,6 @@ final class ChatViewModel {
         oldestSegment = .max
         hasOlderHistory = false
         focusMedication = nil
-        followUps = []
-        hooks = nil
         draftAttachments = []
     }
 
@@ -1264,8 +1258,6 @@ final class ChatViewModel {
         idleHarvestTask?.cancel()
         // 定位是异步的,这一次多半来不及赶上下面这轮请求——赶上的是下一句。
         LocationProvider.shared.refresh()
-        // 那几条接的是上一段回答,新的一段就要开始写了。
-        followUps = []
 
         currentReplyTask = Task {
             // 一次「回复」可能跨好几轮。队列里的话赶在最后一次请求之后才到时,loop 已经没有
@@ -1516,8 +1508,6 @@ final class ChatViewModel {
 
     private func resolveEngine() async throws -> any AgentEngine {
         if let engineFactory {
-            // 注入假引擎的那条路不挂 hook:hook 的行为由 `FollowUpChipTests` 直接对着
-            // `AgentLoop` 验,不必穿过这个状态机。
             return try engineFactory()
         }
         let settings = try cloudSettings()
@@ -1529,7 +1519,6 @@ final class ChatViewModel {
             // 写的那一头由 `PluginContext.isPrivate` 统一堵死:`remember`、用药表的两个写工具
             // 在不留痕的那条对话里根本不挂出去。
             isPrivate: isEphemeral,
-            hooks: followUpHooks(settings),
             sideChatTitle: sideChat?.title
         )
     }
@@ -1569,26 +1558,6 @@ final class ChatViewModel {
             ),
             notes: noteStore
         )
-    }
-
-    /// 追问 chip 的宿主。第一次要发请求时才建,之后一直用它。
-    private func followUpHooks(_ settings: (provider: String, model: String)) -> AgentHookDispatcher {
-        if let hooks { return hooks }
-
-        let suggester = FollowUpSuggester(providerId: settings.provider, model: settings.model)
-        let hook = FollowUpSuggestionHook(
-            generate: { context in
-                // 失败即放弃。追问 chip 没生成出来,用户手上还有固定那几条和输入框。
-                (try? await suggester.suggestions(for: context)) ?? []
-            },
-            deliver: { [weak self] suggestions in
-                guard let self, !isReplying else { return }
-                followUps = suggestions
-            }
-        )
-        let dispatcher = AgentHookDispatcher([hook])
-        hooks = dispatcher
-        return dispatcher
     }
 
     /// 召回够得着哪些线。这条对话自己只翻滑出窗口的那段;别的线(主对话里是全部侧聊,侧聊里是

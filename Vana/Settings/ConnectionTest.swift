@@ -35,7 +35,7 @@ enum ConnectionTest {
     /// - `maxOutputTokens` 压到 4:这次要的是「有没有回话」,不是回了什么。
     /// - `thinking: .off`:DeepSeek、Qwen、GLM 这些默认就思考,而思考算进 output——
     ///   不关的话这几个 token 会在模型开口之前就用光,一次本该成功的测试报成失败
-    ///   (同 `FollowUpSuggester` 那处)。
+    ///   (同 `QuestionSuggester` 那处)。
     @MainActor
     static func run(providerId: String, model: String, apiKey: String) async -> Result {
         let key = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)

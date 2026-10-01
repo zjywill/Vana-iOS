@@ -103,10 +103,8 @@
 		7F6985041E47C60AE8E155A9 /* AskUserCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2552218700BE157F9F2E07D /* AskUserCard.swift */; };
 		7FBBBB446DE2A5100F124A1E /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFECA484A9D54D55039FC79 /* HealthStore.swift */; };
 		81570995D8D914BF506B0ABC /* AskUserTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C6F3129A1B9D1B3D7DCA25 /* AskUserTools.swift */; };
-		840F38A1FC8617F9A6582E55 /* FollowUpChipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3F67C9D7380C4FE1B67E30 /* FollowUpChipTests.swift */; };
 		84E37372CD34040A626016AD /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5123497064729F37C343DCE /* AttachmentStore.swift */; };
 		857EA1F1B76477A1704B991D /* ReminderRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85581B262E5D38F40BD3F4B8 /* ReminderRules.swift */; };
-		86468641347282E311823068 /* FollowUpSuggester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FC479785B4CA5BA47CED88 /* FollowUpSuggester.swift */; };
 		8656B42C8CA6D7CA60FA410A /* system-owner-private.txt in Resources */ = {isa = PBXBuildFile; fileRef = BE2827ED830B1F5ED62306C6 /* system-owner-private.txt */; };
 		86F3EC3D7DE24C9B472FE7A7 /* CloudCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FE93D7A880EE069F71C01E /* CloudCatalog.swift */; };
 		8707A00617A25B09F685EFEF /* WebFetchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF1E74226558063F8A5DDAE /* WebFetchTests.swift */; };
@@ -128,7 +126,6 @@
 		97384AC4E6318AFA440983B8 /* SideChatListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53422F8BF03917CF4353B23 /* SideChatListView.swift */; };
 		9A93AD7297E04EA0F80A4D7B /* HealthAuthorizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB99FB2A4350D0133261BCD /* HealthAuthorizationTests.swift */; };
 		9AD0370E4F44B21287FAE206 /* AssistantPersona.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44D4694D8C62823FFA5928D /* AssistantPersona.swift */; };
-		9C6AC4558C11C4A8555DCEBA /* FollowUpSuggestionHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BD78C05C53584C2AF2636A /* FollowUpSuggestionHook.swift */; };
 		A05CA8058A8333498172115D /* MemoryExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684CCD6611FD7D08A5426D5D /* MemoryExtractor.swift */; };
 		A11B6BB1A39DC9C9EDB93341 /* TenantOpening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F200ED4C8993CBE0265893E /* TenantOpening.swift */; };
 		A2086BF90BCF2E64CA8B009F /* ReminderScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40650E35AF07EB1ADA88BD9B /* ReminderScheduler.swift */; };
@@ -212,7 +209,6 @@
 		0053ADDBAD557DA9E876F2C9 /* VanaPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VanaPlugin.swift; sourceTree = "<group>"; };
 		00879D57177DD8B50F9D16EE /* TextRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRecognizer.swift; sourceTree = "<group>"; };
 		00904AE77400D9D4335E35AB /* BackgroundModelWorkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundModelWorkTests.swift; sourceTree = "<group>"; };
-		06FC479785B4CA5BA47CED88 /* FollowUpSuggester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowUpSuggester.swift; sourceTree = "<group>"; };
 		06FE93D7A880EE069F71C01E /* CloudCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudCatalog.swift; sourceTree = "<group>"; };
 		073D0EA23D9F7CC93D51CEE5 /* ExerciseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseTests.swift; sourceTree = "<group>"; };
 		096B39C408E9605D7F846AAF /* TasksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksTests.swift; sourceTree = "<group>"; };
@@ -314,7 +310,6 @@
 		6C06E8EC52F3C1889663FB7E /* TaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskStore.swift; sourceTree = "<group>"; };
 		6E9DCA1EBAF50C23BA2823B8 /* MedicationBriefer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationBriefer.swift; sourceTree = "<group>"; };
 		6FFECA484A9D54D55039FC79 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
-		75BD78C05C53584C2AF2636A /* FollowUpSuggestionHook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowUpSuggestionHook.swift; sourceTree = "<group>"; };
 		764E7E914A37E40A2DBBE8A4 /* FollowUpRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowUpRunnerTests.swift; sourceTree = "<group>"; };
 		783F60B095112BACC5BF20AB /* QuickSummaryWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSummaryWriter.swift; sourceTree = "<group>"; };
 		7B7E19F88C4C2546AF5A7D4F /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
@@ -335,7 +330,6 @@
 		92EE6AEA91B74C2F3D39E88E /* exercises.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = exercises.json; sourceTree = "<group>"; };
 		939CCB366502EBC729CB1D78 /* Vana.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Vana.entitlements; sourceTree = "<group>"; };
 		9455B2D91ABE108867E5DEC4 /* ConversationHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationHistoryView.swift; sourceTree = "<group>"; };
-		9A3F67C9D7380C4FE1B67E30 /* FollowUpChipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowUpChipTests.swift; sourceTree = "<group>"; };
 		A0CDB352E7A94082B48B6B58 /* TasksPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksPlugin.swift; sourceTree = "<group>"; };
 		A3591CCF4CBABCD1C2C38A66 /* AttachmentIntake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentIntake.swift; sourceTree = "<group>"; };
 		A44D4694D8C62823FFA5928D /* AssistantPersona.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantPersona.swift; sourceTree = "<group>"; };
@@ -622,8 +616,6 @@
 				8ADF42D6FD0EF35154DE95DF /* BackgroundModelWork.swift */,
 				FEE47B0CCC121F1E406E4B50 /* CloudAccess.swift */,
 				45452567FC033D63A31B9379 /* CoreInstructions.swift */,
-				06FC479785B4CA5BA47CED88 /* FollowUpSuggester.swift */,
-				75BD78C05C53584C2AF2636A /* FollowUpSuggestionHook.swift */,
 				1973A68A33172B7A85BCC796 /* HealthReport.swift */,
 				5EF735A49053191B3A4DF699 /* HealthTools.swift */,
 				2ADD466EF0B43D83424825FE /* QuestionSuggester.swift */,
@@ -673,7 +665,6 @@
 				A870C828465B6A656BA05D3D /* ContextBudgetPerformanceTests.swift */,
 				E5D65068691DF366D2832FAC /* DocumentImportTests.swift */,
 				073D0EA23D9F7CC93D51CEE5 /* ExerciseTests.swift */,
-				9A3F67C9D7380C4FE1B67E30 /* FollowUpChipTests.swift */,
 				764E7E914A37E40A2DBBE8A4 /* FollowUpRunnerTests.swift */,
 				5AB99FB2A4350D0133261BCD /* HealthAuthorizationTests.swift */,
 				56BEC630EF5CCF8814029DEF /* JumpToBottomTests.swift */,
@@ -979,7 +970,6 @@
 				8A60CD200BF4DB6E5DC7DBAC /* ContextBudgetPerformanceTests.swift in Sources */,
 				12EB85C4A62C21D593825F9B /* DocumentImportTests.swift in Sources */,
 				3F5335C9D5FD24761A178842 /* ExerciseTests.swift in Sources */,
-				840F38A1FC8617F9A6582E55 /* FollowUpChipTests.swift in Sources */,
 				D87B90216DFC2EB9B2740462 /* FollowUpRunnerTests.swift in Sources */,
 				9A93AD7297E04EA0F80A4D7B /* HealthAuthorizationTests.swift in Sources */,
 				8A58F0294FBA5A4625218921 /* JumpToBottomTests.swift in Sources */,
@@ -1049,8 +1039,6 @@
 				C39F5AAFA6F7D5526C4EE4E9 /* ExerciseLibrary.swift in Sources */,
 				BE5836E874F2691D4933624B /* ExerciseTools.swift in Sources */,
 				C9A947B84CC771CED0510567 /* FollowUpRunner.swift in Sources */,
-				86468641347282E311823068 /* FollowUpSuggester.swift in Sources */,
-				9C6AC4558C11C4A8555DCEBA /* FollowUpSuggestionHook.swift in Sources */,
 				E91695781C6119902AABE429 /* HealthAnalysis.swift in Sources */,
 				106E527F68D9CC58F7E4F080 /* HealthInstructions.swift in Sources */,
 				73420A9807BAC741F3F0CD6C /* HealthKitAttribution.swift in Sources */,

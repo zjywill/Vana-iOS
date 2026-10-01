@@ -122,7 +122,7 @@ struct QuickSummaryTests {
     // MARK: - 发给模型的那份
 
     /// **这条最要紧。** 喂进去的只有本地判定好的一行行结论(现状 + 触发点),没有十四天的
-    /// 逐日样本——多给的每一个数字都是它可以写进句子里的数字。同 `FollowUpSuggester` 不喂
+    /// 逐日样本——多给的每一个数字都是它可以写进句子里的数字。同 `MemoryExtractor` 不喂
     /// 工具输出。
     @Test("只喂结论,不喂原始数据")
     func requestCarriesConclusionsOnly() {

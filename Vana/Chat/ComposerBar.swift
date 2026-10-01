@@ -46,39 +46,8 @@ struct ComposerBar: View {
     /// 长成多行之后才真的当成 27 的圆角用。
     private static let cardRadius: CGFloat = 27
 
-    /// 开聊之后的追问快捷。
-    ///
-    /// 只在有消息时出现:空会话的快捷输入是欢迎卡里那几条建议,在这儿再放一遍是重复。
-    /// 这几句短到一个 chip 放得下,而且都是「接着上一句问」的问法——追问真正的成本是
-    /// 打字,不是想不出问什么。
-    ///
-    /// 第一颗固定不动:「详细一点」对任何一段回答都成立,而且它正是最想在模型还在写的时候
-    /// 点的那一句——生成的那几条要等这一轮答完才有。
-    private static let alwaysOn = String(localized: "详细一点")
-    /// 生成的还没到、或者压根没生成出来时顶上的三条。
-    ///
-    /// chip 那排不能空,也不能在答完的那一刻先空一下再抖出来:那一下比这几条泛泛的问法
-    /// 难看得多,而它恰好发生在用户刚读完回答、正要往下问的时候。
-    private static let fallbackFollowUps = [
-        String(localized: "有什么建议？"),
-        String(localized: "和上周比呢？"),
-        String(localized: "可能是什么原因？")
-    ]
-
-    /// 固定那颗 + 三条按刚才那段回答生成的(`FollowUpSuggestionHook`),没有就用兜底。
-    ///
-    /// 去重不是洁癖:`id` 就是这句话本身,重复的 id 会让 `ForEach` 在换的那一下错位——
-    /// 而模型偶尔真的会写出两条一样的,或者写出一条正好等于「详细一点」。
-    private var followUpChips: [String] {
-        let rest = model.followUps.isEmpty ? Self.fallbackFollowUps : model.followUps
-        var seen: Set<String> = [Self.alwaysOn]
-        return [Self.alwaysOn] + rest.filter { seen.insert($0).inserted }
-    }
-
     var body: some View {
         VStack(spacing: 8) {
-            // chip 那排自己贴到屏幕两边:横向滚动的东西在离边 12pt 处被切断,看着像是
-            // 排版错了而不是「右边还有」。
             quickRow
             // 排在输入框**上方**而不是塞进胶囊里:一张缩略图加一行说明比一行字高得多,
             // 塞进去会把输入框顶成两层,而多数时候这一排根本不存在。
@@ -296,57 +265,14 @@ struct ComposerBar: View {
 
     // MARK: - 快捷 chip
 
-    /// 回复期间这排不再收起来。
-    ///
-    /// 原来收起来是因为那时候点了也没用。现在点一下就排进队列,下一个工具轮边界就送到模型
-    /// 眼前——「详细一点」正是最想在它还在写的时候说的那句。话题和隐私那两颗本来就只在空
-    /// 会话时出现,回复期间不会露面。
+    /// 只剩用药焦点那一颗。没有焦点时整排不存在,不白占 `VStack` 的那一格间距。
     @ViewBuilder
     private var quickRow: some View {
-        ScrollView(.horizontal) {
-            // 一个容器里的玻璃互相认识:靠近时会融到一起,而不是各糊各的背景。
-            GlassEffectContainer(spacing: 8) {
-                HStack(spacing: 8) {
-                    focusChip
-
-                    if !model.messages.isEmpty {
-                        ForEach(Array(followUpChips.enumerated()), id: \.element) { index, question in
-                            Button {
-                                model.send(question)
-                            } label: {
-                                ChipLabel(icon: nil, title: question, isOn: false)
-                            }
-                            .buttonStyle(.plain)
-                            .transition(Self.chipSwap(at: index))
-                            .accessibilityLabel("追问：\(question)")
-                        }
-                    }
-                }
+        if model.focusMedication != nil {
+            focusChip
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 12)
-            }
         }
-        .scrollIndicators(.hidden)
-        // 生成的那几条到了(或者被清掉了)就是这一排在换人。动画挂在这儿而不是交付那一步:
-        // 那是 ViewModel,它不该知道屏幕上这一下要花多久。
-        .animation(.smooth(duration: 0.3), value: followUpChips)
-    }
-
-    /// 换 chip 的那一下。
-    ///
-    /// 要读成「新的到了」,不是「这一排重建了」——所以是**淡入淡出加一点缩放**,不是横向推走:
-    /// 推走会让人以为自己不小心滑了一下这排,而它其实是自己换的。
-    ///
-    /// 退出比进入快一倍:先把位子空出来,新的再进来。两边一样快的话中间那几帧是两套 chip
-    /// 挤在一起,宽度还在变,看着像抖了一下。
-    ///
-    /// 进入按位次错开 60ms,读起来是三条依次落位而不是整排闪一下。第一颗不参与——它的 id
-    /// 从头到尾没变,SwiftUI 根本不会去动它,这是 `id: \.self` 免费换来的。
-    private static func chipSwap(at index: Int) -> AnyTransition {
-        let shape = AnyTransition.opacity.combined(with: .scale(scale: 0.94, anchor: .leading))
-        return .asymmetric(
-            insertion: shape.animation(.smooth(duration: 0.3).delay(Double(index) * 0.06)),
-            removal: shape.animation(.easeOut(duration: 0.15))
-        )
     }
 
     /// 「问问这个药」带进来的焦点。只管下一轮回复,回完就撤;点一下提前撤掉。

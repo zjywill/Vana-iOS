@@ -7,7 +7,7 @@ import AIKit
 /// - **他自己的效果**(`MedicationItem.outcome`)——他记的。值钱得多,界面和工具输出里永远排前面。
 /// - **一般功效**(`MedicationItem.brief`)——这一层。网上到处都是,模型随时能重写一遍。
 ///
-/// 和 `QuestionSuggester` / `FollowUpSuggester` 同一套做法:一次不带工具的便宜调用,加一条时
+/// 和 `QuestionSuggester` 同一套做法:一次不带工具的便宜调用,加一条时
 /// 跑一次,**结果存在那一条上**,不每次渲染重算。失败即放弃——列表照常用,那一行只是少一句话。
 struct MedicationBriefer: Sendable {
     let providerId: String
@@ -44,7 +44,7 @@ struct MedicationBriefer: Sendable {
             maxOutputTokens: 120,
             // 说明一件通用的事,不是写文案。
             temperature: 0.2,
-            // 同 `FollowUpSuggester`:留空是接受模型的默认,而好几家的默认是思考——思考算进
+            // 同 `QuestionSuggester`:留空是接受模型的默认,而好几家的默认是思考——思考算进
             // output,120 个 token 会在写出那一句之前就用光。
             thinking: .off
         ))

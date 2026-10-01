@@ -3082,16 +3082,6 @@
         }
       }
     },
-    "可能是什么原因？" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What could be causing it?"
-          }
-        }
-      }
-    },
     "吃了这么久有变化吗？" : {
       "localizations" : {
         "en" : {
@@ -3250,16 +3240,6 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "和%1$@%2$@差不多"
-          }
-        }
-      }
-    },
-    "和上周比呢？" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "How does that compare with last week?"
           }
         }
       }
@@ -5643,16 +5623,6 @@
         }
       }
     },
-    "有什么建议？" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Any suggestions?"
-          }
-        }
-      }
-    },
     "有什么要注意的？" : {
       "localizations" : {
         "en" : {
@@ -7979,16 +7949,6 @@
         }
       }
     },
-    "详细一点" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "More detail"
-          }
-        }
-      }
-    },
     "语音识别模型正在下载，先用键盘吧。" : {
       "localizations" : {
         "en" : {
@@ -9046,16 +9006,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connected. You're ready to ask."
-          }
-        }
-      }
-    },
-    "追问：%@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Follow up: %@"
           }
         }
       }
