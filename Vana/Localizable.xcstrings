@@ -3570,6 +3570,16 @@
         }
       }
     },
+    "复制" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy"
+          }
+        }
+      }
+    },
     "复制回复" : {
       "localizations" : {
         "en" : {

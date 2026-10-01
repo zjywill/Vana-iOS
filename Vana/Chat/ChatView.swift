@@ -1098,6 +1098,15 @@ private struct MessageBubble: View, Equatable {
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
         .contextMenu {
+            // 气泡里的字能选,但长按先弹的是这份菜单,选字那条路在手机上几乎够不着;
+            // 要原样拿走自己说过的那句,得有一项直接给。只拍了图没打字时没有可复制的。
+            if !message.text.isEmpty {
+                Button {
+                    UIPasteboard.general.string = message.text
+                } label: {
+                    Label("复制", systemImage: "doc.on.doc")
+                }
+            }
             if message.isQueued {
                 // 只有排队中的能收回。已经发出去的那句模型已经看过了,从列表里抹掉它只会让
                 // 屏幕上的对话和模型记得的对话对不上。
