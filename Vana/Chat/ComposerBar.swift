@@ -31,17 +31,6 @@ struct ComposerBar: View {
     /// 按下去那一刻输入框里已经有的字。说出来的接在它后面,不覆盖。
     @State private var dictationBase = ""
 
-    /// 铺开排还是一行排。**必须是存下来的状态,不能是算出来的属性**:进和出的门槛不一样,
-    /// 而"不一样"这件事只有记着上一次的答案才成立。
-    @State private var isStacked = false
-    /// 整张卡片有多宽,和一行排时卡片比输入框宽出多少(加号、右边几颗按钮、间距)。
-    ///
-    /// 换不换排问的是「这段字在**一行排的那一栏**里放不放得下一行」,而铺开之后那一栏
-    /// 已经不存在了——所以量的是两样不随排法变的东西:卡片宽度随时量,两侧占掉的那一截
-    /// 只在一行排时量一次记着。转屏之后卡片变宽,那一栏跟着变宽,两侧那截不变。
-    @State private var cardWidth: CGFloat = 0
-    @State private var rowChrome: CGFloat?
-
     /// 单行时正好是半高(`ComposerLayout.rowMinHeight` 的一半),画出来就是一颗胶囊;
     /// 长成多行之后才真的当成 27 的圆角用。
     private static let cardRadius: CGFloat = 27
@@ -291,16 +280,23 @@ struct ComposerBar: View {
 
     // MARK: - 输入卡片
 
-    /// 平时是一行:加号、输入框、发送,空着的时候就是一颗胶囊。
+    /// 一行:加号、输入框、右边的按钮,空着的时候就是一颗胶囊。
     ///
-    /// 一行放不下就换成上下两层,输入框独占一整幅宽度,按钮沉到底边:夹在两颗按钮中间的
-    /// 那一栏只有七成宽,同样的字要多占几行,还越读越窄;而第二行一出来,胶囊就已经不是
-    /// 胶囊了,两侧那几颗圆钮悬在一个变高的框中间,不如干脆铺开。
+    /// 字多了**只往上长,不换排法**。原来一行放不下就换成上下两层(输入框独占整幅宽,
+    /// 按钮沉到底边),而那一下躲不掉是一次跳:按钮挪到字下面,底边又贴着键盘不动,
+    /// 正在打的那行字就只能整个往上蹿一颗按钮的高度,同时向左挪一颗加号的宽度、按新宽度
+    /// 重新折行——三样一起发生,恰好在他敲字的那一刻。再加上换排靠 `onChange` 改状态,
+    /// 比输入框里的字晚一拍,先在窄栏里折出第二行、再翻面。动画只能把这几下拖长,抹不平:
+    /// 输入框里的折行是 UIKit 当场排的,不跟着动画走。
     ///
-    /// 两种排法走同一个 `Layout`,不是 `if` 出两棵树:`if` 换支的那一下输入框会被拆了
-    /// 重建,焦点跟着没,重建之后敲进去的字直接掉在地上——打到第二行正好触发,再打就没了。
+    /// 现在多一行就多一行高,加号和右边那几颗一直停在最底下那一行的高度上(信息、
+    /// ChatGPT 都是这个形状)。没有状态、没有门槛,也就没有可以在门槛上来回抖的东西。
+    /// 代价是多行时输入框还是夹在两侧按钮中间那一栏里——换来的是打字时它不会动。
+    ///
+    /// 仍然走同一个 `Layout`,不是 `if` 出两棵树:输入框重建的那一下焦点会丢,敲进去的
+    /// 字直接掉在地上。
     private var card: some View {
-        ComposerLayout(isStacked: isStacked) {
+        ComposerLayout {
             moreMenu
             field
             // 这台设备上认不了中文时整颗不出现,`ComposerLayout` 认三个也认四个。
@@ -309,13 +305,7 @@ struct ComposerBar: View {
             }
             sendButton
         }
-        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { cardWidth = $0 }
-        .onChange(of: model.input, initial: true) { restack() }
-        .onChange(of: cardWidth) { restack() }
-        .onChange(of: rowChrome) { restack() }
-        .animation(.smooth(duration: 0.2), value: isStacked)
         .padding(.horizontal, 4)
-        .padding(.bottom, isStacked ? 4 : 0)
         // iOS 26 的底部输入区是浮在内容上的玻璃,不是压在内容上的一条不透明工具栏:
         // 对话往上滚的时候从它下面透出来,用户才知道自己没滚到底。
         .glassEffect(.regular, in: .rect(cornerRadius: Self.cardRadius, style: .continuous))
@@ -344,63 +334,7 @@ struct ComposerBar: View {
             .onSubmit { model.send() }
             .padding(.vertical, 13)
             .accessibilityLabel("消息")
-            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width in
-                // 铺开时这一栏是整幅宽,不是要量的那一栏。
-                guard !isStacked, cardWidth > 0 else { return }
-                rowChrome = cardWidth - width
-            }
     }
-
-    private func restack() {
-        // 还没量到一行排那一栏有多宽时(第一帧),只认换行:按一个猜的宽度翻面,
-        // 下一帧量到了又翻回来。
-        guard let rowChrome, cardWidth > 0 else {
-            isStacked = model.input.contains("\n")
-            return
-        }
-        let font = UIFont.preferredFont(forTextStyle: .body)
-        isStacked = Self.stacks(
-            textWidth: (model.input as NSString).size(withAttributes: [.font: font]).width,
-            hasNewline: model.input.contains("\n"),
-            wasStacked: isStacked,
-            lineWidth: cardWidth - rowChrome,
-            hysteresis: font.pointSize * Self.hysteresisEms
-        )
-    }
-
-    /// 一行排那一栏放不下一行字,就铺开。
-    ///
-    /// **量的是字本身有多宽,不是输入框量出来多高。** 量高度那版会绕回来:高度决定排版,
-    /// 排版决定输入框有多宽,宽度又决定高度。SwiftUI 在这个环里会拿着一份过期的行数排版,
-    /// 粘进来的长文有一半根本不显示。而「这段字按正文字号排成一行有多宽」和「一行排那一栏
-    /// 有多宽」都不随排法变,环就断了。
-    ///
-    /// 原来按字符数估(汉字两格、其余一格),门槛是两行——英文字母窄得多,估出来的格数和
-    /// 屏幕上差着一截,换了语言门槛就不准。现在按真实字体量,门槛是一行:第二行一出现,
-    /// 输入框就独占整幅宽,不再夹在两颗按钮中间挤着长高。
-    ///
-    /// **门槛必须是两个,不是一个。** 只有一个门槛时,光标停在门槛上的那一刻,每敲一下
-    /// 键盘整块输入区就翻一次面——而中文输入法让这件事必然发生:拼音串「kankan」比上屏
-    /// 之后的「看看」宽得多,**同一句话在敲的过程中宽度是来回跳的**,于是它在两种排法
-    /// 之间来回抖(那 0.2 秒的动画把每一次都放大成一次可见的跳动)。所以铺开之后要短到
-    /// 比那一栏再窄 `hysteresis`(约三个字宽,盖住一个拼音音节)才收回去。
-    ///
-    /// `caretSlack` 是光标和折行的余量:字宽刚好等于栏宽时,系统已经折行了。
-    nonisolated static func stacks(
-        textWidth: CGFloat,
-        hasNewline: Bool,
-        wasStacked: Bool,
-        lineWidth: CGFloat,
-        hysteresis: CGFloat
-    ) -> Bool {
-        if hasNewline { return true }
-        let limit = lineWidth - caretSlack - (wasStacked ? hysteresis : 0)
-        return textWidth > limit
-    }
-
-    nonisolated static let caretSlack: CGFloat = 6
-    /// 收回一行排要再短多少,以正文字号为单位(约三个汉字)。
-    nonisolated static let hysteresisEms: CGFloat = 3
 
     /// 加号是**给这句话添东西**,不是「开一条新对话」。
     ///
@@ -567,25 +501,35 @@ struct ComposerBar: View {
     }
 }
 
-/// 加号、输入框、右边那一到两颗按钮的两种排法。
+/// 加号、输入框、右边那一到两颗按钮排成一行。
 ///
-/// 写成 `Layout` 而不是两个 `HStack`/`VStack` 分支,是为了让这几个视图从头到尾是同一份:
-/// 换排的时候输入框不重建,焦点、选区、正在输入的拼音都还在。
+/// 写成 `Layout` 而不是 `HStack(alignment: .bottom)`,是因为按钮要对的不是输入框的底边,
+/// 而是「一行高的胶囊」的中线:单行时整排居中,多行时停在最底下那一行的高度上——
+/// 两种情况是同一个公式(`ComposerLayout.buttonCenterY`),所以字一行行长出来时按钮
+/// 一个点都不跳。
 ///
 /// 右边按几颗算几颗(`subviews[2...]`),不写死是因为按住说话那颗在认不了中文的设备上整个
 /// 不出现——按下标点名的话,那时候发送键会被当成麦克风来摆。
-private struct ComposerLayout: Layout {
-    /// 铺开排:输入框独占一整幅宽度在上,两颗按钮沉到底边。
-    var isStacked: Bool
+struct ComposerLayout: Layout {
     var spacing: CGFloat = 4
-    /// 铺开时输入框两侧留的空,让文字和下面那颗加号对不齐得不难看。
-    var stackedInset: CGFloat = 8
-    /// 一行排时胶囊的最低高度。
+    /// 一行时胶囊的最低高度。
     ///
     /// 不靠加输入框的 padding 去撑:那个数字同时决定多行时每一行的松紧,为了让空着的胶囊
     /// 好看一点而把粘进来的六行文字撑开一倍,是拿常见情况换少见情况。写成下限则只在
     /// "一行字撑不满"时起作用,文字一多它自己就让位了。
-    var rowMinHeight: CGFloat = 54
+    nonisolated static let rowMinHeight: CGFloat = 54
+
+    /// 两侧按钮的中线,从卡片顶边量。
+    ///
+    /// 单行时卡片正好是 `rowMinHeight` 高,这就是正中;多行时卡片往上长,它跟着底边走,
+    /// 停在最底下那一行。**不能写成「单行居中、多行沉底」两支**:那是两个公式,第二行
+    /// 出来的那一下按钮会从一个跳到另一个,而那正是这一版要去掉的东西。
+    ///
+    /// 不沉到底边(`height - 按钮高 / 2`):单行时那样会上宽下窄,一条水平对称的胶囊,
+    /// 眼睛对这种两三点的偏移比对绝对尺寸敏感得多。
+    nonisolated static func buttonCenterY(height: CGFloat) -> CGFloat {
+        height - rowMinHeight / 2
+    }
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let width = proposal.replacingUnspecifiedDimensions().width
@@ -599,51 +543,29 @@ private struct ComposerLayout: Layout {
         cache: inout ()
     ) {
         let m = metrics(width: bounds.width, subviews: subviews)
-        let fieldProposal = ProposedViewSize(width: m.fieldWidth, height: m.fieldHeight)
+        let buttonY = bounds.minY + Self.buttonCenterY(height: bounds.height)
         // 右边那几颗从最右往左摆,最后一个 subview 永远贴着右边——发送键的位置不该因为
         // 多出一颗麦克风而挪走。
-        let trailingY = isStacked ? bounds.maxY : bounds.midY
-        let trailingAnchor: UnitPoint = isStacked ? .bottomTrailing : .trailing
         var x = bounds.maxX
         for (index, size) in Array(zip(subviews.indices.dropFirst(2), m.trailing)).reversed() {
             subviews[index].place(
-                at: CGPoint(x: x, y: trailingY),
-                anchor: trailingAnchor,
+                at: CGPoint(x: x, y: buttonY),
+                anchor: .trailing,
                 proposal: ProposedViewSize(size)
             )
             x -= size.width + spacing
         }
-
-        guard isStacked else {
-            // 一行排:所有东西一律**居中**,不是沉到底边。
-            //
-            // 沉底那版的高度由输入框说了算(它比 44 的按钮高出一点),于是那几颗圆钮上面
-            // 空出那一截、下面顶死——胶囊看着上宽下窄。差的只有两三点,但这是一条水平
-            // 对称的胶囊,眼睛对这种偏移比对绝对尺寸敏感得多。
-            subviews[0].place(
-                at: CGPoint(x: bounds.minX, y: bounds.midY),
-                anchor: .leading,
-                proposal: ProposedViewSize(m.plus)
-            )
-            subviews[1].place(
-                at: CGPoint(x: bounds.minX + m.plus.width + spacing, y: bounds.midY),
-                anchor: .leading,
-                proposal: fieldProposal
-            )
-            return
-        }
-
-        // 铺开排:输入框独占一整幅宽度在上,按钮沉到底边。这儿的沉底是对的——它们
-        // 本来就是排在文字下面的第二行。
-        subviews[1].place(
-            at: CGPoint(x: bounds.minX + stackedInset, y: bounds.minY),
-            anchor: .topLeading,
-            proposal: fieldProposal
-        )
         subviews[0].place(
-            at: CGPoint(x: bounds.minX, y: bounds.maxY),
-            anchor: .bottomLeading,
+            at: CGPoint(x: bounds.minX, y: buttonY),
+            anchor: .leading,
             proposal: ProposedViewSize(m.plus)
+        )
+        // 输入框竖着居中:单行时它比胶囊矮一点,居中才上下对称;多行时它就是整张卡片的
+        // 高度,居中和顶齐是同一个位置。
+        subviews[1].place(
+            at: CGPoint(x: bounds.minX + m.plus.width + spacing, y: bounds.midY),
+            anchor: .leading,
+            proposal: ProposedViewSize(width: m.fieldWidth, height: m.fieldHeight)
         )
     }
 
@@ -665,12 +587,7 @@ private struct ComposerLayout: Layout {
             + spacing * CGFloat(max(0, trailing.count - 1))
         let buttons = max(plus.height, trailing.map(\.height).max() ?? 0)
 
-        let fieldWidth = max(
-            0,
-            isStacked
-                ? width - stackedInset * 2
-                : width - plus.width - trailingWidth - spacing * 2
-        )
+        let fieldWidth = max(0, width - plus.width - trailingWidth - spacing * 2)
         // 高度让输入框自己说了算:它内部有 lineLimit 的上限,到第六行就不再长。
         let fieldHeight = subviews[1]
             .sizeThatFits(ProposedViewSize(width: fieldWidth, height: nil))
@@ -681,9 +598,7 @@ private struct ComposerLayout: Layout {
             trailing: trailing,
             fieldWidth: fieldWidth,
             fieldHeight: fieldHeight,
-            height: isStacked
-                ? fieldHeight + spacing + buttons
-                : max(rowMinHeight, max(buttons, fieldHeight))
+            height: max(Self.rowMinHeight, max(buttons, fieldHeight))
         )
     }
 }
